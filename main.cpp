@@ -1,87 +1,78 @@
 #include <iostream>
 #include "src/base.h"
-
+#include <unordered_map>
 using namespace std;
 using namespace grynca;
 
-
-struct MyStuff;
-
-class StuffManager : public Manager<MyStuff>
-{
-public:
-};
-
-
-class MyStuff : public ManagedItem<StuffManager> {
+class MyStuff {
 public:
     MyStuff() {
-        std::cout << "Creating my stuff." << std::endl;
-        a = rand()%10;
     }
-    ~MyStuff() {
-        std::cout << "Deleting my stuff." << std::endl;
-    }
+    ~MyStuff() { }
 
     void init() {
         a = rand()%10;
+    }
+
+    void dostuff() {
+        a +=rand()%10;
     }
 
     int a;
 };
 
 int main(int argc, char** argv) {
-    fast_vector<int> fv;
-    fv.push_back(1);fv.push_back(2);fv.push_back(3);
+    size_t n = 1e7;
+    std::unordered_map<uint32_t, MyStuff> stuff_map;
+    stuff_map.reserve(n);
+    UnsortedVector<MyStuff> stuff_vec;
+    stuff_vec.reserve(n);
+    fast_vector<unsigned int> destruction_order;
+    destruction_order.reserve(n);
+    randomPickN(destruction_order, n, n);
 
-    Variant<MyStuff, int > v;
-
-    UnsortedVector<int> uv;
-    uv.add(1);
-    uv.add(2);
-    uv.add(3);
-
-    uv.remove(0);
-    uv.remove(2);
-
-    UnsortedVersionedVector<int> uvv;
-    uvv.add(1);uvv.add(2);uvv.add(3);
-
-
-    Manager<MyStuff> mgr;
-    mgr.addItem();
-    mgr.addItem();
-    mgr.addItem();
-    mgr.addItem();
-    mgr.addItem();
-
-    v.set<int>(10);
-
-    std::cout << string_utils::fromString<int>("10", 5) << std::endl;
-    cout << string_utils::trim("   Hello, World!   ") << endl;
-
-    Path p = Path::createDirPath("c:/DEV/gamedev");
-
-    FileLister fl = p.listFiles({"cpp", "h"}, true);
-    Path path;
-    std::string filename;
-    while (fl.nextFile(&path, &filename)) {
-        std::cout << "PATH: " << path << ", FILENAME: " << filename << std::endl;
+    {
+        BlockMeasure m("MAP creation");
+        for (size_t i=0; i<n; ++i) {
+            stuff_map[i] = MyStuff();
+        }
     }
 
-    fast_vector<Path> dirs;
-    p.listDirs(dirs, true);
-    std::cout << "DIRS:" << std::endl;
-    for (size_t i=0; i<dirs.size(); ++i) {
-        std::cout << dirs[i] << std::endl;
+    {
+        BlockMeasure m("MAP loop");
+        for (size_t i=0; i<n; ++i) {
+            stuff_map[i].dostuff();
+        }
     }
 
-    Variant<TypesPack<int, bool>> a;
-    a.set<int>(1);
-    a.set<bool>(false);
+    {
+        BlockMeasure m("MAP destruction");
+        for (size_t i=0; i<n; ++i) {
+            stuff_map.erase(destruction_order[i]);
+        }
+    }
 
+    {
+        BlockMeasure m("UNSORTED_VECTOR creation");
+        for (size_t i=0; i<n; ++i) {
+            stuff_vec.add();
+        }
+    }
 
-    OptionsHandler oh(argc, argv);
+    {
+        BlockMeasure m("UNSORTED_VECTOR loop");
+        for (size_t i=0; i<n; ++i) {
+            stuff_vec.get(i).dostuff();
+        }
+    }
+
+    {
+        BlockMeasure m("UNSORTED_VECTOR destruction");
+        for (size_t i=0; i<n; ++i) {
+            stuff_vec.remove(destruction_order[i]);
+        }
+    }
+
 
     KEY_TO_CONTINUE();
     return 0;

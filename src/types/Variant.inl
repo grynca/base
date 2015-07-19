@@ -72,13 +72,20 @@ namespace grynca
     }
 
     template <typename ... Ts>
+    template<typename T>
+    inline const T& Variant<Ts...>::get()const {
+        assert(typePos_<T>() == curr_pos_);
+        return *reinterpret_cast<const T*>(&data_);
+    }
+
+    template <typename ... Ts>
     inline void* Variant<Ts...>::getData() {
         return &data_;
     }
 
     template <typename ... Ts>
     template<typename T>
-    inline int Variant<Ts...>::typePos_() {
+    inline int Variant<Ts...>::typePos_()const {
         return position<T, Ts...>::pos;
     }
 

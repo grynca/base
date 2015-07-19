@@ -30,14 +30,16 @@ namespace grynca {
 
         template<typename T>
         T& get();
+        template<typename T>
+        const T& get()const;
 
         void* getData();
 
         typedef TypesPack<Ts...> Types;
-        int getCurrentType() { return curr_pos_; }
+        int getCurrentType()const { return curr_pos_; }
     private:
         template <typename T>
-        int typePos_();
+        int typePos_()const;
 
         detail::VariantHelper<Ts...>& getHelper_();
 
