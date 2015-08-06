@@ -4,7 +4,7 @@
 #include "Type.h"
 
 namespace grynca {
-    namespace detail {
+    namespace internal {
 
 
         template<typename... Ts>

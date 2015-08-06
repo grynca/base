@@ -4,21 +4,27 @@
 #include <stdint.h>
 #include <algorithm>
 #include <cassert>
+#include  "containers/fast_vector.h"
 #include "../functions/meta.h"
 
 namespace grynca {
     typedef void (*DestroyFunc)(void*);
-    typedef void (*CopyFunc)(void*, const void*);
-    typedef void (*MoveFunc)(void*, void*);
+    typedef void (*CopyFunc)(void* to, const void* from);
+    typedef void (*MoveFunc)(void* to, void* from);
+
+    // fw
+    class TypeInfo;
+    template<typename> class TypeInfoManager;
 
     template<typename Domain>
-    class TypeIdGiver {
+    class TypeDomain {
     protected:
         static uint32_t getNewId();
     };
 
+// Static type info
     template <typename T, typename Domain = void>
-    class Type : public TypeIdGiver<Domain>
+    class Type : public TypeDomain<Domain>
     {
     public:
         static void destroy(void* place);
@@ -28,21 +34,50 @@ namespace grynca {
         // these ids are automatically set (compilation order dependant)
         //  should not be communicated over network or saved between runs
         static uint32_t getInternalTypeId();
+        static std::string getTypename();
+        static size_t getSize();
+
+        static const TypeInfo& getTypeInfo();
+    private:
+        template <typename TT> friend class TypeInfoManager;
+        static uint32_t& typeId_();
     };
 
-    // class with settable class id
-    template <typename T>
-    class CustomTypeId
+// Dynamic type info
+    class TypeInfo {
+    public:
+        TypeInfo();
+
+        bool isNull()const;
+        size_t getSize()const;
+        DestroyFunc getDestroyFunc()const;
+        CopyFunc getCopyFunc()const;
+        MoveFunc getMoveFunc()const;
+
+        template <typename T, typename Domain>
+        void set(uint32_t id);
+
+        uint32_t getId()const;
+    private:
+        DestroyFunc destroy_;
+        CopyFunc copy_;
+        MoveFunc move_;
+        size_t size_;
+        uint32_t id_;
+    };
+
+    template<typename Domain = void>
+    class TypeInfoManager
     {
     public:
-        static uint32_t getTypeId();
+        template <typename T>
         static void setTypeId(uint32_t tid);
-        static bool isTypeIdSet();
+        static const TypeInfo& get(uint32_t tid);
+        static bool isTypeIdSet(uint32_t tid);
 
-    private:
-        static int32_t& tid_();
+    protected:
+        static fast_vector<TypeInfo>& getTypes_();
     };
-
 
     #define IF_EMPTY(TP) typename std::enable_if< TP::empty() >::type
     #define IF_NOT_EMPTY(TP) typename std::enable_if< !TP::empty() >::type

@@ -163,12 +163,12 @@ namespace grynca {
 
        template<template<class> class InputIterator, class U>
        fast_vector(const InputIterator<U> first, const InputIterator<U> last)
-               : mStart(NULL), mEnd(NULL), mAllocEnd(NULL) {
+        : fast_vector() {
           assign(first, last);
        }
 
        fast_vector(const fast_vector<T> &x)      // copy constructor
-               : mStart(NULL), mEnd(NULL), mAllocEnd(NULL) {
+        : fast_vector() {
           reserve(x.size());
           for (const_iterator it = x.begin(); it != x.end(); ++it)
              push_back(*it);
@@ -176,7 +176,7 @@ namespace grynca {
 
        // initializer list
        fast_vector(std::initializer_list<T> il)
-               : mStart(NULL), mEnd(NULL), mAllocEnd(NULL) {
+        : fast_vector() {
           insert(begin(), il.begin(), il.end());
        }
 
@@ -210,7 +210,7 @@ namespace grynca {
              size_t new_alloc_bytes = _get_new_capacity(curr_capacity, curr_capacity + 1) * sizeof(T);
              _realloc_all(new_alloc_bytes);
           }
-          std::allocator<T>::construct(mEnd);
+          new (mEnd) T();
           ++mEnd;
        }
 
@@ -377,7 +377,7 @@ namespace grynca {
              // no need for realloc yet
           {
              memmove(position.p + 1, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
-             std::allocator<T>::construct(position.p, val);
+             new (position.p) T(val);
              ++mEnd;
              return position;
           }
@@ -391,7 +391,7 @@ namespace grynca {
              T *oldStart = _realloc_split_by_gap(new_capacity_bytes, head_size_bytes, sizeof(T));
              // create element in gap
              uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
-             std::allocator<T>::construct((T *) gap_slot, val);
+             new (gap_slot) T(val);
              free(oldStart);
              return (T *) (gap_slot);
           }
@@ -492,7 +492,7 @@ namespace grynca {
        template<class InputIterator>
        void normal_assign(InputIterator first, InputIterator last) {
           clear();
-          size_t range = std::distance(first, last);
+          size_t range = (size_t)std::distance(first, last);
           reserve(range);
           while (first != last) {
              push_back(*first);
@@ -506,7 +506,7 @@ namespace grynca {
           {
              memmove(position.p + n, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
              for (unsigned int i = 0; i < n; ++i) {
-                std::allocator<T>().construct(position.p, val);
+                new (position.p) T(val);
                 ++position;
              }
              mEnd += n;
@@ -522,7 +522,7 @@ namespace grynca {
              // create elements in gap
              uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
              for (unsigned int i = 0; i < n; ++i) {
-                std::allocator<T>().construct((T *) gap_slot, val);
+                new (gap_slot) T(val);
                 gap_slot += sizeof(T);
              }
              free(oldStart);
@@ -552,7 +552,7 @@ namespace grynca {
           {
              memmove(position.p + range, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
              while (first != last) {
-                std::allocator<T>().construct(position.p, *first);
+                new (position.p) T(*first);
                 ++position;
                 ++first;
              }
@@ -569,7 +569,7 @@ namespace grynca {
              // create elements in gap
              uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
              while (first != last) {
-                std::allocator<T>().construct((T *) gap_slot, *first);
+                new (gap_slot) T(*first);
                 gap_slot += sizeof(T);
                 ++first;
              }

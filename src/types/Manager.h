@@ -31,6 +31,7 @@ namespace grynca {
     protected:
         typedef T ManagerType;
         template<typename TT> friend class Manager;
+        template<typename TT, typename TTT> friend class ManagerSingletons;
 
         uint32_t id_;
         ManagerType* manager_;
@@ -55,7 +56,8 @@ namespace grynca {
     template <typename ItemType>
     class Manager {
     public:
-        ItemType& addItem();    // adds default-constructed item to manager
+        template <typename...ConstructionArgs>
+        ItemType& addItem(ConstructionArgs&&... args);
         ItemType& getItem(uint32_t id);
         ItemType& getItemAtPos(uint32_t pos);
         void removeItem(uint32_t id);
@@ -70,7 +72,8 @@ namespace grynca {
     template <typename ItemType>
     class ManagerVersioned {
     public:
-        ItemType& addItem();  // adds default-constructed item to manager
+        template <typename...ConstructionArgs>
+        ItemType& addItem(ConstructionArgs&&... args);
         ItemType& getItem(VersionedIndex id);
         ItemType& getItemAtPos(uint32_t pos);
         void removeItem(VersionedIndex id);
@@ -82,6 +85,23 @@ namespace grynca {
         bool empty();
     private:
         UnsortedVersionedVector<ItemType> items_;
+    };
+
+    // manages singletons derived from ItemType
+    template <typename Derived, typename ItemType>
+    class ManagerSingletons {
+    public:
+        virtual ~ManagerSingletons();
+
+        template <typename T>
+        T& get();
+
+
+        ItemType* getById(uint32_t id);
+
+        uint32_t getSize();
+    private:
+        fast_vector<ItemType*> items_;
     };
 }
 

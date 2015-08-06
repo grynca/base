@@ -1,13 +1,15 @@
 #include "Manager.h"
+#include "Type.h"
 
 namespace grynca {
 
     template <typename ItemType>
-    inline ItemType& Manager<ItemType>::addItem() {
-        uint32_t id = items_.add();
+    template <typename...ConstructionArgs>
+    inline ItemType& Manager<ItemType>::addItem(ConstructionArgs&&... args) {
+        uint32_t id = items_.add(std::forward<ConstructionArgs>(args)...);
         ItemType& item = items_.get(id);
         item.id_ = id;
-        item.manager_ = reinterpret_cast<typename ItemType::ManagerType*>(this);
+        item.manager_ = (typename ItemType::ManagerType*)(this);
         return item;
     }
 
@@ -42,11 +44,12 @@ namespace grynca {
     }
 
     template <typename ItemType>
-    inline ItemType& ManagerVersioned<ItemType>::addItem() {
-        VersionedIndex id = items_.add();
+    template <typename...ConstructionArgs>
+    inline ItemType& ManagerVersioned<ItemType>::addItem(ConstructionArgs&&... args) {
+        VersionedIndex id = items_.add(std::forward<ConstructionArgs>(args)...);
         ItemType& item = items_.get(id);
         item.id_ = id;
-        item.manager_ = reinterpret_cast<typename ItemType::ManagerType*>(this);
+        item.manager_ = (typename ItemType::ManagerType*)(this);
         return item;
     }
 
@@ -85,4 +88,38 @@ namespace grynca {
         return items_.empty();
     }
 
+
+    template <typename Derived, typename ItemType>
+    inline ManagerSingletons<Derived, ItemType>::~ManagerSingletons() {
+        for (uint32_t i=0; i<items_.size(); ++i) {
+            if (items_[i])
+                delete items_[i];
+        }
+    };
+
+    template <typename Derived, typename ItemType>
+    template <typename T>
+    inline T& ManagerSingletons<Derived, ItemType>::get() {
+        uint32_t tid = Type<T,  Derived>::getInternalTypeId();
+        if (tid >= items_.size()) {
+            items_.resize(tid+1, NULL);
+        }
+        if (!items_[tid]) {
+            T* item = new T();
+            item->id_ = tid;
+            item->manager_ = (typename ItemType::ManagerType*)(this);
+            items_[tid] = item;
+        }
+        return *(T*)items_[tid];
+    }
+
+    template <typename Derived, typename ItemType>
+    inline ItemType* ManagerSingletons<Derived, ItemType>::getById(uint32_t id) {
+        return items_[id];
+    }
+
+    template <typename Derived, typename ItemType>
+    inline uint32_t ManagerSingletons<Derived, ItemType>::getSize() {
+        return items_.size();
+    };
 }

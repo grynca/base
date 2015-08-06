@@ -3,7 +3,7 @@ project(Base)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES main.cpp
+set(SOURCE_FILES test/main.cpp
     src/base.h
     src/functions/debug.h
     src/functions/meta.h
@@ -25,12 +25,26 @@ set(SOURCE_FILES main.cpp
     src/types/RefCommonPtr.h
     src/types/RefPtr.h
     src/types/Manager.h
+    src/types/Manager.inl
     src/functions/string_utils.h
     src/types/Path.h
-    src/functions/random.h
+    src/types/Path.inl
     src/types/FileLister.h
+    src/types/FileLister.inl
     src/types/Config.h
+    src/types/Config.inl
     src/types/OptionsHandler.h
+    src/types/Singleton.h
+    src/types/Singleton.inl
+    src/types/Timer.h
+    src/types/Timer.inl
+    src/functions/random.h
     src/functions/sort_utils.h
+    src/functions/sort_utils.inl
+    src/functions/string_utils.h
+    src/functions/string_utils.inl
+    src/types/VariantCaller.h
+    src/types/Call.h
+    src/types/containers/VVector.h
     )
-add_executable(Base ${SOURCE_FILES})
+add_executable(Base ${SOURCE_FILES} test/test_containers.h test/test_variants.h test/MyDomain.h test/test_type_if.h)

@@ -9,6 +9,7 @@
 #include "types/containers/fast_vector.h"
 #include "types/containers/UnsortedVector.h"
 #include "types/containers/UnsortedVersionedVector.h"
+#include "types/containers/VVector.h"
 #include "types/CommonPtr.h"
 #include "types/Exception.h"
 #include "types/RefCommonPtr.h"
@@ -16,10 +17,13 @@
 #include "types/RefPtr.h"
 #include "types/Type.h"
 #include "types/Variant.h"
+#include "types/VariantCaller.h"
+#include "types/Call.h"
 #include "types/Manager.h"
 #include "types/Path.h"
 #include "types/FileLister.h"
 #include "types/Config.h"
 #include "types/OptionsHandler.h"
+#include "types/Singleton.h"
 
 #endif //BASE_H

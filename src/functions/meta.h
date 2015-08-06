@@ -36,6 +36,11 @@
 #define AND_ALL_9(m, x1, x2, x3, x4, x5, x6, x7, x8, x9) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)
 #define AND_ALL_10(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)
 
+#define DECLARE_PROP(PROP) \
+template<class T> \
+using PROP##_t = decltype(std::declval<T>().PROP); \
+template<class T> \
+using has_##PROP = grynca::can_apply<PROP##_t, T>
 
 namespace grynca {
 
@@ -89,6 +94,21 @@ namespace grynca {
 
     template<template<class...>class Z, class...Ts>
     using can_apply=details::can_apply<Z,void,Ts...>;
+
+
+    template<typename T, template<class> class... Props>
+    struct HasProps;
+
+    template<typename T>
+    struct HasProps<T> {
+        static constexpr bool value = true;
+    };
+
+    template<typename T, template<class> class FirstProp,
+            template<class> class... OtherProps>
+    struct HasProps<T, FirstProp, OtherProps...> {
+        static constexpr bool value = FirstProp<T &>() && HasProps<T, OtherProps...>::value;
+    };
 }
 
 #endif //META_H

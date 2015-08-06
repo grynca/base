@@ -3,6 +3,7 @@
 
 #include "RefCount.h"
 #include "Type.h"
+#include <cassert>
 
 namespace grynca {
 
@@ -38,8 +39,11 @@ namespace grynca {
             unref_();
         }
 
-        T* get() { return ptr_; }
-
+        T* getPtr() { return ptr_; }
+        T& get() {
+            assert(ptr_);
+            return *ptr_;
+        }
     protected:
         void unref_() {
             if (!ref_count_->unref()) {

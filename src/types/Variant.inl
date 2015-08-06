@@ -44,7 +44,7 @@ namespace grynca
     template <typename ... Ts>
     template<typename T>
     inline bool Variant<Ts...>::is() {
-        return (curr_pos_ == typePos_<T>() );
+        return (curr_pos_ == typePos<T>() );
     }
 
     template <typename ... Ts>
@@ -60,21 +60,21 @@ namespace grynca
             getHelper_().destroy(curr_pos_, &data_);
         // construct new with placement new
         new (&data_) T(std::forward<Args>(args)...);
-        curr_pos_ =  typePos_<T>();
+        curr_pos_ =  typePos<T>();
         return get<T>();
     }
 
     template <typename ... Ts>
     template <typename T>
     inline T& Variant<Ts...>::get() {
-        assert(typePos_<T>() == curr_pos_);
+        assert(typePos<T>() == curr_pos_);
         return *reinterpret_cast<T*>(&data_);
     }
 
     template <typename ... Ts>
     template<typename T>
     inline const T& Variant<Ts...>::get()const {
-        assert(typePos_<T>() == curr_pos_);
+        assert(typePos<T>() == curr_pos_);
         return *reinterpret_cast<const T*>(&data_);
     }
 
@@ -85,13 +85,14 @@ namespace grynca
 
     template <typename ... Ts>
     template<typename T>
-    inline int Variant<Ts...>::typePos_()const {
+    inline int Variant<Ts...>::typePos() {
+    // static
         return position<T, Ts...>::pos;
     }
 
     template <typename ... Ts>
-    inline detail::VariantHelper<Ts...>& Variant<Ts...>::getHelper_() {
-        static detail::VariantHelper<Ts...> helper;
+    inline internal::VariantHelper<Ts...>& Variant<Ts...>::getHelper_() {
+        static internal::VariantHelper<Ts...> helper;
         return helper;
     }
 }

@@ -37,11 +37,12 @@ namespace grynca {
 
         typedef TypesPack<Ts...> Types;
         int getCurrentType()const { return curr_pos_; }
-    private:
-        template <typename T>
-        int typePos_()const;
 
-        detail::VariantHelper<Ts...>& getHelper_();
+        template <typename T>
+        static int typePos();
+    private:
+
+        internal::VariantHelper<Ts...>& getHelper_();
 
         static const size_t data_size = static_max<sizeof(Ts)...>::value;
         static const size_t data_align = static_max<alignof(Ts)...>::value;
