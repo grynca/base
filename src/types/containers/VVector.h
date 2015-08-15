@@ -16,6 +16,8 @@ namespace grynca {
         VVector(const VVector & v);
         ~VVector();
 
+        VVector& operator=(const VVector & v);
+
         template <typename T, typename ... Args>
         T& add(Args&&... args);
 

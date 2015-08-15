@@ -21,4 +21,17 @@
 std::cout << "press any key to continue ..." << std::endl; \
 getchar() \
 
+#ifndef NDEBUG
+#   define ASSERT(condition, message) \
+    do { \
+        if (! (condition)) { \
+            std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
+                      << " line " << __LINE__ << ": " << message << std::endl; \
+            KEY_TO_CONTINUE();  \
+        } \
+    } while (false)
+#else
+#   define ASSERT(condition, message) do { } while (false)
+#endif
+
 #endif // DEBUG_H

@@ -35,7 +35,8 @@ namespace grynca {
         template <typename VariantType, typename...Args>
         static void call(VariantType& v, Args&&... args) {
             static internal::Funcs<Functor, VariantType, Args...> funcs;
-            assert(v.valid());
+            ASSERT(v.valid(),
+                  "Cant call on variant.");
             funcs.funcs[v.getCurrentType()](v, std::forward<Args>(args)... );
         }
     };

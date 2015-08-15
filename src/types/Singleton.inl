@@ -11,7 +11,7 @@ namespace grynca {
     template <typename T>
     inline T& Singleton<T>::get() {
     //static
-        assert(instance_() && "Not created.");
+        ASSERT(instance_(), "Not created.");
         return *instance_();
     }
 
@@ -23,7 +23,7 @@ namespace grynca {
 
     template <typename T>
     inline Singleton<T>::Singleton() {
-        assert(!instance_() && "Already created.");
+        ASSERT(!instance_(), "Already created.");
     }
 
     template <typename T>

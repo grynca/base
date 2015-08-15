@@ -41,7 +41,7 @@ namespace grynca {
 
         T* getPtr() { return ptr_; }
         T& get() {
-            assert(ptr_);
+            ASSERT(ptr_, "");
             return *ptr_;
         }
     protected:

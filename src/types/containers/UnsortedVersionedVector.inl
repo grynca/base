@@ -38,7 +38,7 @@ namespace grynca {
 
     template <typename T>
     inline void UnsortedVersionedVector<T>::remove(VersionedIndex index) {
-        assert(isValidIndex(index));
+        ASSERT(isValidIndex(index), "Invalid index.");
 
         uint32_t deleted_item_slot_id = redirects_[index.index].index;
 
@@ -73,7 +73,7 @@ namespace grynca {
 
     template <typename T>
     inline T& UnsortedVersionedVector<T>::get(VersionedIndex index) {
-        assert(isValidIndex(index));
+        ASSERT(isValidIndex(index), "Invalid index.");
         uint32_t item_slot_id = redirects_[index.index].index;
         return *((T*)&items_data_[item_slot_id*sizeof(T)]);
     }

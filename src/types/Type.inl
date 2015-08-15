@@ -103,7 +103,8 @@ namespace grynca {
     template <typename T>
     inline void TypeInfoManager<Domain>::setTypeId(uint32_t tid) {
     //static
-        assert(!isTypeIdSet(tid) && "Type with this id already set.");
+        ASSERT(!isTypeIdSet(tid),
+               "Type with this id already set.");
         if (tid >=getTypes_().size())
             getTypes_().resize(tid+1);
         getTypes_()[tid].template set<T, Domain>(tid);
@@ -113,7 +114,8 @@ namespace grynca {
     template <typename Domain>
     inline const TypeInfo& TypeInfoManager<Domain>::get(uint32_t tid) {
     //static
-        assert(isTypeIdSet(tid));
+        ASSERT(isTypeIdSet(tid),
+               "Type with this id not set.");
         return getTypes_()[tid];
     }
 

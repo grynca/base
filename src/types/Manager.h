@@ -36,8 +36,8 @@ namespace grynca {
         uint32_t id_;
         ManagerType* manager_;
     public:
-        uint32_t getId() { return id_; }
-        ManagerType& getManager() { return *manager_; }
+        uint32_t getId()const { return id_; }
+        ManagerType& getManager()const { return *manager_; }
     };
 
     template <typename T>
@@ -49,8 +49,8 @@ namespace grynca {
         VersionedIndex id_;
         ManagerType* manager_;
     public:
-        VersionedIndex getId() { return id_; }
-        ManagerType& getManager() { return *manager_; }
+        VersionedIndex getId()const { return id_; }
+        ManagerType& getManager()const { return *manager_; }
     };
 
     template <typename ItemType>

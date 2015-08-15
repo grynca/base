@@ -12,7 +12,7 @@ namespace grynca {
 
     // pick count numbers without repeating, from 0 to (max-1), caller is responsible for seeding his random gen
     static void randomPickN(fast_vector<unsigned int>& picked, unsigned int count, unsigned int max) {
-        assert(count <= max);
+        ASSERT(count <= max, "Cant pick more numbers than max.");
 
         // create vector of numbers from 0..(max-1)
         fast_vector<unsigned int> numbers_pool;

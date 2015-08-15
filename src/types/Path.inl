@@ -86,7 +86,7 @@ namespace grynca {
         // If we didn't find a common prefix then throw
         if (last_common_root == -1)
         {
-            assert( 0 ); // "Paths do not have a common base"
+            ASSERT(false, "Paths do not have a common base");
             relative = "";
         }
 
@@ -116,7 +116,7 @@ namespace grynca {
         return (stat (path_.c_str(), &buffer) == 0);
     }
     inline bool Path::loadDataFromFile(fast_vector<uint8_t>& data_out) {
-        assert(!is_dir_);
+        ASSERT(!is_dir_, "Cant load data from dir.");
 
         std::ifstream f(path_, std::ios::binary);
         if (!f.is_open())
@@ -245,7 +245,7 @@ namespace grynca {
     }
 
     inline void Path::listDirs(fast_vector<Path>& dirsOut, bool dive /*= false*/) {
-        assert(is_dir_);
+        ASSERT(is_dir_, "Must be dir.");
         listDirsInner_(path_, dirsOut, dive);
     }
 
@@ -267,7 +267,7 @@ namespace grynca {
     }
 
     inline FileLister Path::listFiles(const fast_vector<std::string>& extensions, bool dive /*= false*/) {
-        assert(is_dir_);
+        ASSERT(is_dir_, "Must be dir.");
         return FileLister(path_, extensions, dive);
     }
 

@@ -18,9 +18,9 @@ namespace grynca {
 
     template <typename Domain>
     inline VVector<Domain>::VVector(const VVector & v) {
-        items_.reserve(v.getCount());
-        type_ids_.reserve(v.getCount());
-        for (uint32_t i=0; i<v.getCount(); ++i) {
+        items_.reserve(v.getSize());
+        type_ids_.reserve(v.getSize());
+        for (uint32_t i=0; i<v.getSize(); ++i) {
             const TypeInfo& tinfo = v.getTypeInfo_(i);
             uint8_t *ptr = new uint8_t(tinfo.getSize());
             tinfo.getCopyFunc()(ptr, v.get(i));
@@ -34,6 +34,13 @@ namespace grynca {
         for (uint32_t i=0; i<items_.size(); ++i) {
             getTypeInfo_(i).getDestroyFunc()(items_[i]);
         }
+    }
+
+    template <typename Domain>
+    VVector<Domain>& VVector<Domain>::operator=(const VVector& v) {
+        this->~VVector();
+        new (this) VVector<Domain>(v);
+        return *this;
     }
 
     template <typename Domain>

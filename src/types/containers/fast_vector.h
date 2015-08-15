@@ -9,6 +9,7 @@
 #include <cmath>
 #include <type_traits>
 #include <memory>
+#include "../../functions/debug.h"
 
 namespace grynca {
     template<typename T>
@@ -119,12 +120,6 @@ namespace grynca {
        return !(lhs.p < rhs.p);
     }
 
-
-    //#ifdef _DEBUG
-    //#  define DEFAULT_INITIAL_ALLOC (size_t)2
-    //#else // !_DEBUG
-    //#  define DEFAULT_INITIAL_ALLOC (size_t)8
-    //#endif // !_DEBUG
 #define GROWING_FACTOR 1.5
 
     template<typename T>
@@ -242,12 +237,12 @@ namespace grynca {
        }
 
        T &operator[](size_t id) {
-          assert(mStart + id < mEnd);
+          ASSERT(mStart + id < mEnd, "");
           return *(mStart + id);
        }
 
        const T &operator[](size_t id) const {
-          assert(mStart + id < mEnd);
+          ASSERT(mStart + id < mEnd, "");
           return *(mStart + id);
        }
 
@@ -371,8 +366,8 @@ namespace grynca {
        }
 
        iterator insert(iterator position, const T &val) {
-          assert(position <= iterator(mEnd));
-          assert(position >= iterator(mStart));
+          ASSERT(position <= iterator(mEnd), "");
+          ASSERT(position >= iterator(mStart), "");
           if (mEnd < mAllocEnd)
              // no need for realloc yet
           {
@@ -407,8 +402,8 @@ namespace grynca {
        }
 
        iterator erase(iterator position) {
-          assert(position < iterator(mEnd));
-          assert(position >= iterator(mStart));
+          ASSERT(position < iterator(mEnd), "");
+          ASSERT(position >= iterator(mStart), "");
           if (position.p == (mEnd - 1)) {
              pop_back();
           }
@@ -422,11 +417,11 @@ namespace grynca {
        }
 
        iterator erase(iterator first, iterator last) {
-          assert(first <= iterator(mEnd));
-          assert(first >= iterator(mStart));
-          assert(last <= iterator(mEnd));
-          assert(last >= iterator(mStart));
-          assert(last >= first);
+          ASSERT(first <= iterator(mEnd), "");
+          ASSERT(first >= iterator(mStart), "");
+          ASSERT(last <= iterator(mEnd), "");
+          ASSERT(last >= iterator(mStart), "");
+          ASSERT(last >= first, "");
 
           iterator tmp = first;
           while (tmp != last)  // call destructors for erased elems

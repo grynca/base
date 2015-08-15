@@ -29,7 +29,7 @@ namespace grynca {
         }
 
         void destroy() {
-            assert(!isNull());
+            ASSERT(!isNull(), "Cant destroy null CommonPtr.");
             destructor_(place_);
         }
 

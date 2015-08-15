@@ -67,14 +67,16 @@ namespace grynca
     template <typename ... Ts>
     template <typename T>
     inline T& Variant<Ts...>::get() {
-        assert(typePos<T>() == curr_pos_);
+        ASSERT(typePos<T>() == curr_pos_,
+               "This type is not currently set in Variant.");
         return *reinterpret_cast<T*>(&data_);
     }
 
     template <typename ... Ts>
     template<typename T>
     inline const T& Variant<Ts...>::get()const {
-        assert(typePos<T>() == curr_pos_);
+        ASSERT(typePos<T>() == curr_pos_,
+               "This type is not currently set in Variant.");
         return *reinterpret_cast<const T*>(&data_);
     }
 
