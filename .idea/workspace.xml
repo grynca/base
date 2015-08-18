@@ -11,24 +11,10 @@
     </ADDITIONAL_GENERATION_ENVIRONMENT>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2c82014f-4e98-4835-a773-e5895247d40a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/CommonPtr.h" afterPath="$PROJECT_DIR$/src/types/CommonPtr.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Exception.h" afterPath="$PROJECT_DIR$/src/types/Exception.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Manager.h" afterPath="$PROJECT_DIR$/src/types/Manager.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Path.inl" afterPath="$PROJECT_DIR$/src/types/Path.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/RefPtr.h" afterPath="$PROJECT_DIR$/src/types/RefPtr.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Singleton.inl" afterPath="$PROJECT_DIR$/src/types/Singleton.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Type.inl" afterPath="$PROJECT_DIR$/src/types/Type.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/UnsortedVector.inl" afterPath="$PROJECT_DIR$/src/types/containers/UnsortedVector.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/UnsortedVersionedVector.inl" afterPath="$PROJECT_DIR$/src/types/containers/UnsortedVersionedVector.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/VVector.h" afterPath="$PROJECT_DIR$/src/types/containers/VVector.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/VVector.inl" afterPath="$PROJECT_DIR$/src/types/containers/VVector.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Variant.inl" afterPath="$PROJECT_DIR$/src/types/Variant.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/VariantCaller.h" afterPath="$PROJECT_DIR$/src/types/VariantCaller.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/debug.h" afterPath="$PROJECT_DIR$/src/functions/debug.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/fast_vector.h" afterPath="$PROJECT_DIR$/src/types/containers/fast_vector.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/random.h" afterPath="$PROJECT_DIR$/src/functions/random.h" />
+    <list default="true" id="2c82014f-4e98-4835-a773-e5895247d40a" name="Default" comment="custom assert (with message &amp; non-crashing)&#10;+ minor changes">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/meta.h" afterPath="$PROJECT_DIR$/src/functions/meta.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Path.inl" afterPath="$PROJECT_DIR$/src/types/Path.inl" />
     </list>
     <ignored path="Base.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -49,18 +35,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="debug.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/functions/debug.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="3" column="19" selection-start-line="3" selection-start-column="19" selection-end-line="3" selection-end-column="19" />
-              <folding>
-                <element signature="e#962#1020#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="fast_vector.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/types/containers/fast_vector.h">
           <provider selected="true" editor-type-id="text-editor">
@@ -121,14 +95,36 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="string_utils.h" pinned="false" current-in-tab="true">
+      <file leaf-file-name="string_utils.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/functions/string_utils.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33402276">
-              <caret line="20" column="37" selection-start-line="20" selection-start-column="37" selection-end-line="20" selection-end-column="37" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="20" column="34" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
               <folding>
                 <element signature="e#298#310#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="meta.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/functions/meta.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="71" column="42" selection-start-line="71" selection-start-column="42" selection-end-line="71" selection-end-column="42" />
+              <folding>
+                <element signature="e#3656#3702#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Path.inl" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/types/Path.inl">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.38469493">
+              <caret line="294" column="73" selection-start-line="294" selection-start-column="73" selection-end-line="294" selection-end-column="73" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -142,16 +138,6 @@
                 <element signature="e#1757#1774#0" expanded="true" />
                 <element signature="e#1788#1800#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="VariantCaller.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/VariantCaller.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="38" column="31" selection-start-line="38" selection-start-column="31" selection-end-line="38" selection-end-column="31" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -183,7 +169,6 @@
         <option value="$PROJECT_DIR$/src/types/VariantFuncs.h" />
         <option value="$PROJECT_DIR$/src/types/Variant.h" />
         <option value="$PROJECT_DIR$/src/types/Call.h" />
-        <option value="$PROJECT_DIR$/src/functions/meta.h" />
         <option value="$PROJECT_DIR$/src/types/Manager.h" />
         <option value="$PROJECT_DIR$/src/types/Manager.inl" />
         <option value="$PROJECT_DIR$/src/types/containers/OwnerVector.h" />
@@ -205,7 +190,6 @@
         <option value="$PROJECT_DIR$/src/functions/random.h" />
         <option value="$PROJECT_DIR$/src/types/CommonPtr.h" />
         <option value="$PROJECT_DIR$/src/types/Exception.h" />
-        <option value="$PROJECT_DIR$/src/types/Path.inl" />
         <option value="$PROJECT_DIR$/src/types/RefPtr.h" />
         <option value="$PROJECT_DIR$/src/types/Singleton.inl" />
         <option value="$PROJECT_DIR$/src/types/Type.inl" />
@@ -215,6 +199,8 @@
         <option value="$PROJECT_DIR$/src/types/containers/UnsortedVector.inl" />
         <option value="$PROJECT_DIR$/src/types/containers/UnsortedVersionedVector.inl" />
         <option value="$PROJECT_DIR$/src/types/Variant.inl" />
+        <option value="$PROJECT_DIR$/src/functions/meta.h" />
+        <option value="$PROJECT_DIR$/src/types/Path.inl" />
       </list>
     </option>
   </component>
@@ -355,7 +341,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
     <property name="FullScreen" value="false" />
@@ -412,31 +398,37 @@
       <option name="project" value="LOCAL" />
       <updated>1438890132660</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="custom assert (with message &amp; non-crashing)&#10;+ minor changes">
+      <created>1439628395699</created>
+      <option name="number" value="00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1439628395699</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-4" y="-4" width="1866" height="1088" extended-state="6" />
-    <editor active="true" />
+    <frame x="-4" y="-4" width="1866" height="1088" extended-state="0" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25026911" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25026911" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32930514" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2487412" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.28499496" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.28499496" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32930514" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2487412" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -452,7 +444,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="properties declaration, hasProps type checker&#10;VVector - vector managing objects of arbitrary types via pointers&#10;Call - compile time type-conditional caller&#10;ManagerSingletons - contains single instance of each type&#10;TypeInfoManager - dynamic type info&#10;VariantCaller - calls correctly typed variant into functor&#10;&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="properties declaration, hasProps type checker&#10;VVector - vector managing objects of arbitrary types via pointers&#10;Call - compile time type-conditional caller&#10;ManagerSingletons - contains single instance of each type&#10;TypeInfoManager - dynamic type info&#10;VariantCaller - calls correctly typed variant into functor&#10;&#10;" />
+    <MESSAGE value="custom assert (with message &amp; non-crashing)&#10;+ minor changes" />
+    <option name="LAST_COMMIT_MESSAGE" value="custom assert (with message &amp; non-crashing)&#10;+ minor changes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -643,13 +636,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/functions/meta.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="38" column="8" selection-start-line="38" selection-start-column="8" selection-end-line="38" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/types/Call.h">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -720,14 +706,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Path.inl">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="247" column="37" selection-start-line="247" selection-start-column="37" selection-end-line="247" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/types/RefPtr.h">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -753,9 +731,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="3" column="19" selection-start-line="3" selection-start-column="19" selection-end-line="3" selection-end-column="19" />
-          <folding>
-            <element signature="e#962#1020#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -763,7 +738,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="38" column="31" selection-start-line="38" selection-start-column="31" selection-end-line="38" selection-end-column="31" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -828,11 +802,29 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/functions/string_utils.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33402276">
-          <caret line="20" column="37" selection-start-line="20" selection-start-column="37" selection-end-line="20" selection-end-column="37" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="34" selection-start-line="20" selection-start-column="34" selection-end-line="20" selection-end-column="34" />
           <folding>
             <element signature="e#298#310#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/functions/meta.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="71" column="42" selection-start-line="71" selection-start-column="42" selection-end-line="71" selection-end-column="42" />
+          <folding>
+            <element signature="e#3656#3702#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/types/Path.inl">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.38469493">
+          <caret line="294" column="73" selection-start-line="294" selection-start-column="73" selection-end-line="294" selection-end-column="73" />
+          <folding />
         </state>
       </provider>
     </entry>

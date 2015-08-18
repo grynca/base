@@ -89,7 +89,7 @@ namespace grynca {
         template<template<class...>class Z, class, class...Ts>
         struct can_apply: std::false_type {};
         template<template<class...>class Z, class...Ts>
-        struct can_apply<Z, void_t<Z<Ts...>>, Ts...> : std::true_type {};
+        struct can_apply<Z, void_t<Z<Ts...> >, Ts...> : std::true_type {};
     }
 
     template<template<class...>class Z, class...Ts>

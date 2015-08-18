@@ -109,6 +109,7 @@ namespace grynca {
             relative += "/";
 
         path_ = relative;
+        return true;
     }
 
     inline bool Path::exists() {
@@ -317,6 +318,7 @@ namespace grynca {
     }
 
     inline std::ostream& operator << (std::ostream& os, Path& p) {
-        std::cout << p.path_;
+        os << p.path_;
+        return os;
     }
 }
