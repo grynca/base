@@ -3,6 +3,16 @@
 
 namespace grynca {
 
+    template <typename T>
+    ManagedItem<T>::ManagedItem()
+     : id_(INVALID_ID), manager_(NULL)
+    {}
+
+    template <typename T>
+    ManagedItemVersioned<T>::ManagedItemVersioned()
+            : id_(INVALID_ID), manager_(NULL)
+    {}
+
     template <typename ItemType>
     template <typename...ConstructionArgs>
     inline ItemType& Manager<ItemType>::addItem(ConstructionArgs&&... args) {
@@ -19,7 +29,17 @@ namespace grynca {
     }
 
     template <typename ItemType>
+    inline const ItemType& Manager<ItemType>::getItem(uint32_t id)const  {
+        return items_.get(id);
+    }
+
+    template <typename ItemType>
     inline ItemType& Manager<ItemType>::getItemAtPos(uint32_t pos) {
+        return items_.getAtPos(pos);
+    }
+
+    template <typename ItemType>
+    inline const ItemType& Manager<ItemType>::getItemAtPos(uint32_t pos)const {
         return items_.getAtPos(pos);
     }
 
@@ -34,7 +54,12 @@ namespace grynca {
     }
 
     template <typename ItemType>
-    inline uint32_t Manager<ItemType>::getItemsCount() {
+    inline bool Manager<ItemType>::isValidIndex(uint32_t index)const {
+        return items_.isValidIndex(index);
+    }
+
+    template <typename ItemType>
+    inline uint32_t Manager<ItemType>::getItemsCount()const {
         return items_.size();
     }
 
@@ -59,7 +84,17 @@ namespace grynca {
     }
 
     template <typename ItemType>
+    inline const ItemType& ManagerVersioned<ItemType>::getItem(VersionedIndex id)const {
+        return items_.get(id);
+    }
+
+    template <typename ItemType>
     inline ItemType& ManagerVersioned<ItemType>::getItemAtPos(uint32_t pos) {
+        return items_.getAtPos(pos);
+    }
+
+    template <typename ItemType>
+    inline const ItemType& ManagerVersioned<ItemType>::getItemAtPos(uint32_t pos)const {
         return items_.getAtPos(pos);
     }
 
@@ -74,12 +109,12 @@ namespace grynca {
     }
 
     template <typename ItemType>
-    inline bool ManagerVersioned<ItemType>::isValidIndex(VersionedIndex index) {
+    inline bool ManagerVersioned<ItemType>::isValidIndex(VersionedIndex index)const {
         return items_.isValidIndex(index);
     }
 
     template <typename ItemType>
-    inline uint32_t ManagerVersioned<ItemType>::getItemsCount() {
+    inline uint32_t ManagerVersioned<ItemType>::getItemsCount()const {
         return items_.size();
     }
 

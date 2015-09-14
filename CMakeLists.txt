@@ -3,48 +3,57 @@ project(Base)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES test/main.cpp
-    src/base.h
-    src/functions/debug.h
-    src/functions/meta.h
-    src/types/Exception.h
-    src/types/Type.h
-    src/types/Type.inl
-    src/types/Variant.h
-    src/types/Variant.inl
-    src/types/variant_helper.h
-    src/types/VersionedIndex.h
-    src/types/containers/fast_vector.h
-    src/types/containers/UnsortedVector.h
-    src/types/containers/UnsortedVector.inl
-    src/types/containers/UnsortedVersionedVector.h
-    src/types/containers/UnsortedVersionedVector.inl
-    src/types/BlockMeasure.h
-    src/types/RefCount.h
-    src/types/CommonPtr.h
-    src/types/RefCommonPtr.h
-    src/types/RefPtr.h
-    src/types/Manager.h
-    src/types/Manager.inl
-    src/functions/string_utils.h
-    src/types/Path.h
-    src/types/Path.inl
-    src/types/FileLister.h
-    src/types/FileLister.inl
-    src/types/Config.h
-    src/types/Config.inl
-    src/types/OptionsHandler.h
-    src/types/Singleton.h
-    src/types/Singleton.inl
-    src/types/Timer.h
-    src/types/Timer.inl
-    src/functions/random.h
-    src/functions/sort_utils.h
-    src/functions/sort_utils.inl
-    src/functions/string_utils.h
-    src/functions/string_utils.inl
-    src/types/VariantCaller.h
-    src/types/Call.h
-    src/types/containers/VVector.h
+set(SOURCE_FILES
+        src/base.h
+        src/functions/debug.h
+        src/functions/meta.h
+        src/types/Exception.h
+        src/types/Type.h
+        src/types/Type.inl
+        src/types/Variant.h
+        src/types/Variant.inl
+        src/types/variant_helper.h
+        src/types/VersionedIndex.h
+        src/types/containers/fast_vector.h
+        src/types/containers/UnsortedVector.h
+        src/types/containers/UnsortedVector.inl
+        src/types/containers/UnsortedVersionedVector.h
+        src/types/containers/UnsortedVersionedVector.inl
+        src/types/BlockMeasure.h
+        src/types/RefCount.h
+        src/types/CommonPtr.h
+        src/types/RefCommonPtr.h
+        src/types/RefPtr.h
+        src/types/Manager.h
+        src/types/Manager.inl
+        src/functions/string_utils.h
+        src/types/Path.h
+        src/types/Path.inl
+        src/types/FileLister.h
+        src/types/FileLister.inl
+        src/types/Config.h
+        src/types/Config.inl
+        src/types/OptionsHandler.h
+        src/types/Singleton.h
+        src/types/Singleton.inl
+        src/types/Timer.h
+        src/types/Timer.inl
+        src/functions/random.h
+        src/functions/sort_utils.h
+        src/functions/sort_utils.inl
+        src/functions/string_utils.h
+        src/functions/string_utils.inl
+        src/types/VariantCaller.h
+        src/types/Call.h
+        src/types/containers/VVector.h
     )
-add_executable(Base ${SOURCE_FILES} test/test_containers.h test/test_variants.h test/MyDomain.h test/test_type_if.h)
+
+set(TEST_FILES
+        test/main.cpp
+        test/test_containers.h
+        test/test_variants.h
+        test/MyDomain.h
+        test/test_type_if.h
+)
+
+add_executable(Base ${SOURCE_FILES} ${TEST_FILES})

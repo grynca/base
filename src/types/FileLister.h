@@ -12,12 +12,12 @@ namespace grynca {
     {
     public:
         // extensions without dot
-        FileLister(const std::string& dir_path, const fast_vector<std::string>& extensions, bool dive = false);
+        FileLister(const Path& dir_path, const fast_vector<std::string>& extensions, bool dive = false);
         ~FileLister();
 
         // called iteratively
         // both args can be NULL if not needed
-        bool nextFile(Path* path_out, std::string* fname_out = NULL);
+        bool nextFile(Path& path_out);
 
     protected:
 

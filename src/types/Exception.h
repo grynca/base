@@ -13,13 +13,11 @@ namespace grynca {
          : std::runtime_error("")
         {
             dout << this->what() << std::endl;
-            ASSERT(false, "");
         }
         Exception(const std::string& msg) throw()
          : std::runtime_error(msg)
         {
             dout << this->what() << std::endl;
-            ASSERT(false, "");
         }
     };
 

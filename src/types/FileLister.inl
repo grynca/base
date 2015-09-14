@@ -2,7 +2,7 @@
 #include "Path.h"
 
 namespace grynca {
-    inline FileLister::FileLister(const std::string& dir_path, const fast_vector<std::string>& extensions, bool dive /*= false*/)
+    inline FileLister::FileLister(const Path& dir_path, const fast_vector<std::string>& extensions, bool dive /*= false*/)
         : _recursive(dive), _extensions(extensions)
     {
         // convert extensions to lower case
@@ -10,9 +10,10 @@ namespace grynca {
             std::transform(_extensions[i].begin(), _extensions[i].end(), _extensions[i].begin(), ::tolower);
 
         // open top lvl dir
-        DIR* dir = opendir(dir_path.c_str());
+        std::string dirp = dir_path.getDirpath();
+        DIR* dir = opendir(dirp.c_str());
         if (dir)
-            _dirs.push_back(std::make_pair(dir, dir_path) );
+            _dirs.push_back(std::make_pair(dir, dirp) );
     }
 
     inline FileLister::~FileLister()
@@ -22,7 +23,7 @@ namespace grynca {
             closedir(_dirs[i].first);
     }
 
-    inline bool FileLister::nextFile(Path* path_out, std::string* fname_out /*= NULL*/)
+    inline bool FileLister::nextFile(Path& path_out)
     {
         struct dirent *dirp;
         while (_dirs.size())
@@ -36,7 +37,7 @@ namespace grynca {
                 if (curr_item_name == "." || curr_item_name == "..")
                     continue;
 
-                Path p = Path::createDirPath(_dirs.back().second) + curr_item_name;
+                Path p = Path(_dirs.back().second) + curr_item_name;
 
                 DIR* dir = opendir(p.getPath().c_str());
                 if (dir)
@@ -60,10 +61,7 @@ namespace grynca {
                     continue;
 
                 // it can be read -> return file
-                if (path_out)
-                    *path_out = p;
-                if (fname_out)
-                    *fname_out = curr_item_name;
+                path_out = p;
 
                 return true;
             }

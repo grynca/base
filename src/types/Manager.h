@@ -36,6 +36,10 @@ namespace grynca {
         uint32_t id_;
         ManagerType* manager_;
     public:
+        static constexpr uint32_t INVALID_ID = uint32_t(-1);
+
+        ManagedItem();
+
         uint32_t getId()const { return id_; }
         ManagerType& getManager()const { return *manager_; }
     };
@@ -49,6 +53,10 @@ namespace grynca {
         VersionedIndex id_;
         ManagerType* manager_;
     public:
+        static constexpr VersionedIndex INVALID_ID = VersionedIndex{uint32_t(-1), uint32_t(-1)};
+
+        ManagedItemVersioned();
+
         VersionedIndex getId()const { return id_; }
         ManagerType& getManager()const { return *manager_; }
     };
@@ -59,11 +67,15 @@ namespace grynca {
         template <typename...ConstructionArgs>
         ItemType& addItem(ConstructionArgs&&... args);
         ItemType& getItem(uint32_t id);
+        const ItemType& getItem(uint32_t id)const;
         ItemType& getItemAtPos(uint32_t pos);
+        const ItemType& getItemAtPos(uint32_t pos)const;
         void removeItem(uint32_t id);
         void reserveSpaceForItems(size_t count);
 
-        uint32_t getItemsCount();
+        bool isValidIndex(uint32_t index)const;
+
+        uint32_t getItemsCount()const;
         bool empty();
     private:
         UnsortedVector<ItemType> items_;
@@ -75,13 +87,15 @@ namespace grynca {
         template <typename...ConstructionArgs>
         ItemType& addItem(ConstructionArgs&&... args);
         ItemType& getItem(VersionedIndex id);
+        const ItemType& getItem(VersionedIndex id)const;
         ItemType& getItemAtPos(uint32_t pos);
+        const ItemType& getItemAtPos(uint32_t pos)const;
         void removeItem(VersionedIndex id);
         void reserveSpaceForItems(size_t count);
 
-        bool isValidIndex(VersionedIndex index);
+        bool isValidIndex(VersionedIndex index)const;
 
-        uint32_t getItemsCount();
+        uint32_t getItemsCount()const;
         bool empty();
     private:
         UnsortedVersionedVector<ItemType> items_;

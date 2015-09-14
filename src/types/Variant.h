@@ -30,6 +30,10 @@ namespace grynca {
 
         template<typename T>
         T& get();
+
+        template<typename IfaceT>
+        IfaceT& getBase();
+
         template<typename T>
         const T& get()const;
 

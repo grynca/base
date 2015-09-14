@@ -36,7 +36,7 @@ namespace grynca {
         static void call(VariantType& v, Args&&... args) {
             static internal::Funcs<Functor, VariantType, Args...> funcs;
             ASSERT(v.valid(),
-                  "Cant call on variant.");
+                  "Cant call on invalid variant.");
             funcs.funcs[v.getCurrentType()](v, std::forward<Args>(args)... );
         }
     };

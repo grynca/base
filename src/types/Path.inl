@@ -11,24 +11,17 @@
 namespace grynca {
 
     inline Path::Path()
-     : is_dir_(false)
     {
     }
 
-    inline Path::Path(const std::string& s, bool dir_path)
-     : is_dir_(dir_path), path_(s)
+    inline Path::Path(const char* path)
+     : path_(path)
     {
-        path_ = normalize_(path_, is_dir_);
     }
 
-    inline Path Path::createDirPath(const std::string& s) {
-    // static
-        return Path(s, true);
-    }
-
-    inline Path Path::createFilePath(const std::string& s) {
-    // static
-        return Path(s, false);
+    inline Path::Path(const std::string& path)
+     : path_(path)
+    {
     }
 
     inline bool Path::createPathDirs() {
@@ -60,10 +53,10 @@ namespace grynca {
     }
 
 
-    inline bool Path::convertToRelative(const std::string& relative_to, bool is_dir) {
+    inline bool Path::convertToRelative(const std::string& relative_to) {
         fast_vector<std::string> absolute_dirs;
         fast_vector<std::string> relative_dirs;
-        std::string rel = normalize_(relative_to, is_dir);
+        std::string rel = normalize_(relative_to);
         string_utils::tokenize(path_, absolute_dirs, "/");
         string_utils::tokenize(rel, relative_dirs, "/");
 
@@ -112,13 +105,11 @@ namespace grynca {
         return true;
     }
 
-    inline bool Path::exists() {
+    inline bool Path::exists()const {
         struct stat buffer;
         return (stat (path_.c_str(), &buffer) == 0);
     }
     inline bool Path::loadDataFromFile(fast_vector<uint8_t>& data_out) {
-        ASSERT(!is_dir_, "Cant load data from dir.");
-
         std::ifstream f(path_, std::ios::binary);
         if (!f.is_open())
             return false;
@@ -207,73 +198,65 @@ namespace grynca {
                 // dot must be after last slash
                 if ( dot_pos>slash_pos )
                     // remove everything from dot to end
-                    path_.erase(dot_pos+1);
+                    path_.erase(dot_pos);
             }
             else
-                path_.erase(dot_pos+1);
+                path_.erase(dot_pos);
         }
         // append new extension
-        path_.append(ext);
+        if (!ext.empty())
+            path_.append("."+ext);
     }
 
     inline void Path::removeExtension() {
         setExtension("");
     }
 
-    inline const std::string& Path::getPath() {
+    inline const std::string& Path::getPath()const {
         return path_;
     }
 
-    inline std::string Path::getFilename() {
+    inline std::string Path::getFilename()const {
         std::string p = path_;
         if (p[p.size()-1] == '/' || p[p.size()-1] == '\\')
             p.pop_back();
-        unsigned int found = p.find_last_of("/\\");
+        size_t found = p.find_last_of("/\\");
+        if (found == std::string::npos)
+            return p;
         return p.substr(found+1);
     }
 
-    inline std::string Path::getDirpath() {
+    inline std::string Path::getDirpath()const {
         std::string p = path_;
         if (p[p.size()-1] == '/' || p[p.size()-1] == '\\')
             p.pop_back();
-        unsigned int found = p.find_last_of("/\\");
+        size_t found = p.find_last_of("/\\");
+        if (found == std::string::npos)
+            return p;
         return p.substr(0,found);
-
-    }
-
-    inline bool Path::isDir() {
-        return is_dir_;
     }
 
     inline void Path::listDirs(fast_vector<Path>& dirsOut, bool dive /*= false*/) {
-        ASSERT(is_dir_, "Must be dir.");
         listDirsInner_(path_, dirsOut, dive);
     }
 
-    inline std::string Path::normalize_(const std::string& path, bool is_dir) {
+    inline std::string Path::normalize_(const std::string& path) {
         // replace backslashes with forward slashes
         std::string p = path;
         std::replace(p.begin(), p.end(), '\\', '/');
         p = string_utils::trim(p);
-        if (is_dir)  {
-            // enforce trailing slash
-            if (p.size())
-            {
-                char last_char = p[p.size()-1];
-                if (last_char != '/')
-                    p.push_back('/');
-            }
-        }
+        // remove trailing slash
+        if (p.back() == '/')
+            p.pop_back();
         return p;
     }
 
     inline FileLister Path::listFiles(const fast_vector<std::string>& extensions, bool dive /*= false*/) {
-        ASSERT(is_dir_, "Must be dir.");
-        return FileLister(path_, extensions, dive);
+        return FileLister(*this, extensions, dive);
     }
 
-    inline void Path::listDirsInner_(const std::string& dir, fast_vector<Path>& dirs_out, bool dive) {
-        DIR *d = opendir(dir.c_str());
+    inline void Path::listDirsInner_(const Path& dir, fast_vector<Path>& dirs_out, bool dive) {
+        DIR *d = opendir(dir.getPath().c_str());
         DIR *d_inner;
         struct dirent *dirp;
         if(d == NULL)
@@ -282,9 +265,10 @@ namespace grynca {
         {
             // ignore . and ..
             std::string name(dirp->d_name);
+            std::string path = (dir+name).getPath();
             if (name == "." || name == "..")
                 continue;
-            d_inner = opendir( (dir + name).c_str() );
+            d_inner = opendir( path.c_str() );
             if (d_inner)
             // is directory
             {
@@ -292,11 +276,11 @@ namespace grynca {
                     // recurse into it and find leafs
                 {
                     fast_vector<Path> lower_level_dirs;
-                    listDirsInner_(dir+name+"/", lower_level_dirs, dive);
+                    listDirsInner_(path+"/", lower_level_dirs, dive);
                     if (!lower_level_dirs.size())
                         // no subdirs -> this is leaf dir
                     {
-                        dirs_out.push_back(Path::createDirPath(dir+name));
+                        dirs_out.push_back(path);
                     }
                     else
                         // append leaf dirs to output vector
@@ -304,7 +288,7 @@ namespace grynca {
                 }
                 else
                     // dont look for leafs, just add dir
-                    dirs_out.push_back(Path::createDirPath(dir+name));
+                    dirs_out.push_back(path);
                 closedir(d_inner);
             }
         }
@@ -313,8 +297,7 @@ namespace grynca {
 
 
     inline Path operator+(const Path& p1, const std::string& s) {
-        bool s_is_dir = s.back() == '/' || s.back() == '\\';
-        return Path(p1.path_ + s, s_is_dir);
+        return Path(p1.path_ + "/" + s);
     }
 
     inline std::ostream& operator << (std::ostream& os, Path& p) {

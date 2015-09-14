@@ -9,6 +9,7 @@
 #include <cmath>
 #include <type_traits>
 #include <memory>
+#include <string.h>
 #include "../../functions/debug.h"
 
 namespace grynca {
@@ -271,19 +272,19 @@ namespace grynca {
        }
 
        reverse_iterator rbegin() {
-          return reverse_iterator(mEnd - 1);
+          return reverse_iterator(mEnd);
        }
 
        const_reverse_iterator rbegin() const {
-          return const_reverse_iterator(mEnd - 1);
+          return const_reverse_iterator(mEnd);
        }
 
        reverse_iterator rend() {
-          return reverse_iterator(mStart - 1);
+          return reverse_iterator(mStart);
        }
 
        const_reverse_iterator rend() const {
-          return const_reverse_iterator(mStart - 1);
+          return const_reverse_iterator(mStart);
        }
 
        void resize(size_t n, const T &val = T()) {

@@ -6,6 +6,12 @@
 namespace grynca {
     namespace internal {
 
+        struct VariantIfaceCaster {
+            template <typename V, typename T, typename IfaceT>
+            static void f(V& v, T& t, IfaceT*& i) {
+                i = (IfaceT*)(&t);
+            }
+        };
 
         template<typename... Ts>
         struct VariantHelper {

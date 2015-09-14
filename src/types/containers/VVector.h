@@ -8,6 +8,8 @@ namespace grynca {
     // fw
     class TypeInfo;
 
+    // VVector as for Virtual Vector
+
     template <typename Domain = void>
     class VVector {
     public:

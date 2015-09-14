@@ -29,12 +29,15 @@ namespace grynca {
         T& get(uint32_t index);
         T& getAtPos(uint32_t pos);      // good for looping through 0-size
 
-        bool isValidIndex(uint32_t index);
+        const T& get(uint32_t index)const;
+        const T& getAtPos(uint32_t pos)const;
+
+        bool isValidIndex(uint32_t index)const;
 
         T* getData();
 
-        uint32_t size();
-        bool empty();
+        uint32_t size()const;
+        bool empty()const;
     protected:
         fast_vector<uint8_t> items_data_;
         // for each item index of its redirect (needed for removal)

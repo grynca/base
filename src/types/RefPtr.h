@@ -21,6 +21,10 @@ namespace grynca {
                 : ptr_((T*)ptr), ref_count_(new RefCount())
         {}
 
+        RefPtr(T& t)
+            : RefPtr(&t)
+        {}
+
         RefPtr(const RefPtr& ptr)
                 : ptr_(ptr.ptr_), ref_count_(ptr.ref_count_)
         {
@@ -44,12 +48,23 @@ namespace grynca {
             ASSERT(ptr_, "");
             return *ptr_;
         }
+
+        T* operator->() {
+            ASSERT(ptr_, "");
+            return ptr_;
+        }
+
+        T const* operator->()const {
+            ASSERT(ptr_, "");
+            return ptr_;
+        }
+
     protected:
         void unref_() {
             if (!ref_count_->unref()) {
                 delete ref_count_;
                 if (ptr_) {
-                    Type<T>::destroy(ptr_);
+                    delete ptr_;
                 }
             }
         }

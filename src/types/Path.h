@@ -18,18 +18,18 @@ namespace grynca {
         friend std::ostream& operator << (std::ostream& os, Path& p);
     public:
         Path();
-        static Path createDirPath(const std::string& s);
-        static Path createFilePath(const std::string& s);
+        Path(const char* path);
+        Path(const std::string& path);
 
         // create needed dirs, returns same as mkdir() (0 if ok, -1 on error + ERRNO set)
         bool createPathDirs();
 
         // "c:/a/b/c" + "c:/a/x/file.txt" => "../../x/file.txt"
         // http://mrpmorris.blogspot.com/2007/05/convert-absolute-path-to-relative-path.html
-        bool convertToRelative(const std::string& relative_to, bool is_dir);
+        bool convertToRelative(const std::string& relative_to);
 
 // file manipulation
-        bool exists();
+        bool exists()const;
         bool loadDataFromFile(fast_vector<uint8_t>& data_out);
         bool saveDataToFile(const fast_vector<uint8_t>& data);
         bool loadStringFromFile(std::string& path_out);
@@ -41,22 +41,16 @@ namespace grynca {
         void setExtension(const std::string& ext);
         void removeExtension();
 // C:/data/obr.jpg , filename == obr.jpg, dirpath == C:/data/
-        const std::string& getPath();
-        std::string getFilename();
-        std::string getDirpath();
-
-        bool isDir();
+        const std::string& getPath()const;
+        std::string getFilename()const;
+        std::string getDirpath()const;
 
         void listDirs(fast_vector<Path>& dirsOut, bool dive = false);
         FileLister listFiles(const fast_vector<std::string>& extensions, bool dive = false);
     protected:
+        std::string normalize_(const std::string& path);
+        void listDirsInner_(const Path& dir, fast_vector<Path>& dirs_out, bool dive);
 
-        Path(const std::string& s, bool dir_path);
-
-        std::string normalize_(const std::string& path, bool is_dir);
-        void listDirsInner_(const std::string& dir, fast_vector<Path>& dirs_out, bool dive);
-
-        bool is_dir_;
         std::string path_;
     };
 }

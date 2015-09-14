@@ -1,4 +1,5 @@
 #include "Variant.h"
+#include "VariantCaller.h"
 #include <algorithm>
 #include <utility>
 #include <typeinfo>
@@ -69,7 +70,15 @@ namespace grynca
     inline T& Variant<Ts...>::get() {
         ASSERT(typePos<T>() == curr_pos_,
                "This type is not currently set in Variant.");
-        return *reinterpret_cast<T*>(&data_);
+        return *(T*)(&data_);
+    }
+
+    template <typename ... Ts>
+    template<typename IfaceT>
+    inline IfaceT& Variant<Ts...>::getBase() {
+        IfaceT *ptr;
+        VariantCaller<internal::VariantIfaceCaster>::call<Variant<Ts...> >(*this, ptr);
+        return *ptr;
     }
 
     template <typename ... Ts>
@@ -77,7 +86,7 @@ namespace grynca
     inline const T& Variant<Ts...>::get()const {
         ASSERT(typePos<T>() == curr_pos_,
                "This type is not currently set in Variant.");
-        return *reinterpret_cast<const T*>(&data_);
+        return *(const T*)(&data_);
     }
 
     template <typename ... Ts>

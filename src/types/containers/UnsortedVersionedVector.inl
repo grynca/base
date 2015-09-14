@@ -58,8 +58,8 @@ namespace grynca {
         items_data_.resize(last_item_slot_id*sizeof(T));
         redirect_ids_.resize(last_item_slot_id);
 
-        redirects_[deleted_item_slot_id].index = uint32_t(-1);
-        ++redirects_[deleted_item_slot_id].version;     // increment redirect version of removed item
+        redirects_[index.index].index = uint32_t(-1);
+        ++redirects_[index.index].version;     // increment redirect version of removed item
         // add redirect to free list
         free_redirects_.push_back(index.index);
     }
@@ -97,7 +97,7 @@ namespace grynca {
     }
 
     template <typename T>
-    inline uint32_t UnsortedVersionedVector<T>::size() {
+    inline uint32_t UnsortedVersionedVector<T>::size()const {
         return (uint32_t)redirect_ids_.size();
     }
 

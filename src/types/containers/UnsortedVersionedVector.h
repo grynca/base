@@ -29,7 +29,7 @@ namespace grynca {
         bool isValidIndex(VersionedIndex index);
 
         T* getData();
-        uint32_t size();
+        uint32_t size()const;
         bool empty();
     private:
         fast_vector<uint8_t> items_data_;

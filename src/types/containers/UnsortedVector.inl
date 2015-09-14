@@ -81,7 +81,17 @@ namespace grynca {
     }
 
     template <typename T>
-    inline bool UnsortedVector<T>::isValidIndex(uint32_t index) {
+    inline const T& UnsortedVector<T>::get(uint32_t index)const {
+        return ((UnsortedVector<T>*)this)->get(index);
+    }
+
+    template <typename T>
+    inline const T& UnsortedVector<T>::getAtPos(uint32_t pos)const {
+        return ((UnsortedVector<T>*)this)->getAtPos(pos);
+    }
+
+    template <typename T>
+    inline bool UnsortedVector<T>::isValidIndex(uint32_t index)const {
         if (index >= redirects_.size())
             return false;
         return redirects_[index]!=uint32_t(-1);
@@ -93,12 +103,12 @@ namespace grynca {
     }
 
     template <typename T>
-    inline uint32_t UnsortedVector<T>::size() {
+    inline uint32_t UnsortedVector<T>::size()const {
         return (uint32_t)redirect_ids_.size();
     }
 
     template <typename T>
-    inline bool UnsortedVector<T>::empty() {
+    inline bool UnsortedVector<T>::empty()const {
         return redirect_ids_.empty();
     }
 }

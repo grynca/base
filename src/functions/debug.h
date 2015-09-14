@@ -23,15 +23,16 @@ getchar() \
 
 #ifndef NDEBUG
 #   define ASSERT(condition, message) \
-    do { \
-        if (! (condition)) { \
-            std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
-                      << " line " << __LINE__ << ": " << message << std::endl; \
-            KEY_TO_CONTINUE();  \
-        } \
-    } while (false)
+    if (! (condition)) { \
+        std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
+                  << " line " << __LINE__ << ": " << (message); \
+        uint8_t* ptr = NULL; \
+        *ptr = 1; \
+    }
+#   define NEVER_GET_HERE(msg) ASSERT(false, ""#msg)
 #else
 #   define ASSERT(condition, message) do { } while (false)
+#   define NEVER_GET_HERE(msg)
 #endif
 
 #endif // DEBUG_H
