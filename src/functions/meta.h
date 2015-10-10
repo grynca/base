@@ -3,7 +3,7 @@
 
 #include <cstddef>
 
-/* This counts the number of args */
+/* This counts the number of args (does not work for 0 args) */
 #define NARGS_SEQ(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10, N,...) N
 #define NARGS(...) NARGS_SEQ(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
@@ -35,6 +35,12 @@
 #define AND_ALL_8(m, x1, x2, x3, x4, x5, x6, x7, x8) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)
 #define AND_ALL_9(m, x1, x2, x3, x4, x5, x6, x7, x8, x9) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)
 #define AND_ALL_10(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)
+
+
+
+#define NONE(S) S
+#define DEFINE_ENUM(NAME, ...) struct NAME { enum { APPLY(NONE, __VA_ARGS__), end };};
+#define DEFINE_ENUM_E(NAME, BASE, FIRST, ...) struct NAME: public BASE { enum { FIRST = BASE::end, APPLY(NONE,##__VA_ARGS__, end)};};
 
 #define DECLARE_PROP(PROP) \
 template<class T> \

@@ -33,6 +33,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/types/Timer.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Type.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Type.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Type_internal.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Variant.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Variant.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/VariantCaller.h" isTestSource="false" />
@@ -42,12 +43,17 @@
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/UnsortedVersionedVector.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/UnsortedVersionedVector.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector2.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector2.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/fast_vector.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/variant_helper.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/MyDomain.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/main.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/test_containers.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test/test_enum.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/test_type_if.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test/test_types.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/test_variants.h" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>

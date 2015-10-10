@@ -53,6 +53,7 @@ namespace grynca {
         DestroyFunc getDestroyFunc()const;
         CopyFunc getCopyFunc()const;
         MoveFunc getMoveFunc()const;
+        const std::string& getTypename()const;
 
         template <typename T, typename Domain>
         void set(uint32_t id);
@@ -64,6 +65,7 @@ namespace grynca {
         MoveFunc move_;
         size_t size_;
         uint32_t id_;
+        std::string typename_;
     };
 
     template<typename Domain = void>
@@ -74,7 +76,7 @@ namespace grynca {
         static void setTypeId(uint32_t tid);
         static const TypeInfo& get(uint32_t tid);
         static bool isTypeIdSet(uint32_t tid);
-
+        static uint32_t getTypesCount();
     protected:
         static fast_vector<TypeInfo>& getTypes_();
     };
@@ -96,6 +98,11 @@ namespace grynca {
         static constexpr int pos() { return position<T>::pos; }
 
         static constexpr int empty() { return true; }
+
+        template <typename... Tss>
+        static TypesPack<Tss...> expand() {
+            return TypesPack<Tss...>();
+        }
     };
 
     template <typename F, typename... R>
@@ -105,20 +112,25 @@ namespace grynca {
         typedef F Head;
         typedef TypesPack<R...> Tail;
 
+        static constexpr int getTypesCount();
 
-        static constexpr int getTypesCount() {
-            return sizeof...(R) +1;
-        }
-
-        // get type position id in pack
         template <typename T>
-        static constexpr int pos() {
-            return position<T, F, R...>::pos;
-        }
+        static constexpr int pos(); // get type position id in pack
 
-        static constexpr int empty() {
-            return false;
-        }
+        static constexpr int empty();
+
+        static const TypeInfo& getTypeInfo(int pos);
+
+        template <typename... Tss>
+        static TypesPack<F, R...,Tss...> expand();  // expand with types
+
+    };
+
+
+    template <typename... Ts> struct TypesPackMerge;
+    template <typename... Ts1, typename... Ts2>
+    struct TypesPackMerge<TypesPack<Ts1...>, TypesPack<Ts2...> > {
+        typedef TypesPack<Ts1..., Ts2...> Types;
     };
 }
 

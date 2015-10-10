@@ -74,6 +74,7 @@ namespace grynca { namespace test_containers {
     inline void testVirtualVector() {
         VVector<MyDomain> vv;
         vv.reserve(n());
+        vv.addAs<MyStuffA, MyStuff>();
 
         std::cout << "VVector:" << std::endl;
         {

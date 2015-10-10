@@ -1,5 +1,5 @@
-#ifndef VVECTOR_H
-#define VVECTOR_H
+#ifndef VVECTOR2_H_H
+#define VVECTOR2_H_H
 
 #include "fast_vector.h"
 
@@ -9,22 +9,22 @@ namespace grynca {
     class TypeInfo;
 
     // VVector as for Virtual Vector
-    // types indexed with domain typeIds
-    template <typename Domain = void>
-    class VVector {
+    // types indexed with type pos
+    template <typename TP>
+    class VVector2 {
     public:
-        VVector();
-        VVector(VVector && v);
-        VVector(const VVector & v);
-        ~VVector();
+        VVector2();
+        VVector2(VVector2 && v);
+        VVector2(const VVector2 & v);
+        ~VVector2();
 
-        VVector& operator=(const VVector & v);
+        VVector2& operator=(const VVector2 & v);
 
         template <typename T, typename ... ConstrArgs>
-        T& add(ConstrArgs&&... args);     // stores casted to uint8_t*
+        T& add(ConstrArgs&&... args);
 
         template <typename T, typename Base, typename ... ConstrArgs>
-        T& addAs(ConstrArgs&&... args);   // stores casted to Base*
+        T& addAs(ConstrArgs&&... args);
 
         // returns if item was found
         template <typename T>
@@ -48,6 +48,5 @@ namespace grynca {
 
 }
 
-
-#include "VVector.inl"
-#endif //VVECTOR_H
+#include "VVector2.inl"
+#endif //VVECTOR2_H_H

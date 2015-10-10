@@ -10,6 +10,7 @@
 #include "types/containers/UnsortedVector.h"
 #include "types/containers/UnsortedVersionedVector.h"
 #include "types/containers/VVector.h"
+#include "types/containers/VVector2.h"
 #include "types/CommonPtr.h"
 #include "types/Exception.h"
 #include "types/RefCommonPtr.h"

@@ -10,6 +10,7 @@ set(SOURCE_FILES
         src/types/Exception.h
         src/types/Type.h
         src/types/Type.inl
+        src/types/Type_internal.h
         src/types/Variant.h
         src/types/Variant.inl
         src/types/variant_helper.h
@@ -46,14 +47,17 @@ set(SOURCE_FILES
         src/types/VariantCaller.h
         src/types/Call.h
         src/types/containers/VVector.h
-    )
+        src/types/containers/VVector.inl
+        src/types/containers/VVector2.h
+        src/types/containers/VVector2.inl
+)
 
 set(TEST_FILES
         test/main.cpp
+        test/MyDomain.h
         test/test_containers.h
         test/test_variants.h
-        test/MyDomain.h
         test/test_type_if.h
-)
+        test/test_enum.h test/test_types.h)
 
 add_executable(Base ${SOURCE_FILES} ${TEST_FILES})
