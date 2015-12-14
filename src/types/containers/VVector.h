@@ -32,6 +32,8 @@ namespace grynca {
 
         void remove(uint32_t id);
 
+        void clear();
+
         uint32_t getSize()const;
         uint8_t* get(uint32_t id);
         uint8_t* const get(uint32_t id)const;

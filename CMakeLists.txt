@@ -14,7 +14,7 @@ set(SOURCE_FILES
         src/types/Variant.h
         src/types/Variant.inl
         src/types/variant_helper.h
-        src/types/VersionedIndex.h
+        src/types/Index.h
         src/types/containers/fast_vector.h
         src/types/containers/UnsortedVector.h
         src/types/containers/UnsortedVector.inl
@@ -49,8 +49,7 @@ set(SOURCE_FILES
         src/types/containers/VVector.h
         src/types/containers/VVector.inl
         src/types/containers/VVector2.h
-        src/types/containers/VVector2.inl
-)
+        src/types/containers/VVector2.inl)
 
 set(TEST_FILES
         test/main.cpp

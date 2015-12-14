@@ -46,7 +46,7 @@ namespace grynca {
         // call destructor on item data
         deleted->~T();
         // move last item to deleted place
-        std::copy(last, last+1, deleted);
+        memmove(deleted, last, sizeof(T));
         // update redirect for last item
         uint32_t redirect_id = redirect_ids_[last_item_slot_id];
         redirects_[redirect_id] = deleted_item_slot_id;
@@ -78,6 +78,11 @@ namespace grynca {
     template <typename T>
     inline T& UnsortedVector<T>::getAtPos(uint32_t pos) {
         return *((T*)&items_data_[pos*sizeof(T)]);
+    }
+
+    template <typename T>
+    inline uint32_t UnsortedVector<T>::getIndexForPos(uint32_t pos) {
+        return redirect_ids_[pos];
     }
 
     template <typename T>

@@ -28,6 +28,5 @@ int main(int argc, char** argv) {
 
     test_enum::test();
 
-    KEY_TO_CONTINUE();
     return 0;
 }

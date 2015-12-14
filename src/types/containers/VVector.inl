@@ -31,9 +31,7 @@ namespace grynca {
 
     template <typename Domain>
     inline VVector<Domain>::~VVector() {
-        for (uint32_t i=0; i<items_.size(); ++i) {
-            getTypeInfo_(i).getDestroyFunc()(items_[i]);
-        }
+        clear();
     }
 
     template <typename Domain>
@@ -81,6 +79,15 @@ namespace grynca {
         getTypeInfo_(id).getDestroyFunc()(items_[id]);
         items_.erase(items_.begin()+id);
         type_ids_.erase(type_ids_.begin()+id);
+    }
+
+    template <typename Domain>
+    inline void VVector<Domain>::clear() {
+        for (uint32_t i=0; i<items_.size(); ++i) {
+            getTypeInfo_(i).getDestroyFunc()(items_[i]);
+        }
+        items_.clear();
+        type_ids_.clear();
     }
 
     template <typename Domain>

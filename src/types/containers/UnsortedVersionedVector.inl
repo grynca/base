@@ -84,7 +84,12 @@ namespace grynca {
     }
 
     template <typename T>
-    inline bool UnsortedVersionedVector<T>::isValidIndex(VersionedIndex index) {
+    inline uint32_t UnsortedVersionedVector<T>::getIndexForPos(uint32_t pos) {
+        return redirect_ids_[pos];
+    }
+
+    template <typename T>
+    inline bool UnsortedVersionedVector<T>::isValidIndex(VersionedIndex index) const {
         if (index.index >= redirects_.size())
             return false;
         return redirects_[index.index].index!=uint32_t(-1);

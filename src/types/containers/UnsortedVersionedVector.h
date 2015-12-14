@@ -4,7 +4,7 @@
 #include <list>
 #include <stdint.h>
 #include "fast_vector.h"
-#include "../VersionedIndex.h"
+#include "../Index.h"
 
 namespace grynca {
 
@@ -24,9 +24,10 @@ namespace grynca {
 
         T& get(VersionedIndex index);
         T& getAtPos(uint32_t pos);      // good for looping through 0-size
+        uint32_t getIndexForPos(uint32_t pos);
 
         // can check if index is valid (current and not already removed)
-        bool isValidIndex(VersionedIndex index);
+        bool isValidIndex(VersionedIndex index) const;
 
         T* getData();
         uint32_t size()const;

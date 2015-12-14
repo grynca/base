@@ -115,6 +115,10 @@ namespace grynca {
     struct HasProps<T, FirstProp, OtherProps...> {
         static constexpr bool value = FirstProp<T &>() && HasProps<T, OtherProps...>::value;
     };
+
+    template <typename T> int sgn(T val) {
+        return (T(0) < val) - (val < T(0));
+    }
 }
 
 #endif //META_H

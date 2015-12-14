@@ -76,7 +76,7 @@ namespace grynca
     template <typename ... Ts>
     template<typename IfaceT>
     inline IfaceT& Variant<Ts...>::getBase() {
-        IfaceT *ptr;
+        IfaceT *ptr = NULL;
         VariantCaller<internal::VariantIfaceCaster>::call<Variant<Ts...> >(*this, ptr);
         return *ptr;
     }

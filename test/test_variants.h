@@ -4,7 +4,7 @@
 namespace grynca { namespace test_variants {
 
     inline constexpr uint32_t n() {
-        return 1e5;
+        return 100;
     }
 
     struct StuffCaller {
@@ -21,7 +21,7 @@ namespace grynca { namespace test_variants {
         std::cout <<"Variants:" << std::endl;
         {
             BlockMeasure m(" create:");
-
+            std::cout << "Variant size: " << sizeof(MyStuffVariant) << std::endl;
             for (size_t i=0; i<n(); ++i) {
                 rvar.push_back();
                 switch (rand()%3) {

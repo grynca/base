@@ -28,6 +28,7 @@ namespace grynca {
 
         T& get(uint32_t index);
         T& getAtPos(uint32_t pos);      // good for looping through 0-size
+        uint32_t getIndexForPos(uint32_t pos);      // get index for data at pos
 
         const T& get(uint32_t index)const;
         const T& getAtPos(uint32_t pos)const;

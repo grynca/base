@@ -17,6 +17,7 @@
 #include "types/RefCount.h"
 #include "types/RefPtr.h"
 #include "types/Type.h"
+#include "types/Timer.h"
 #include "types/Variant.h"
 #include "types/VariantCaller.h"
 #include "types/Call.h"

@@ -393,6 +393,34 @@ namespace grynca {
           }
        }
 
+       template<class... ConstructionArgs>
+       iterator emplace(iterator position, ConstructionArgs&&... args) {
+          ASSERT(position <= iterator(mEnd), "");
+          ASSERT(position >= iterator(mStart), "");
+          if (mEnd < mAllocEnd)
+             // no need for realloc yet
+          {
+             memmove(position.p + 1, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
+             new (position.p) T(std::forward<ConstructionArgs>(args)...);
+             ++mEnd;
+             return position;
+          }
+          else
+             // no space here -> find new home for data;]
+          {
+             size_t curr_capacity = capacity();
+             size_t new_capacity_bytes = _get_new_capacity(curr_capacity, curr_capacity + 1) * sizeof(T);
+
+             size_t head_size_bytes = (uint8_t *) position.p - (uint8_t *) mStart;
+             T *oldStart = _realloc_split_by_gap(new_capacity_bytes, head_size_bytes, sizeof(T));
+             // create element in gap
+             uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
+             new (gap_slot) T(std::forward<ConstructionArgs>(args)...);
+             free(oldStart);
+             return (T *) (gap_slot);
+          }
+       }
+
        void insert(iterator position, size_t n, const T &val) {
           fill_insert(position, n, val);
        }
