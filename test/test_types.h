@@ -3,6 +3,13 @@
 
 namespace grynca { namespace test_types {
 
+        struct TypesLoopFunctor {
+            template <typename TP, typename T>
+            static void f() {
+                std::cout << " " << Type<T>::getTypename() << std::endl;
+            }
+        };
+
         inline void test() {
 
             std::cout << "Loop over MyStuff TypePack types info: " << std::endl;
@@ -22,6 +29,9 @@ namespace grynca { namespace test_types {
                     std::cout << " Pos " << i << ":" << " TID= " << ti.getId() << ", size= " << ti.getSize() << ", name= " << ti.getTypename() << std::endl;
                 }
             }
+
+            std::cout << "Loop over StuffTypes typespack: " << std::endl;
+            StuffTypes::callOnTypes<TypesLoopFunctor>();
         }
 
     }

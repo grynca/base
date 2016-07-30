@@ -45,7 +45,7 @@ namespace grynca
     template <typename ... Ts>
     template<typename T>
     inline bool Variant<Ts...>::is() {
-        return (curr_pos_ == typePos<T>() );
+        return (curr_pos_ == getTypeIdOf<T>() );
     }
 
     template <typename ... Ts>
@@ -61,14 +61,14 @@ namespace grynca
             getHelper_().destroy(curr_pos_, &data_);
         // construct new with placement new
         new (&data_) T(std::forward<Args>(args)...);
-        curr_pos_ =  typePos<T>();
+        curr_pos_ = getTypeIdOf<T>();
         return get<T>();
     }
 
     template <typename ... Ts>
     template <typename T>
     inline T& Variant<Ts...>::get() {
-        ASSERT(typePos<T>() == curr_pos_,
+        ASSERT_M(getTypeIdOf<T>() == curr_pos_,
                "This type is not currently set in Variant.");
         return *(T*)(&data_);
     }
@@ -82,9 +82,17 @@ namespace grynca
     }
 
     template <typename ... Ts>
+    template<typename IfaceT>
+    inline const IfaceT& Variant<Ts...>::getBase()const {
+        IfaceT *ptr = NULL;
+        VariantCaller<internal::VariantIfaceCaster>::call<Variant<Ts...> >(*const_cast<Variant<Ts...>*>(this), ptr);
+        return *ptr;
+    }
+
+    template <typename ... Ts>
     template<typename T>
     inline const T& Variant<Ts...>::get()const {
-        ASSERT(typePos<T>() == curr_pos_,
+        ASSERT_M(getTypeIdOf<T>() == curr_pos_,
                "This type is not currently set in Variant.");
         return *(const T*)(&data_);
     }
@@ -95,8 +103,13 @@ namespace grynca
     }
 
     template <typename ... Ts>
+    inline const void* Variant<Ts...>::getData()const {
+        return &data_;
+    }
+
+    template <typename ... Ts>
     template<typename T>
-    inline int Variant<Ts...>::typePos() {
+    inline int Variant<Ts...>::getTypeIdOf() {
     // static
         return position<T, Ts...>::pos;
     }

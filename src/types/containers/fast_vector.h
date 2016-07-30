@@ -191,6 +191,19 @@ namespace grynca {
           return *this;
        }
 
+       // move assignment
+       fast_vector& operator=(fast_vector&& x) {
+          this->~fast_vector();
+
+          mStart = x.mStart;
+          mEnd = x.mEnd;
+          mAllocEnd = x.mAllocEnd;
+          x.mStart = NULL;
+          x.mEnd = NULL;
+          x.mAllocEnd = NULL;
+          return *this;
+       }
+
        ~fast_vector() {
           T *tmp = mStart;
           while (tmp != mEnd) {
@@ -238,12 +251,12 @@ namespace grynca {
        }
 
        T &operator[](size_t id) {
-          ASSERT(mStart + id < mEnd, "");
+          ASSERT(mStart + id < mEnd);
           return *(mStart + id);
        }
 
        const T &operator[](size_t id) const {
-          ASSERT(mStart + id < mEnd, "");
+          ASSERT(mStart + id < mEnd);
           return *(mStart + id);
        }
 
@@ -367,8 +380,8 @@ namespace grynca {
        }
 
        iterator insert(iterator position, const T &val) {
-          ASSERT(position <= iterator(mEnd), "");
-          ASSERT(position >= iterator(mStart), "");
+          ASSERT(position <= iterator(mEnd));
+          ASSERT(position >= iterator(mStart));
           if (mEnd < mAllocEnd)
              // no need for realloc yet
           {
@@ -395,8 +408,8 @@ namespace grynca {
 
        template<class... ConstructionArgs>
        iterator emplace(iterator position, ConstructionArgs&&... args) {
-          ASSERT(position <= iterator(mEnd), "");
-          ASSERT(position >= iterator(mStart), "");
+          ASSERT(position <= iterator(mEnd));
+          ASSERT(position >= iterator(mStart));
           if (mEnd < mAllocEnd)
              // no need for realloc yet
           {
@@ -431,8 +444,8 @@ namespace grynca {
        }
 
        iterator erase(iterator position) {
-          ASSERT(position < iterator(mEnd), "");
-          ASSERT(position >= iterator(mStart), "");
+          ASSERT(position < iterator(mEnd));
+          ASSERT(position >= iterator(mStart));
           if (position.p == (mEnd - 1)) {
              pop_back();
           }
@@ -446,11 +459,11 @@ namespace grynca {
        }
 
        iterator erase(iterator first, iterator last) {
-          ASSERT(first <= iterator(mEnd), "");
-          ASSERT(first >= iterator(mStart), "");
-          ASSERT(last <= iterator(mEnd), "");
-          ASSERT(last >= iterator(mStart), "");
-          ASSERT(last >= first, "");
+          ASSERT(first <= iterator(mEnd));
+          ASSERT(first >= iterator(mStart));
+          ASSERT(last <= iterator(mEnd));
+          ASSERT(last >= iterator(mStart));
+          ASSERT(last >= first);
 
           iterator tmp = first;
           while (tmp != last)  // call destructors for erased elems
@@ -607,6 +620,7 @@ namespace grynca {
 
        void _realloc_all(size_t new_capacity_bytes) {
           size_t curr_size = sizeBytes();
+          T* oldStart = mStart;
           mStart = (T *) realloc(mStart, new_capacity_bytes);
           mEnd = (T *) ((uint8_t *) mStart + curr_size);
           mAllocEnd = (T *) ((uint8_t *) mStart + new_capacity_bytes);

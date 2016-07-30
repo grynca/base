@@ -7,7 +7,7 @@
 
 namespace grynca {
 
-    template <typename Func>
+    template <typename Functor, typename... TypeArgs>
     class Call {
     public:
         template <typename Trait, typename... Args>
@@ -17,7 +17,7 @@ namespace grynca {
         template <typename Trait, typename... Args>
         static typename std::enable_if<Trait::value>::type
         ifTrue(Args&&... args) {
-            Func::f(std::forward<Args>(args)...);
+            Functor::template f<TypeArgs...>(std::forward<Args>(args)...);
         }
 
         template <typename Trait, typename... Args>
@@ -27,7 +27,7 @@ namespace grynca {
         template <typename Trait, typename... Args>
         static typename std::enable_if<!Trait::value>::type
         ifFalse(Args&&... args) {
-            Func::f(std::forward<Args>(args)...);
+            Functor::template f<TypeArgs...>(std::forward<Args>(args)...);
         }
     };
 }

@@ -79,7 +79,7 @@ namespace grynca {
         // If we didn't find a common prefix then throw
         if (last_common_root == -1)
         {
-            ASSERT(false, "Paths do not have a common base");
+            ASSERT_M(false, "Paths do not have a common base");
             relative = "";
         }
 

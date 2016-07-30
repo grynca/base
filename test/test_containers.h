@@ -5,7 +5,7 @@
 
 namespace grynca { namespace test_containers {
     inline constexpr uint32_t n() {
-        return 1e5;
+        return 1e6;
     }
 
     inline fast_vector<unsigned int> randomDestructionOrder() {
@@ -20,7 +20,7 @@ namespace grynca { namespace test_containers {
         stuff_map.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
 
-        std::cout << "std::map: " << std::endl;
+        std::cout << "std::unordered_map: " << std::endl;
         {
             BlockMeasure m(" creation");
             for (size_t i=0; i<n(); ++i) {
@@ -29,7 +29,13 @@ namespace grynca { namespace test_containers {
         }
 
         {
-            BlockMeasure m(" loop");
+            BlockMeasure m(" loop (iter)");
+            for (auto it = stuff_map.begin(); it != stuff_map.end(); ++it) {
+                it->second.dostuff();
+            }
+        }
+        {
+            BlockMeasure m(" loop (index)");
             for (size_t i=0; i<n(); ++i) {
                 stuff_map[i].dostuff();
             }
@@ -43,30 +49,66 @@ namespace grynca { namespace test_containers {
         }
     }
 
-    inline void testUnsortedVector() {
-        UnsortedVector<MyStuff> stuff_vec;
+    inline void testArray() {
+        Array<MyStuff> stuff_vec;
+        fast_vector<Index> indices;
         stuff_vec.reserve(n());
+        indices.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
 
-        std::cout << "UnsortedVector: " << std::endl;
+        std::cout << "Array: " << std::endl;
         {
             BlockMeasure m(" creation");
             for (size_t i=0; i<n(); ++i) {
-                stuff_vec.add();
+                indices.push_back(stuff_vec.add());
             }
         }
 
         {
             BlockMeasure m(" loop");
             for (size_t i=0; i<n(); ++i) {
-                stuff_vec.get(i).dostuff();
+                MyStuff* stuff = stuff_vec.getAtPos(i);
+                // must check if not NULL (can contain holes)
+                if (stuff)
+                    stuff->dostuff();
             }
         }
 
         {
             BlockMeasure m(" destruction");
             for (size_t i=0; i<n(); ++i) {
-                stuff_vec.remove(destruction_order[i]);
+                stuff_vec.remove(indices[destruction_order[i]]);
+            }
+        }
+    }
+
+    inline void testTightArray() {
+        TightArray<MyStuff> stuff_vec;
+        fast_vector<Index> indices;
+        stuff_vec.reserve(n());
+        indices.reserve(n());
+        fast_vector<unsigned int> destruction_order = randomDestructionOrder();
+
+        std::cout << "Tight Array: " << std::endl;
+        {
+            BlockMeasure m(" creation");
+            for (size_t i=0; i<n(); ++i) {
+                indices.push_back(stuff_vec.add());
+            }
+        }
+
+        {
+            BlockMeasure m(" loop");
+            for (size_t i=0; i<n(); ++i) {
+                // no need to check for NULL ... cant contain holes
+                stuff_vec.getAtPos(i)->dostuff();
+            }
+        }
+
+        {
+            BlockMeasure m(" destruction");
+            for (size_t i=0; i<n(); ++i) {
+                stuff_vec.remove(indices[destruction_order[i]]);
             }
         }
     }

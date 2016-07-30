@@ -8,20 +8,22 @@ namespace grynca {
     //  its owner must still call .destroy()
     class CommonPtr {
     public:
-        CommonPtr() : place_(NULL), destructor_(NULL) {}
+        CommonPtr() : place_(NULL), type_id_(uint32_t(-1)) {}
 
         template <typename T>
         CommonPtr(T* ptr)
-                : place_(ptr),
-                  destructor_(Type<T>::destroy)
+          : place_(ptr), type_id_(Type<T>::getInternalTypeId())
         {}
 
         CommonPtr(const CommonPtr& ptr)
-                : place_(ptr.place_),
-                  destructor_(ptr.destructor_)
+          : place_(ptr.place_), type_id_(ptr.type_id_)
         {}
 
         virtual ~CommonPtr() {}
+
+        void* getPtr() {
+            return place_;
+        }
 
         template <typename T>
         T* getAs() {
@@ -29,15 +31,23 @@ namespace grynca {
         }
 
         void destroy() {
-            ASSERT(!isNull(), "Cant destroy null CommonPtr.");
-            destructor_(place_);
+            ASSERT_M(!isNull(), "Cant destroy null CommonPtr.");
+            InternalTypes<>::getInfo(type_id_).getDestroyFunc()(place_);
+        }
+
+        uint32_t getTypeId() {
+            return type_id_;
+        }
+
+        const TypeInfo& getTypeInfo() {
+            return InternalTypes<>::getInfo(type_id_);
         }
 
         bool isNull() { return place_==NULL; }
 
     protected:
         void *place_;
-        DestroyFunc destructor_;
+        uint32_t type_id_;
     };
 }
 

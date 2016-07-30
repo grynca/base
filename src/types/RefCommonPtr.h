@@ -35,7 +35,7 @@ namespace grynca {
         RefCommonPtr& operator =(const RefCommonPtr& ptr) {
             unref_();
             place_ = ptr.place_;
-            destructor_ = ptr.destructor_;
+            type_id_ = ptr.type_id_;
             ref_count_ = ptr.ref_count_;
             ref_count_->ref();
             return *this;

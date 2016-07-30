@@ -16,10 +16,10 @@ set(SOURCE_FILES
         src/types/variant_helper.h
         src/types/Index.h
         src/types/containers/fast_vector.h
-        src/types/containers/UnsortedVector.h
-        src/types/containers/UnsortedVector.inl
-        src/types/containers/UnsortedVersionedVector.h
-        src/types/containers/UnsortedVersionedVector.inl
+        src/types/containers/Array.h
+        src/types/containers/Array.inl
+        src/types/containers/SharedBuffer.h
+        src/types/containers/SharedBuffer.inl
         src/types/BlockMeasure.h
         src/types/RefCount.h
         src/types/CommonPtr.h
@@ -49,7 +49,13 @@ set(SOURCE_FILES
         src/types/containers/VVector.h
         src/types/containers/VVector.inl
         src/types/containers/VVector2.h
-        src/types/containers/VVector2.inl)
+        src/types/containers/VVector2.inl
+        src/types/containers/RoundBuffer.h
+        src/types/containers/TightPool.h
+        src/types/containers/TightPool.inl
+        src/types/containers/Pool.h
+        src/types/containers/Pool.inl
+        src/functions/common.h)
 
 set(TEST_FILES
         test/main.cpp
@@ -57,6 +63,6 @@ set(TEST_FILES
         test/test_containers.h
         test/test_variants.h
         test/test_type_if.h
-        test/test_enum.h test/test_types.h)
+        test/test_enum.h test/test_types.h )
 
 add_executable(Base ${SOURCE_FILES} ${TEST_FILES})

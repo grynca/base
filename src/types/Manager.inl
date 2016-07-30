@@ -1,21 +1,14 @@
 #include "Manager.h"
 #include "Type.h"
 
+#define MGR_TPL template <typename T, class AT >
+#define MGR_TYPE Manager<T, AT>
+
 namespace grynca {
 
-    template <typename T>
-    ManagedItem<T>::ManagedItem()
-     : id_(Index::Invalid()), manager_(NULL), ref_count_(0)
-    {}
-
-    template <typename T>
-    ManagedItemVersioned<T>::ManagedItemVersioned()
-            : id_(IndexType::Invalid()), manager_(NULL), ref_count_(0)
-    {}
-
-    template <typename T>
+    MGR_TPL
     template <typename...ConstructionArgs>
-    inline T& Manager<T>::addItem(ConstructionArgs&&... args) {
+    inline T& MGR_TYPE::addItem(ConstructionArgs&&... args) {
         IndexType id = items_.add(std::forward<ConstructionArgs>(args)...);
         ItemType& item = items_.get(id);
         item.id_ = id;
@@ -23,106 +16,50 @@ namespace grynca {
         return item;
     }
 
-    template <typename T>
-    inline T& Manager<T>::getItem(IndexType id) {
+    MGR_TPL
+    inline T& MGR_TYPE::getItem(IndexType id) {
         return items_.get(id);
     }
 
-    template <typename T>
-    inline const T& Manager<T>::getItem(IndexType id)const  {
+    MGR_TPL
+    inline const T& MGR_TYPE::getItem(IndexType id)const  {
         return items_.get(id);
     }
 
-    template <typename T>
-    inline T& Manager<T>::getItemAtPos(uint32_t pos) {
+    MGR_TPL
+    inline T* MGR_TYPE::getItemAtPos(uint32_t pos) {
         return items_.getAtPos(pos);
     }
 
-    template <typename T>
-    inline const T& Manager<T>::getItemAtPos(uint32_t pos)const {
+    MGR_TPL
+    inline const T* MGR_TYPE::getItemAtPos(uint32_t pos)const {
         return items_.getAtPos(pos);
     }
 
-    template <typename T>
-    inline void Manager<T>::removeItem(IndexType id) {
+    MGR_TPL
+    inline void MGR_TYPE::removeItem(IndexType id) {
         items_.remove(id);
     }
 
-    template <typename T>
-    inline void Manager<T>::reserveSpaceForItems(size_t count) {
+    MGR_TPL
+    inline void MGR_TYPE::reserveSpaceForItems(size_t count) {
         items_.reserve(count);
     }
 
-    template <typename T>
-    inline bool Manager<T>::isValidIndex(IndexType index)const {
+    MGR_TPL
+    inline bool MGR_TYPE::isValidIndex(IndexType index)const {
         return items_.isValidIndex(index);
     }
 
-    template <typename T>
-    inline uint32_t Manager<T>::getItemsCount()const {
+    MGR_TPL
+    inline uint32_t MGR_TYPE::getItemsCount()const {
         return items_.size();
     }
 
-    template <typename T>
-    inline bool Manager<T>::empty() {
+    MGR_TPL
+    inline bool MGR_TYPE::empty() {
         return items_.empty();
     }
-
-    template <typename T>
-    template <typename...ConstructionArgs>
-    inline T& ManagerVersioned<T>::addItem(ConstructionArgs&&... args) {
-        IndexType id = items_.add(std::forward<ConstructionArgs>(args)...);
-        ItemType& item = items_.get(id);
-        item.id_ = id;
-        item.manager_ = (typename ItemType::ManagerType*)(this);
-        return item;
-    }
-
-    template <typename T>
-    inline T& ManagerVersioned<T>::getItem(IndexType id) {
-        return items_.get(id);
-    }
-
-    template <typename T>
-    inline const T& ManagerVersioned<T>::getItem(IndexType id)const {
-        return items_.get(id);
-    }
-
-    template <typename T>
-    inline T& ManagerVersioned<T>::getItemAtPos(uint32_t pos) {
-        return items_.getAtPos(pos);
-    }
-
-    template <typename T>
-    inline const T& ManagerVersioned<T>::getItemAtPos(uint32_t pos)const {
-        return items_.getAtPos(pos);
-    }
-
-    template <typename T>
-    inline void ManagerVersioned<T>::removeItem(IndexType id) {
-        return items_.remove(id);
-    }
-
-    template <typename T>
-    inline void ManagerVersioned<T>::reserveSpaceForItems(size_t count) {
-        items_.reserve(count);
-    }
-
-    template <typename T>
-    inline bool ManagerVersioned<T>::isValidIndex(IndexType index)const {
-        return items_.isValidIndex(index);
-    }
-
-    template <typename T>
-    inline uint32_t ManagerVersioned<T>::getItemsCount()const {
-        return items_.size();
-    }
-
-    template <typename T>
-    inline bool ManagerVersioned<T>::empty() {
-        return items_.empty();
-    }
-
 
     template <typename Derived, typename BaseType>
     inline ManagerSingletons<Derived, BaseType>::~ManagerSingletons() {
@@ -149,12 +86,12 @@ namespace grynca {
     }
 
     template <typename Derived, typename BaseType>
-    inline BaseType* ManagerSingletons<Derived, BaseType>::getById(uint32_t id) {
+    inline BaseType* ManagerSingletons<Derived, BaseType>::getById(IndexType id) {
         return items_[id];
     }
 
     template <typename Derived, typename BaseType>
-    inline const BaseType* ManagerSingletons<Derived, BaseType>::getById(uint32_t id)const {
+    inline const BaseType* ManagerSingletons<Derived, BaseType>::getById(IndexType id)const {
         return items_[id];
     };
 
@@ -210,7 +147,7 @@ namespace grynca {
 
     template <typename ItemType>
     inline ItemType& ManagedItemRef<ItemType>::get()const {
-        assert(manager_);
+        ASSERT(manager_);
         return manager_->getItem(id_);
     }
 
@@ -221,3 +158,6 @@ namespace grynca {
         }
     }
 }
+
+#undef MGR_TPL
+#undef MGR_TYPE

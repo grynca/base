@@ -45,17 +45,17 @@ namespace grynca {
 
         T* getPtr() { return ptr_; }
         T& get() {
-            ASSERT(ptr_, "");
+            ASSERT(ptr_);
             return *ptr_;
         }
 
         T* operator->() {
-            ASSERT(ptr_, "");
+            ASSERT(ptr_);
             return ptr_;
         }
 
         T const* operator->()const {
-            ASSERT(ptr_, "");
+            ASSERT(ptr_);
             return ptr_;
         }
 

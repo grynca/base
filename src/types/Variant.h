@@ -6,11 +6,15 @@
 #include "../functions/meta.h"
 #include <ostream>
 
+#define GET_BASE(e, BASE) ((BASE&)(e).template getBase<BASE>())
+
 namespace grynca {
 
     template <typename ... Ts>
     class Variant {
     public:
+        typedef TypesPack<Ts...> Types;
+
         Variant();
         Variant(const Variant<Ts...>& old);
         Variant(Variant<Ts...>&& old);
@@ -34,17 +38,20 @@ namespace grynca {
         template<typename IfaceT>
         IfaceT& getBase();
 
+        template<typename IfaceT>
+        const IfaceT& getBase()const;
+
         template<typename T>
         const T& get()const;
 
         void* getData();
+        const void* getData()const ;
 
-        typedef TypesPack<Ts...> Types;
-        int getCurrentType()const { return curr_pos_; }
+        int getTypeId()const { return curr_pos_; }
 
         template <typename T>
-        static int typePos();
-    private:
+        static int getTypeIdOf();
+    protected:
 
         internal::VariantHelper<Ts...>& getHelper_();
 

@@ -2,6 +2,9 @@
 #define META_H
 
 #include <cstddef>
+#include <type_traits>
+
+#define ARRAY_SIZE(array) (sizeof(array)/sizeof(*array))
 
 /* This counts the number of args (does not work for 0 args) */
 #define NARGS_SEQ(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10, N,...) N
@@ -36,19 +39,24 @@
 #define AND_ALL_9(m, x1, x2, x3, x4, x5, x6, x7, x8, x9) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)
 #define AND_ALL_10(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)
 
-
-
 #define NONE(S) S
 #define DEFINE_ENUM(NAME, ...) struct NAME { enum { APPLY(NONE, __VA_ARGS__), end };};
 #define DEFINE_ENUM_E(NAME, BASE, FIRST, ...) struct NAME: public BASE { enum { FIRST = BASE::end, APPLY(NONE,##__VA_ARGS__, end)};};
 
+// works correctly only on static member functions
 #define DECLARE_PROP(PROP) \
 template<class T> \
-using PROP##_t = decltype(std::declval<T>().PROP); \
-template<class T> \
-using has_##PROP = grynca::can_apply<PROP##_t, T>
+using PROP##_t = decltype(std::declval<T>().PROP); //
+\
+//template<class T> \
+//using has_##PROP = grynca::can_apply<PROP##_t, T>
 
 namespace grynca {
+
+    enum class enabler_t {};
+
+    template<typename T>
+    using EnableIf = typename std::enable_if<T::value, enabler_t>::type;
 
 // e.g. static_max<int, double, MyType>::value
     template <size_t arg1, size_t ... others>  struct static_max;
@@ -101,19 +109,39 @@ namespace grynca {
     template<template<class...>class Z, class...Ts>
     using can_apply=details::can_apply<Z,void,Ts...>;
 
-
-    template<typename T, template<class> class... Props>
-    struct HasProps;
-
-    template<typename T>
-    struct HasProps<T> {
+    struct TrueTrait {
         static constexpr bool value = true;
     };
 
-    template<typename T, template<class> class FirstProp,
-            template<class> class... OtherProps>
-    struct HasProps<T, FirstProp, OtherProps...> {
-        static constexpr bool value = FirstProp<T &>() && HasProps<T, OtherProps...>::value;
+    template <template<class> class Prop>
+    struct HasPropTrait {
+
+        template <class T>
+        struct apply {
+            static constexpr bool value = grynca::can_apply<Prop, T&>();
+        };
+
+    };
+
+    template<class... Traits>
+    struct CondAll;
+
+    template <>
+    struct CondAll<> {
+
+        template <typename T>
+        struct apply {
+            static constexpr bool value = true;
+        };
+    };
+
+    template<class FirstTrait, class... OtherTraits>
+    struct CondAll<FirstTrait, OtherTraits...> {
+
+        template <typename T>
+        struct apply {
+            static constexpr bool value = FirstTrait::template apply<T>::value && CondAll<OtherTraits...>::template apply<T>::value;
+        };
     };
 
     template <typename T> int sgn(T val) {

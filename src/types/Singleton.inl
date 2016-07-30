@@ -1,4 +1,5 @@
 #include "Singleton.h"
+#include "../functions/debug.h"
 
 namespace grynca {
     template <typename T>
@@ -11,7 +12,7 @@ namespace grynca {
     template <typename T>
     inline T& Singleton<T>::get() {
     //static
-        ASSERT(instance_(), "Not created.");
+        ASSERT_M(instance_(), "Not created.");
         return *instance_();
     }
 
@@ -23,7 +24,7 @@ namespace grynca {
 
     template <typename T>
     inline Singleton<T>::Singleton() {
-        ASSERT(!instance_(), "Already created.");
+        ASSERT_M(!instance_(), "Already created.");
     }
 
     template <typename T>

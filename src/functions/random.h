@@ -15,9 +15,13 @@ namespace grynca {
         return float(rand()%RAND_MAX)/RAND_MAX;
     }
 
+    static float randFloatMinMax(float min, float max) {
+        return randFloat()*(max-min) + min;
+    }
+
     // pick count numbers without repeating, from 0 to (max-1), caller is responsible for seeding his random gen
     static void randomPickN(fast_vector<unsigned int>& picked, unsigned int count, unsigned int max) {
-        ASSERT(count <= max, "Cant pick more numbers than max.");
+        ASSERT_M(count <= max, "Cant pick more numbers than max.");
 
         // create vector of numbers from 0..(max-1)
         fast_vector<unsigned int> numbers_pool;

@@ -3,25 +3,50 @@
 
 #include <string>
 #include <iostream>
-#include <time.h>
+#include "types/Timer.h"
 
 namespace grynca {
-    class BlockMeasure {
-    public:
-        BlockMeasure(const std::string& msg)
-                : msg_(msg), t_(clock()), divider_(1.0f) {}
 
-        ~BlockMeasure() {
-            float dt = (float)(clock()-t_)/divider_/CLOCKS_PER_SEC;
-            std::cout << msg_ << ": " << dt << " sec." << std::endl;
+    class Measure {
+    public:
+        Measure(const std::string& msg)
+         : msg_(msg), counter_(0) {}
+
+        void reset() {
+            counter_ = 0;
+            t_.reset();
         }
 
-        void setDivider(float d) { divider_ = d; }
+        void print() {
+            std::cout << msg_ << ": " << calcDt() << " sec." << std::endl;
+        }
 
-    private:
+        float calcDt() {
+            if (counter_ == 0)
+                return 0.0f;
+            return t_.getElapsed()/counter_;
+        }
+
+        uint32_t incCounter() {  return ++counter_; };
+        uint32_t getCounter() { return counter_; }
+
+    protected:
+        uint32_t counter_;
         std::string msg_;
-        clock_t t_;
-        float divider_;
+        Timer t_;
+    };
+
+    class BlockMeasure : public Measure {
+    public:
+        BlockMeasure(const std::string& msg)
+         : Measure(msg)
+        {
+            counter_ = 1;
+        }
+
+        ~BlockMeasure() {
+            print();
+        }
     };
 }
 

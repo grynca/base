@@ -20,7 +20,7 @@ namespace grynca {
                 std::invalid_argument("NONE option '" + option_name + "' with argument") {}
     };
 
-    enum ArgumentType { NONE, REQUIRED, OPTIONAL };
+    enum ArgumentType { atNONE, atREQUIRED, atOPTIONAL };
 
     class OptionsHandler {
     private:
@@ -167,13 +167,13 @@ namespace grynca {
                  (*str).substr(2) == option.long_name)) {
 
                 // Create empty vector if type = none
-                if (option.type == NONE)
+                if (option.type == atNONE)
                     update_none(option, str);
 
-                if(option.type == REQUIRED)
+                if(option.type == atREQUIRED)
                     update_required(option, str);
 
-                if(option.type == OPTIONAL)
+                if(option.type == atOPTIONAL)
                     update_optional(option, str);
 
             }

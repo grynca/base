@@ -1,8 +1,7 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
-#include "containers/UnsortedVector.h"
-#include "containers/UnsortedVersionedVector.h"
+#include "containers/Array.h"
 #include "RefCount.h"
 
 /*
@@ -31,13 +30,13 @@ namespace grynca {
     // fw
     template <typename IT> class ManagedItemRef;
 
-    template <typename T>
+    template <typename T, typename IT = Index>
     class ManagedItem {
     public:
         typedef T ManagerType;
-        typedef uint32_t IndexType;
+        typedef IT IndexType;
     protected:
-        template<typename TT> friend class Manager;
+        template<typename TT, typename TTT> friend class Manager;
         template<typename TT> friend class ManagedItemRef;
         template<typename TT, typename TTT> friend class ManagerSingletons;
 
@@ -45,7 +44,8 @@ namespace grynca {
         ManagerType* manager_;
         RefCount ref_count_;
     public:
-        ManagedItem();
+        ManagedItem()
+         : manager_(NULL), ref_count_(0) {}
 
         int getRefCount() { return ref_count_.get(); }
         IndexType getId()const { return id_; }
@@ -53,38 +53,25 @@ namespace grynca {
     };
 
     template <typename T>
-    class ManagedItemVersioned {
-    public:
-        typedef T ManagerType;
-        typedef VersionedIndex IndexType;
-    protected:
-        template<typename TT> friend class ManagedItemRef;
-        template<typename TT> friend class ManagerVersioned;
-
-        IndexType id_;
-        ManagerType* manager_;
-        RefCount ref_count_;
-    public:
-        ManagedItemVersioned();
-
-        int getRefCount() { return ref_count_.get(); }
-        IndexType getId()const { return id_; }
-        ManagerType& getManager()const { return *manager_; }
+    class ManagedItemSingleton : public ManagedItem<T, uint32_t> {
     };
 
-    template <typename T>
+    // do not store pointers or references to items
+    //  only indices or ManagedItemRef
+
+    template <typename T, class ArrayType = Array<T> >
     class Manager {
     public:
         typedef T ItemType;
-        typedef uint32_t IndexType;
+        typedef Index IndexType;
         typedef ManagedItemRef<ItemType> ItemRef;
 
         template <typename...ConstructionArgs>
         ItemType& addItem(ConstructionArgs&&... args);
         ItemType& getItem(IndexType id);
         const ItemType& getItem(IndexType id)const;
-        ItemType& getItemAtPos(IndexType pos);
-        const ItemType& getItemAtPos(IndexType pos)const;
+        ItemType* getItemAtPos(uint32_t pos);
+        const ItemType* getItemAtPos(uint32_t pos)const;
         void removeItem(IndexType id);
         void reserveSpaceForItems(size_t count);
 
@@ -93,32 +80,12 @@ namespace grynca {
         uint32_t getItemsCount()const;
         bool empty();
     private:
-        UnsortedVector<ItemType> items_;                // items are in-place -> volatile
+        ArrayType items_;
     };
 
-    template <typename T>
-    class ManagerVersioned {
-    public:
-        typedef T ItemType;
-        typedef VersionedIndex IndexType;
-        typedef ManagedItemRef<ItemType> ItemRef;
+    template <typename ItemType>
+    class TightManager : public Manager<ItemType, TightArray<ItemType> > {};
 
-        template <typename...ConstructionArgs>
-        ItemType& addItem(ConstructionArgs&&... args);
-        ItemType& getItem(IndexType id);
-        const ItemType& getItem(IndexType id)const;
-        ItemType& getItemAtPos(uint32_t pos);
-        const ItemType& getItemAtPos(uint32_t pos)const;
-        void removeItem(IndexType id);
-        void reserveSpaceForItems(size_t count);
-
-        bool isValidIndex(IndexType index)const;
-
-        uint32_t getItemsCount()const;
-        bool empty();
-    private:
-        UnsortedVersionedVector<ItemType> items_;       // items are in-place -> volatile
-    };
 
     // manages singletons derived from BaseType
     template <typename Derived, typename BaseType>
@@ -132,9 +99,8 @@ namespace grynca {
         template <typename T>
         T& get();
 
-
-        BaseType* getById(uint32_t id);
-        const BaseType* getById(uint32_t id)const;
+        BaseType* getById(IndexType id);
+        const BaseType* getById(IndexType id)const;
 
         uint32_t getSize();
     private:

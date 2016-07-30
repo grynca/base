@@ -19,7 +19,8 @@ int main(int argc, char** argv) {
     test_types::test();
 
     test_containers::testStdMap();
-    test_containers::testUnsortedVector();
+    test_containers::testArray();
+    test_containers::testTightArray();
     test_containers::testVirtualVector();
 
     test_variants::testVariants();
@@ -28,5 +29,6 @@ int main(int argc, char** argv) {
 
     test_enum::test();
 
+    KEY_TO_CONTINUE();
     return 0;
 }

@@ -1,9 +1,9 @@
 #ifndef FILELISTER_H
 #define FILELISTER_H
 
-#include "containers/fast_vector.h"
 #include <dirent.h>
 #include <string>
+#include <vector>
 
 namespace grynca {
     class Path;
@@ -20,10 +20,14 @@ namespace grynca {
         bool nextFile(Path& path_out);
 
     protected:
+        struct Pair_ {
+            DIR* dir;
+            std::string path;
+        };
 
         bool _recursive;
-        fast_vector<std::string> _extensions;
-        fast_vector< std::pair<DIR *, std::string/*path*/> > _dirs;
+        std::vector<std::string> _extensions;
+        std::vector<Pair_> _dirs;
     };
 }
 

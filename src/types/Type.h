@@ -16,17 +16,28 @@ namespace grynca {
     class TypeInfo;
     template<typename> class TypeInfoManager;
 
-    template<typename Domain>
-    class TypeDomain {
+// Type manager for internal types
+    template<typename Domain = void>
+    class InternalTypes {
+    public:
+        static const TypeInfo& getInfo(uint32_t tid);
+        static bool isTypeIdSet(uint32_t tid);
+        static std::string getDebugString(std::string indent);
     protected:
-        static uint32_t getNewId();
+        template <typename T>
+        static uint32_t getNewId_();
+
+        // internal type infos
+        static fast_vector<TypeInfo>& getTypes_();
     };
 
 // Static type info
     template <typename T, typename Domain = void>
-    class Type : public TypeDomain<Domain>
+    class Type : public InternalTypes<Domain>
     {
     public:
+        template <typename BaseType, typename... ConstructionArgs>
+        static BaseType* create(void* place, ConstructionArgs&&... args);
         static void destroy(void* place);
         static void copy(void *to, const void *from);
         static void move(void *to, void *from);
@@ -38,6 +49,7 @@ namespace grynca {
         static size_t getSize();
 
         static const TypeInfo& getTypeInfo();
+        static bool isTypeInfoSet();
     private:
         template <typename TT> friend class TypeInfoManager;
         static uint32_t& typeId_();
@@ -59,6 +71,8 @@ namespace grynca {
         void set(uint32_t id);
 
         uint32_t getId()const;
+
+        std::string getDebugString()const;
     private:
         DestroyFunc destroy_;
         CopyFunc copy_;
@@ -68,6 +82,7 @@ namespace grynca {
         std::string typename_;
     };
 
+// Type manager for user-defined types
     template<typename Domain = void>
     class TypeInfoManager
     {
@@ -99,10 +114,15 @@ namespace grynca {
 
         static constexpr int empty() { return true; }
 
+        static const TypeInfo& getTypeInfo(int pos) { ASSERT_M(false, "empty types pack"); return Type<void>::getTypeInfo(); }
+
         template <typename... Tss>
         static TypesPack<Tss...> expand() {
             return TypesPack<Tss...>();
         }
+
+        template <typename Functor, typename... Args>
+        static void callOnTypes(Args&&... args) {};
     };
 
     template <typename F, typename... R>
@@ -124,6 +144,18 @@ namespace grynca {
         template <typename... Tss>
         static TypesPack<F, R...,Tss...> expand();  // expand with types
 
+
+        // functor must be:
+        // template <typename TypesPack, typename Type>
+        // static void f(args) {}
+        template <typename Functor, typename... Args>
+        static void callOnTypes(Args&&... args);
+    private:
+        template <typename TPOrig, typename TP, typename Functor, typename... Args>
+        static IF_EMPTY(TP) callOnInner_(Args&&... args);
+
+        template <typename TPOrig, typename TP, typename Functor, typename... Args>
+        static IF_NOT_EMPTY(TP) callOnInner_(Args&&... args);
     };
 
 
