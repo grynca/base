@@ -53,6 +53,11 @@ namespace grynca {
     inline int sign(T v) {
         return (v > 0) - (v < 0);
     }
+
+    template <typename T>
+    inline T wrap(T a, T b) {
+        return a < 0 ? a % b + b : a % b;
+    }
 }
 
 #endif //COMMON_H

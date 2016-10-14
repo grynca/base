@@ -3,7 +3,7 @@
 
 #include <string>
 #include <iostream>
-#include "types/Timer.h"
+#include "Timer.h"
 
 namespace grynca {
 

@@ -64,10 +64,9 @@ namespace grynca {
         int32_t curr_pos_;
     };
 
+    // Variant from TypesPack
     template <typename... Ts>
     class Variant<TypesPack<Ts...> > : public Variant<Ts...> {};
-
-
 }
 
 #include "Variant.inl"

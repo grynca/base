@@ -18,7 +18,7 @@ namespace grynca { namespace test_variants {
         std::cout <<"Variants:" << std::endl;
 
         fast_vector<MyStuffVariant> rvar;
-                {
+        {
             BlockMeasure m(" create:");
             std::cout << "Variant size: " << sizeof(MyStuffVariant) << std::endl;
             rvar = MyStuffVariant::generateN(n());

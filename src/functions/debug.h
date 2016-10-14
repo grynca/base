@@ -14,13 +14,20 @@
 #if !defined(NDEBUG)
 #   define dout std::cout
 #   define DEBUG_BUILD
+#   define PROFILE_BUILD
 #else
 #   define dout 0 && std::cout
 #endif
 
+#ifdef _WIN32
+# define WAIT_FOR_KEY_ON_WIN() KEY_TO_CONTINUE()
+#else
+# define WAIT_FOR_KEY_ON_WIN()
+#endif
+
 #define KEY_TO_CONTINUE() \
-std::cout << "press any key to continue ..." << std::endl; \
-getchar() \
+ std::cout << "press any key to continue ..." << std::endl; \
+ getchar()
 
 #ifdef DEBUG_BUILD
 #   define ASSERT_M(condition, message) \

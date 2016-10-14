@@ -2,63 +2,63 @@
 <module type="CPP_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Singleton.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/CommonPtr.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Index.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/BlockMeasure.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Timer.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Call.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Type.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Manager.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/RefCommonPtr.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Config.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/variant_helper.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Exception.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Type_internal.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Variant.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/RefCount.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/VariantCaller.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Manager.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Type.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Variant.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/variant_helper.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/RefPtr.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Variant.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Timer.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Manager.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Exception.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/RefCommonPtr.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Type.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Path.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Config.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/FileLister.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/VariantCaller.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Config.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Index.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/OptionsHandler.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Timer.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Manager.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/BlockMeasure.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Singleton.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Path.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/RefPtr.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/FileLister.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/Singleton.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Type_internal.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/RefCount.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/Call.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Config.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/CommonPtr.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/FileLister.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Path.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/OptionsHandler.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/Timer.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/fast_vector.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/Array.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/TightPool.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/SharedBuffer.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/Pool.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/TightPool.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/Pool.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/SharedBuffer.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/SharedBuffer.inl" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/Array.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector2.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/TightPool.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector2.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector2.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/types/containers/RoundBuffer.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/VVector2.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/Pool.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/Array.inl" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/types/containers/Array.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/functions/common.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/functions/meta.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/functions/sort_utils.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/functions/sort_utils.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/functions/debug.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/functions/sort_utils.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/functions/string_utils.inl" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/functions/random.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/functions/string_utils.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/functions/sort_utils.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/base.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/test/MyDomain.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test/test_types.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/test_type_if.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/main.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/test_variants.h" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/test/test_types.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test/MyDomain.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/test_containers.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test/test_enum.h" isTestSource="false" />
     </content>
@@ -66,16 +66,16 @@
     <orderEntry type="module-library">
       <library name="Header Search Paths">
         <CLASSES>
-          <root url="file://C:/MinGW/lib/gcc/mingw32/4.9.3/include" />
-          <root url="file://C:/MinGW/lib/gcc/mingw32/4.9.3/include-fixed" />
-          <root url="file://C:/MinGW/mingw32/include" />
-          <root url="file://C:/MinGW/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
+          <root url="file:///usr/include" />
+          <root url="file:///usr/local/include" />
         </CLASSES>
         <SOURCES>
-          <root url="file://C:/MinGW/lib/gcc/mingw32/4.9.3/include" />
-          <root url="file://C:/MinGW/lib/gcc/mingw32/4.9.3/include-fixed" />
-          <root url="file://C:/MinGW/mingw32/include" />
-          <root url="file://C:/MinGW/include" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include-fixed" />
+          <root url="file:///usr/lib/gcc/x86_64-linux-gnu/5/include" />
+          <root url="file:///usr/include" />
+          <root url="file:///usr/local/include" />
         </SOURCES>
       </library>
     </orderEntry>

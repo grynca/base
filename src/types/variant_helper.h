@@ -2,6 +2,7 @@
 #define VARIANTHELPER_H
 
 #include "Type.h"
+#include <cassert>
 
 namespace grynca {
     namespace internal {
@@ -9,6 +10,7 @@ namespace grynca {
         struct VariantIfaceCaster {
             template <typename V, typename T, typename IfaceT>
             static void f(V& v, T& t, IfaceT*& i) {
+                ASSERT((std::is_base_of<IfaceT, T>::value));
                 i = (IfaceT*)(&t);
             }
         };

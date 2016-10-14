@@ -4,6 +4,12 @@
 #include <cstddef>
 #include <type_traits>
 
+#define GET_BIT(num, b_id) (bool)(((num)>>(b_id))&1)
+#define SET_BIT(num, b_id, val) (decltype(num))((num)|(1<<(b_id)))
+#define CLEAR_BIT(num, b_id) (decltype(num))((num)&~(1<<(b_id)))
+#define TGL_BIT(num, b_id) (decltype(num))((num)^(1<<(b_id)))
+#define SET_BITV(num, b_id, val)  (decltype(num))((num)^((-((int)(bool)val)^(num))&(1<<(b_id))))
+
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(*array))
 
 /* This counts the number of args (does not work for 0 args) */

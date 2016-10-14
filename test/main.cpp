@@ -18,12 +18,11 @@ int main(int argc, char** argv) {
 
     test_types::test();
 
+    test_variants::testVariants();
     test_containers::testStdMap();
     test_containers::testArray();
     test_containers::testTightArray();
     test_containers::testVirtualVector();
-
-    test_variants::testVariants();
 
     test_type_if::test();
 
