@@ -13,365 +13,292 @@
 #include "../../functions/debug.h"
 
 namespace grynca {
-    template<typename T>
-    class fast_vec_iterator : public std::iterator<std::random_access_iterator_tag, T> {
-    private:
-       template<typename U> friend
-       class fast_vector;
-
-       template<typename U> friend
-       class fast_vec_iterator;
-
-       T *p;
-
-       fast_vec_iterator(T *x) : p(x) { }    // available only to friends
-    public:
-       fast_vec_iterator() { }
-
-       /// unary operators
-       fast_vec_iterator &operator++() {
-          ++p;
-          return *this;
-       }
-
-       fast_vec_iterator operator++(int) { return fast_vec_iterator(p++); }         // postfix
-       fast_vec_iterator &operator--() {
-          --p;
-          return *this;
-       }
-
-       fast_vec_iterator operator--(int) { return fast_vec_iterator(p--); }         // postfix
-       fast_vec_iterator operator+(size_t n) const { return fast_vec_iterator(p + n); }
-
-       fast_vec_iterator operator-(size_t n) const { return fast_vec_iterator(p - n); }
-
-       fast_vec_iterator &operator+=(size_t n) {
-          p += n;
-          return *this;
-       }
-
-       fast_vec_iterator &operator-=(size_t n) {
-          p -= n;
-          return *this;
-       }
-
-       T &operator[](int n) { return *(operator+(n)); }
-
-       template<typename U, typename V>
-       friend int operator-(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs);
-
-       template<typename U, typename V>
-       friend bool operator==(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs);
-
-       template<typename U, typename V>
-       friend bool operator!=(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs);
-
-       template<typename U, typename V>
-       friend bool operator<(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs);
-
-       template<typename U, typename V>
-       friend bool operator>(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs);
-
-       template<typename U, typename V>
-       friend bool operator<=(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs);
-
-       template<typename U, typename V>
-       friend bool operator>=(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs);
-
-       T &operator*() const { return *p; }
-
-       T *operator->() const { return p; }
-
-       operator fast_vec_iterator<const T>() const { return fast_vec_iterator<const T>(p); }
-    };
-
-    template<typename U, typename V>
-    inline int operator-(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs) {
-       return (int) (lhs.p - rhs.p);
-    }
-
-    /// Comparison operators
-    template<typename U, typename V>
-    inline bool operator==(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs) {
-       return lhs.p == rhs.p;
-    }
-
-    template<typename U, typename V>
-    inline bool operator!=(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs) {
-       return lhs.p != rhs.p;
-    }
-
-    template<typename U, typename V>
-    inline bool operator<(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs) {
-       return lhs.p < rhs.p;
-    }
-
-    template<typename U, typename V>
-    inline bool operator>(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs) {
-       return lhs.p > rhs.p;
-    }
-
-    template<typename U, typename V>
-    inline bool operator<=(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs) {
-       return !(lhs.p > rhs.p);
-    }
-
-    template<typename U, typename V>
-    inline bool operator>=(const fast_vec_iterator<U> &lhs, const fast_vec_iterator<V> &rhs) {
-       return !(lhs.p < rhs.p);
-    }
 
 #define GROWING_FACTOR 1.5
 
     template<typename T>
     class fast_vector {
     public:
-       typedef T value_type;
-       typedef size_t size_type;
-       typedef T &reference;
-       typedef const T &const_reference;
-
-       typedef fast_vec_iterator<T> iterator;
-       typedef fast_vec_iterator<const T> const_iterator;
-
-       typedef std::reverse_iterator<iterator> reverse_iterator;
-       typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+        // types:
+        typedef T                                     value_type;
+        typedef T&                                   reference;
+        typedef const T&                             const_reference;
+        typedef T*                                   pointer;
+        typedef const T*                             const_pointer;
+        typedef T*                                   iterator;
+        typedef const T*                             const_iterator;
+        typedef std::reverse_iterator<iterator>       reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+        typedef ptrdiff_t                             difference_type;
+        typedef unsigned int                          size_type;
 
        // constructors
        fast_vector()
-               : mStart(NULL), mEnd(NULL), mAllocEnd(NULL) { }
+        : mCapacity(0), mSize(0), mData(NULL) { }
 
-       fast_vector(size_t n) {
-          mStart = (T *) malloc(sizeof(T) * n);
-          mAllocEnd = mStart + n;
-          mEnd = mStart;
+       fast_vector(size_t n)
+        : mCapacity(n), mSize(n)
+       {
+          mData = (T *) malloc(sizeof(T) * n);
           for (size_t i = 0; i < n; ++i)
-             push_back();
+             new (&mData[i]) T();
        }
 
-       fast_vector(size_t n, const T &val) {
-          mStart = (T *) malloc(sizeof(T) * n);
-          mAllocEnd = mStart + n;
-          mEnd = mStart;
+       fast_vector(size_t n, const T &val)
+        : mCapacity(n), mSize(n)
+       {
+          mData = (T *) malloc(sizeof(T) * n);
           for (size_t i = 0; i < n; ++i)
-             push_back(val);
+             new (&mData[i]) T(val);
        }
 
        template<template<class> class InputIterator, class U>
        fast_vector(const InputIterator<U> first, const InputIterator<U> last)
-        : fast_vector() {
-          assign(first, last);
+       {
+          size_t count = last - first;
+          mCapacity = mSize = count;
+          mData = (T *) malloc(sizeof(T) * count);
+          for (size_t i = 0; i < count; ++i, ++first) {
+             new (&mData[i]) T(*first);
+          }
        }
 
        fast_vector(const fast_vector<T> &x)      // copy constructor
-        : fast_vector() {
-          reserve(x.size());
-          for (const_iterator it = x.begin(); it != x.end(); ++it)
-             push_back(*it);
+        : mCapacity(x.mCapacity), mSize(x.mSize)
+       {
+          mData = (T *) malloc(sizeof(T) * mCapacity);
+          for (size_t i = 0; i < mSize; ++i) {
+             new (&mData[i]) T(x.mData[i]);
+          }
        }
+
+        /// move constructor
+        fast_vector(fast_vector<T> &&x)
+         : mCapacity(x.mCapacity), mSize(x.mSize)
+        {
+           mData = (T *) malloc(sizeof(T) * mCapacity);
+           for (size_t i = 0; i < mSize; ++i) {
+              // call move constructors on items
+              new (&mData[i]) T(std::move(x.mData[i]));
+           }
+        }
 
        // initializer list
-       fast_vector(std::initializer_list<T> il)
-        : fast_vector() {
-          insert(begin(), il.begin(), il.end());
+       fast_vector(std::initializer_list<T> il) {
+          size_t count = il.size();
+          mCapacity = mSize = count;
+          mData = (T *) malloc(sizeof(T) * count);
+          for (size_t i=0; i<count; ++i) {
+             new (&mData[i]) T(*(il.begin() + i));
+          }
        }
 
-       /// move constructor
-       fast_vector(fast_vector &&rhs) {
-          mStart = rhs.mStart;
-          mEnd = rhs.mEnd;
-          mAllocEnd = rhs.mAllocEnd;
-          rhs.mStart = NULL;
-          rhs.mEnd = NULL;
-          rhs.mAllocEnd = NULL;
-       }
+       fast_vector<T> &operator=(const fast_vector<T> &x) {
+          if (mCapacity < x.mSize) {
+             _realloc_all(_get_new_capacity(capacity(), x.mSize));
+          }
+          size_t i = 0;
+          for ( ; i< mSize; ++i) {
+             mData[i] = x.mData[i];
+          }
+          for ( ; i<x.mSize; ++i) {
+             new (&mData[i]) T(x.mData[i]);
+          }
 
-       fast_vector &operator=(const fast_vector &x) {
-          assign(x.begin(), x.end());
+          mSize = x.mSize;
           return *this;
        }
 
        // move assignment
-       fast_vector& operator=(fast_vector&& x) {
-          this->~fast_vector();
+       fast_vector<T>& operator=(fast_vector<T>&& x) {
+          if (mCapacity < x.mSize) {
+             _realloc_all(_get_new_capacity(capacity(), x.mSize));
+          }
+          size_t i = 0;
+          for ( ; i< mSize; ++i) {
+             mData[i] = std::move(x.mData[i]);
+          }
+          for ( ; i<x.mSize; ++i) {
+             new (&mData[i]) T(std::move(x.mData[i]));
+          }
 
-          mStart = x.mStart;
-          mEnd = x.mEnd;
-          mAllocEnd = x.mAllocEnd;
-          x.mStart = NULL;
-          x.mEnd = NULL;
-          x.mAllocEnd = NULL;
           return *this;
        }
 
+        fast_vector<T>& operator=(std::initializer_list<T> il) {
+           size_t count = il.size();
+           if (mCapacity < count) {
+              _realloc_all(_get_new_capacity(capacity(), count));
+           }
+
+           size_t i = 0;
+           for ( ; i<mSize; ++i) {
+              mData[i] = *(il.begin()+i);
+           }
+           for ( ; i<count; ++i) {
+              new (&mData[i]) T(*(il.begin()+i));
+           }
+
+           return *this;
+        }
+
        ~fast_vector() {
-          T *tmp = mStart;
-          while (tmp != mEnd) {
-             tmp->~T();
-             ++tmp;
+          for (size_t i=0; i<mSize; ++i) {
+             mData[i].~T();
           }
-          free(mStart);
+          free(mData);
        }
 
        void push_back() {
-          if (mEnd == mAllocEnd) {
-             size_t curr_capacity = capacity();
-             size_t new_alloc_bytes = _get_new_capacity(curr_capacity, curr_capacity + 1) * sizeof(T);
-             _realloc_all(new_alloc_bytes);
+          if (mSize == mCapacity) {
+             _realloc_all(_get_new_capacity(capacity(), capacity() + 1));
           }
-          new (mEnd) T();
-          ++mEnd;
+          new (&mData[mSize]) T();
+          ++mSize;
        }
 
        void push_back(const T &el)      // uses copy constructor for T
        {
-          if (mEnd == mAllocEnd) {
-             size_t curr_capacity = capacity();
-             size_t new_alloc_bytes = _get_new_capacity(curr_capacity, curr_capacity + 1) * sizeof(T);
-             _realloc_all(new_alloc_bytes);
+          if (mSize == mCapacity) {
+             _realloc_all(_get_new_capacity(capacity(), capacity() + 1));
           }
-          new(mEnd) T(el);
-          ++mEnd;
+          new (&mData[mSize]) T(el);
+          ++mSize;
        }
+
+        void push_back(T &&val) {
+           if (mSize == mCapacity) {
+              _realloc_all(_get_new_capacity(capacity(), capacity() + 1));
+           }
+           new (&mData[mSize]) T(std::move(val));
+           ++mSize;
+        }
+
+        void pop_back() {
+           --mSize;
+           mData[mSize].~T(); // destroy last element
+        }
 
        template<class... ConstructionArgs>
        void emplace_back(ConstructionArgs &&... args) {
-          if (mEnd == mAllocEnd) {
-             size_t curr_capacity = capacity();
-             size_t new_alloc_bytes = _get_new_capacity(curr_capacity, curr_capacity + 1) * sizeof(T);
-             _realloc_all(new_alloc_bytes);
+          if (mSize == mCapacity) {
+             _realloc_all(_get_new_capacity(capacity(), capacity() + 1));
           }
-          new(mEnd) T(std::forward<ConstructionArgs>(args)...);
-          ++mEnd;
-       }
-
-       void pop_back() {
-          --mEnd;
-          mEnd->~T(); // destroy last element
+          mData[mSize] = std::move(T(std::forward<ConstructionArgs>(args)...));
+          ++mSize;
        }
 
        T &operator[](size_t id) {
-          ASSERT(mStart + id < mEnd);
-          return *(mStart + id);
+          ASSERT(id < mSize);
+          return mData[id];
        }
 
        const T &operator[](size_t id) const {
-          ASSERT(mStart + id < mEnd);
-          return *(mStart + id);
+          ASSERT(id < mSize);
+          return mData[id];
        }
 
        size_t size() const {
-          return mEnd - mStart;
+          return mSize;
        }
 
        size_t sizeBytes() const {
-          return (uint8_t *) mEnd - (uint8_t *) mStart;
+          return mSize*sizeof(T);
        }
 
        iterator begin() {
-          return mStart;
+          return mData;
        }
 
        const_iterator begin() const {
-          return mStart;
+          return mData;
        }
 
        iterator end() {
-          return mEnd;
+          return mData+mSize;
        }
 
        const_iterator end() const {
-          return mEnd;
+          return mData+mSize;
        }
 
        reverse_iterator rbegin() {
-          return reverse_iterator(mEnd);
+          return reverse_iterator(mData+mSize);
        }
 
        const_reverse_iterator rbegin() const {
-          return const_reverse_iterator(mEnd);
+          return const_reverse_iterator(mData+mSize);
        }
 
        reverse_iterator rend() {
-          return reverse_iterator(mStart);
+          return reverse_iterator(mData);
        }
 
        const_reverse_iterator rend() const {
-          return const_reverse_iterator(mStart);
+          return const_reverse_iterator(mData);
        }
 
        void resize(size_t n, const T &val = T()) {
-          size_t curr_size_bytes = sizeBytes();
-          size_t new_size_bytes = n * sizeof(T);
-          int size_diff = (int) (new_size_bytes - curr_size_bytes);
-          if (size_diff > 0) {
-             if (new_size_bytes > capacityBytes()) {
-                _realloc_all(new_size_bytes);
+          if (n > mSize) {
+             if (n > mCapacity) {
+                _realloc_all(n);
              }
-             T *ptr = (T *) ((uint8_t *) mEnd + size_diff);
-             while (mEnd != ptr) {
-                new(mEnd) T(val);
-                ++mEnd;
+             for (size_t i=mSize; i<n; ++i) {
+                new (&mData[i]) T(val);
              }
           }
           else {
-             T *ptr = (T *) ((uint8_t *) mEnd + size_diff);
-             while (ptr != mEnd) {
-                ptr->~T();
-                ++ptr;
+             for (size_t i=n; i<mSize; ++i) {
+                mData[i].~T();
              }
-             mEnd = (T *) ((uint8_t *) mStart + new_size_bytes);
           }
+          mSize = n;
        }
 
        size_t capacity() const {
-          return mAllocEnd - mStart;
+          return mCapacity;
        }
 
        size_t capacityBytes() const {
-          return (uint8_t *) mAllocEnd - (uint8_t *) mStart;
+          return mCapacity*sizeof(T);
        }
 
        bool empty() const {
-          return mStart == mEnd;
+          return mSize == 0;
        }
 
        void reserve(size_t n) {
-          size_t desired_alloc = n * sizeof(T);
-          size_t current_alloc = capacityBytes();
-          if (desired_alloc > current_alloc) {
-             _realloc_all(desired_alloc);
+          if (n > mCapacity) {
+             _realloc_all(n);
           }
        }
 
        T &at(size_t id) {
-          T *elptr = mStart + id;
-          if (elptr >= mEnd)
+          if (id >= mSize)
              throw std::out_of_range("fast_vector");
-          return *elptr;
+          return mData[id];
        }
 
        const T &at(size_t id) const {
-          T *elptr = mStart + id;
-          if (elptr >= mEnd)
+          if (id >= mSize)
              throw std::out_of_range("fast_vector");
-          return *elptr;
+          return mData[id];
        }
 
        T &front() {
-          return *begin();
+          return mData[0];
        }
 
        const T &front() const {
-          return *begin();
+          return mData[0];
        }
 
        T &back() {
-          return *(end() - 1);
+          return mData[mSize-1];
        }
 
        const T &back() const {
-          return *(end() - 1);
+          return mData[mSize-1];
        }
 
        iterator insert(iterator position)  // requires copy constructor
@@ -380,269 +307,155 @@ namespace grynca {
        }
 
        iterator insert(iterator position, const T &val) {
-          ASSERT(position <= iterator(mEnd));
-          ASSERT(position >= iterator(mStart));
-          if (mEnd < mAllocEnd)
-             // no need for realloc yet
-          {
-             memmove(position.p + 1, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
-             new (position.p) T(val);
-             ++mEnd;
-             return position;
+          ASSERT(position <= end() );
+          ASSERT(position >= begin());
+          if (mSize == mCapacity) {
+             size_t pos_id = position-mData;
+             _realloc_all(_get_new_capacity(capacity(), mSize + 1));
+             position = &mData[pos_id];
           }
-          else
-             // no space here -> find new home for data;]
-          {
-             size_t curr_capacity = capacity();
-             size_t new_capacity_bytes = _get_new_capacity(curr_capacity, curr_capacity + 1) * sizeof(T);
 
-             size_t head_size_bytes = (uint8_t *) position.p - (uint8_t *) mStart;
-             T *oldStart = _realloc_split_by_gap(new_capacity_bytes, head_size_bytes, sizeof(T));
-             // create element in gap
-             uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
-             new (gap_slot) T(val);
-             free(oldStart);
-             return (T *) (gap_slot);
-          }
+          memmove(position + 1, position, (uint8_t *)end() - (uint8_t *) position);
+          new (position) T(val);
+          ++mSize;
+          return position;
        }
 
        template<class... ConstructionArgs>
        iterator emplace(iterator position, ConstructionArgs&&... args) {
-          ASSERT(position <= iterator(mEnd));
-          ASSERT(position >= iterator(mStart));
-          if (mEnd < mAllocEnd)
-             // no need for realloc yet
-          {
-             memmove(position.p + 1, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
-             new (position.p) T(std::forward<ConstructionArgs>(args)...);
-             ++mEnd;
-             return position;
+          ASSERT(position <= end() );
+          ASSERT(position >= begin());
+          if (mSize == mCapacity) {
+             size_t pos_id = position-mData;
+             _realloc_all(_get_new_capacity(capacity(), mSize + 1));
+             position = &mData[pos_id];
           }
-          else
-             // no space here -> find new home for data;]
-          {
-             size_t curr_capacity = capacity();
-             size_t new_capacity_bytes = _get_new_capacity(curr_capacity, curr_capacity + 1) * sizeof(T);
 
-             size_t head_size_bytes = (uint8_t *) position.p - (uint8_t *) mStart;
-             T *oldStart = _realloc_split_by_gap(new_capacity_bytes, head_size_bytes, sizeof(T));
-             // create element in gap
-             uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
-             new (gap_slot) T(std::forward<ConstructionArgs>(args)...);
-             free(oldStart);
-             return (T *) (gap_slot);
-          }
+          memmove(position + 1, position, (uint8_t *)end() - (uint8_t *) position);
+          new (position) T(std::forward<ConstructionArgs>(args)...);
+          ++mSize;
+          return position;
        }
 
-       void insert(iterator position, size_t n, const T &val) {
-          fill_insert(position, n, val);
+       iterator insert(iterator position, size_t n, const T &val) {
+          if (mSize+n > mCapacity) {
+             size_t pos_id = position-mData;
+             _realloc_all(_get_new_capacity(capacity(), mSize + n));
+             position = &mData[pos_id];
+          }
+          memmove(position + n, position, (uint8_t *)end() - (uint8_t *)position);
+          mSize += n;
+          for (iterator it = position; n--; ++it) {
+             new (it) T(val);
+          }
+
+          return position;
        }
 
        template<typename InputIterator>
-       void insert(iterator position, InputIterator first, InputIterator last) {
-          insert_range_or_fill(position, first, last);
+       iterator insert(iterator position, InputIterator first, InputIterator last) {
+          size_t count = last - first;
+          if (mSize + count > mCapacity) {
+             size_t pos_id = position-mData;
+             _realloc_all(_get_new_capacity(capacity(), mSize + count));
+             position = &mData[pos_id];
+          }
+          memmove(position + count, position, (uint8_t *)end() - (uint8_t *)position);
+          for (iterator it = position; first != last; ++it, ++first) {
+             new (it) T(*first);
+          }
+          mSize += count;
+          return position;
        }
 
        iterator erase(iterator position) {
-          ASSERT(position < iterator(mEnd));
-          ASSERT(position >= iterator(mStart));
-          if (position.p == (mEnd - 1)) {
-             pop_back();
-          }
-          else {
-             (position.p)->~T();
-             size_t tail_size = (uint8_t *) mEnd - (uint8_t *) position.p - sizeof(T);
-             memmove(position.p, position.p + 1, tail_size);
-             --mEnd;
-          }
+          ASSERT(position < end() );
+          ASSERT(position >= begin());
+
+          position->~T();
+          size_t tail_size = (uint8_t *)end() - (uint8_t *)position - sizeof(T);
+          memmove(position, position+1, tail_size);
+          --mSize;
           return position;
        }
 
        iterator erase(iterator first, iterator last) {
-          ASSERT(first <= iterator(mEnd));
-          ASSERT(first >= iterator(mStart));
-          ASSERT(last <= iterator(mEnd));
-          ASSERT(last >= iterator(mStart));
+          ASSERT(first <= end());
+          ASSERT(first >= begin());
+          ASSERT(last <= end());
+          ASSERT(last >= begin());
           ASSERT(last >= first);
 
           iterator tmp = first;
           while (tmp != last)  // call destructors for erased elems
           {
-             (tmp.p)->~T();
+             tmp->~T();
              ++tmp;
           }
-          size_t tail_size = (uint8_t *) mEnd - (uint8_t *) last.p;
-          memmove(first.p, last.p, tail_size);
-          mEnd -= (last - first);
+          size_t tail_size = (uint8_t *)end() - (uint8_t *)last;
+          memmove(first, last, tail_size);
+          mSize -= (last - first);
           return first;
        }
 
        // clear
        void clear() {
-          T *loop_ptr = mStart;
-          while (loop_ptr != mEnd) {
-             loop_ptr->~T();
-             ++loop_ptr;
-          }
-          mEnd = mStart;
+          size_type i;
+          for (size_t i = 0; i<mSize; ++i)
+             mData[i].~T();
+          mSize = 0;
        }
 
        void swap(fast_vector<T> &x) {
-          std::swap(mStart, x.mStart);
-          std::swap(mEnd, x.mEnd);
-          std::swap(mAllocEnd, x.mAllocEnd);
-       }
-
-       void assign(const_iterator first, const_iterator last) {
-          if (first == last) {
-             clear();
-             return;
-          }
-
-          if ((mStart <= first.p && first.p <= mEnd) && (mStart <= last.p && last.p <= mEnd))
-             self_assign(first, last);
-          else
-             normal_assign(first, last);
+          std::swap(mData, x.mData);
+          std::swap(mSize, x.mSize);
+          std::swap(mCapacity, x.mCapacity);
        }
 
        template<class InputIterator>
        void assign(InputIterator first, InputIterator last) {
-          normal_assign(first, last);
+          size_t count = last - first;
+          if (mCapacity < count) {
+             _realloc_all(_get_new_capacity(capacity(), count));
+          }
+          size_t i=0;
+          for ( ; i < mSize; ++i, ++first) {
+             mData[i] = *first;
+          }
+          for ( ; i < count; ++i, ++first) {
+             new (&mData[i]) T(*first);
+          }
+          mSize = count;
        }
 
        void assign(size_t n, const T &val) {
-          clear();
-          reserve(n);
-          for (size_t i = 0; i < n; ++i)
-             push_back(val);
+          if (mCapacity < n) {
+             _realloc_all(_get_new_capacity(capacity(), n));
+          }
+          size_t i=0;
+          for ( ; i < mSize; ++i) {
+             mData[i] = val;
+          }
+          for ( ; i <n; ++i) {
+             new (&mData[i]) T(val);
+          }
+          mSize = n;
        }
-
 
     private:
-       template<class InputIterator>
-       void self_assign(InputIterator first, InputIterator last) {
-          fast_vector<T> v(first, last);
-          clear();
-          std::swap(*this, v);
-       }
 
-       template<class InputIterator>
-       void normal_assign(InputIterator first, InputIterator last) {
-          clear();
-          size_t range = (size_t)std::distance(first, last);
-          reserve(range);
-          while (first != last) {
-             push_back(*first);
-             ++first;
-          }
-       }
-
-       void fill_insert(iterator position, size_t n, const T &val) {
-          if ((mEnd + n) <= mAllocEnd)
-             // no need for realloc
-          {
-             memmove(position.p + n, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
-             for (unsigned int i = 0; i < n; ++i) {
-                new (position.p) T(val);
-                ++position;
-             }
-             mEnd += n;
-          }
-          else
-             // must realloc
-          {
-             size_t curr_capacity = capacity();
-             size_t new_capacity_bytes = _get_new_capacity(curr_capacity, curr_capacity + n) * sizeof(T);
-             size_t gap_size_bytes = n * sizeof(T);
-             size_t head_size_bytes = (uint8_t *) position.p - (uint8_t *) mStart;
-             T *oldStart = _realloc_split_by_gap(new_capacity_bytes, head_size_bytes, gap_size_bytes);
-             // create elements in gap
-             uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
-             for (unsigned int i = 0; i < n; ++i) {
-                new (gap_slot) T(val);
-                gap_slot += sizeof(T);
-             }
-             free(oldStart);
-          }
-       }
-
-       template<typename Integer>
-       typename std::enable_if<std::is_integral<Integer>::value>::type insert_range_or_fill(iterator position,
-                                                                                            Integer n, Integer val) {
-          fill_insert(position, n, val);
-       }
-
-       // For integral types only:
-       template<typename InputIterator>
-       typename std::enable_if<!std::is_integral<InputIterator>::value>::type insert_range_or_fill(iterator position,
-                                                                                                   InputIterator first,
-                                                                                                   InputIterator last) {
-          insert_range(position, first, last);
-       }
-
-       template<typename InputIterator>
-       void insert_range(iterator position, InputIterator first, InputIterator last) {
-          size_t range = std::distance(first, last);
-
-          if ((mEnd + range) <= mAllocEnd)
-             // no need for realloc
-          {
-             memmove(position.p + range, position.p, (uint8_t *) mEnd - (uint8_t *) position.p);
-             while (first != last) {
-                new (position.p) T(*first);
-                ++position;
-                ++first;
-             }
-             mEnd += range;
-          }
-          else
-             // must realloc
-          {
-             size_t curr_capacity = capacity();
-             size_t new_capacity_bytes = _get_new_capacity(curr_capacity, curr_capacity + range) * sizeof(T);
-             size_t gap_size_bytes = range * sizeof(T);
-             size_t head_size_bytes = (uint8_t *) position.p - (uint8_t *) mStart;
-             T *oldStart = _realloc_split_by_gap(new_capacity_bytes, head_size_bytes, gap_size_bytes);
-             // create elements in gap
-             uint8_t *gap_slot = (uint8_t *) mStart + head_size_bytes;
-             while (first != last) {
-                new (gap_slot) T(*first);
-                gap_slot += sizeof(T);
-                ++first;
-             }
-             free(oldStart);
-          }
-       }
-
-       size_t _get_new_capacity(size_t curr_capacity, size_t needed_capacity) {
+       inline size_t _get_new_capacity(size_t curr_capacity, size_t needed_capacity) {
           return std::max((size_t) std::ceil(curr_capacity * GROWING_FACTOR), needed_capacity);
        }
 
-       void _realloc_all(size_t new_capacity_bytes) {
-          size_t curr_size = sizeBytes();
-          T* oldStart = mStart;
-          mStart = (T *) realloc(mStart, new_capacity_bytes);
-          mEnd = (T *) ((uint8_t *) mStart + curr_size);
-          mAllocEnd = (T *) ((uint8_t *) mStart + new_capacity_bytes);
+       inline void _realloc_all(size_t new_capacity) {
+          mCapacity = new_capacity;
+          mData = (T *)realloc(mData, new_capacity*sizeof(T));
        }
 
-       // reallocs with gap inside
-       T *_realloc_split_by_gap(size_t new_capacity_bytes, size_t head_size_bytes, size_t gap_size_bytes) {
-          uint8_t *new_start = (uint8_t *) malloc(new_capacity_bytes);
-          size_t tail_size_bytes = sizeBytes() - head_size_bytes;
-          memcpy(new_start, mStart, head_size_bytes);
-          memcpy(new_start + gap_size_bytes + head_size_bytes, (uint8_t *) mStart + head_size_bytes, tail_size_bytes);
-          T *oldStart = mStart;
-
-          mStart = (T *) new_start;
-          mEnd = (T *) (new_start + head_size_bytes + tail_size_bytes + gap_size_bytes);
-          mAllocEnd = (T *) (new_start + new_capacity_bytes);
-          return oldStart;
-       }
-
-       T *mStart;
-       T *mEnd;
-       T *mAllocEnd;
+       size_type mCapacity;
+       size_type mSize;
+       T *mData;
     };
 
 

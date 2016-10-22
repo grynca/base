@@ -15,6 +15,7 @@
 #include "types/containers/VVector2.h"
 #include "types/containers/SharedBuffer.h"
 #include "types/containers/RoundBuffer.h"
+#include "types/containers/SortedSet.h"
 #include "types/CommonPtr.h"
 #include "types/Exception.h"
 #include "types/RefCommonPtr.h"

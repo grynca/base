@@ -32,6 +32,8 @@ namespace grynca {
             ArgumentType type;
             bool multiple;
 
+            Option() {}
+
             Option( char         _short_name,
                     std::string  _long_name,
                     ArgumentType _type,

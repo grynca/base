@@ -18,16 +18,17 @@ int main(int argc, char** argv) {
 
     test_types::test();
 
-    test_variants::testVariants();
+    //test_variants::testVariants();
     test_containers::testStdMap();
     test_containers::testArray();
     test_containers::testTightArray();
+    test_containers::testSortedSet();
     test_containers::testVirtualVector();
 
     test_type_if::test();
 
     test_enum::test();
 
-    KEY_TO_CONTINUE();
+    WAIT_FOR_KEY_ON_WIN();
     return 0;
 }

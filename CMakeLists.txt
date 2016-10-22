@@ -3,7 +3,12 @@ project(Base)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES
+IF (WIN32)
+    # for profiling
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer -gdwarf-2" )
+ENDIF()
+
+    set(SOURCE_FILES
         src/base.h
         src/functions/debug.h
         src/functions/meta.h
@@ -20,6 +25,8 @@ set(SOURCE_FILES
         src/types/containers/Array.inl
         src/types/containers/SharedBuffer.h
         src/types/containers/SharedBuffer.inl
+        src/types/containers/SortedSet.h
+        src/types/containers/SortedSet.inl
         src/types/BlockMeasure.h
         src/types/RefCount.h
         src/types/CommonPtr.h
@@ -55,7 +62,8 @@ set(SOURCE_FILES
         src/types/containers/TightPool.inl
         src/types/containers/Pool.h
         src/types/containers/Pool.inl
-        src/functions/common.h)
+        src/functions/common.h
+        )
 
 set(TEST_FILES
         test/main.cpp

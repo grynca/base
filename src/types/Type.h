@@ -145,9 +145,12 @@ namespace grynca {
         static TypesPack<F, R...,Tss...> expand();  // expand with types
 
 
-        // functor must be:
-        // template <typename TypesPack, typename Type>
-        // static void f(args) {}
+        /* functor must be:
+            struct Functor {
+                template <typename TypesPack, typename Type>
+                static void f(args) {}
+            }
+        */
         template <typename Functor, typename... Args>
         static void callOnTypes(Args&&... args);
     private:
@@ -159,6 +162,8 @@ namespace grynca {
     };
 
 
+    // usage:
+    //   typedef TypesPackMerge<TP1, TP2>::Types MyTypesPack;
     template <typename... Ts> struct TypesPackMerge;
     template <typename... Ts1, typename... Ts2>
     struct TypesPackMerge<TypesPack<Ts1...>, TypesPack<Ts2...> > {

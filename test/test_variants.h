@@ -4,7 +4,7 @@
 namespace grynca { namespace test_variants {
 
     inline constexpr uint32_t n() {
-        return 100;
+        return 1e6;
     }
 
     struct StuffCaller {
@@ -15,7 +15,7 @@ namespace grynca { namespace test_variants {
     };
 
     inline void testVariants() {
-        std::cout <<"Variants:" << std::endl;
+        std::cout <<"Variants " << n() << ":" << std::endl;
 
         fast_vector<MyStuffVariant> rvar;
         {

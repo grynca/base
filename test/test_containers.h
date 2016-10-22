@@ -5,7 +5,7 @@
 
 namespace grynca { namespace test_containers {
     inline constexpr uint32_t n() {
-        return 1e6;
+        return 1e5;
     }
 
     inline fast_vector<unsigned int> randomDestructionOrder() {
@@ -20,7 +20,7 @@ namespace grynca { namespace test_containers {
         stuff_map.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
 
-        std::cout << "std::unordered_map: " << std::endl;
+        std::cout << "std::unordered_map " << n() << ":" << std::endl;
         {
             BlockMeasure m(" creation");
             for (size_t i=0; i<n(); ++i) {
@@ -56,7 +56,7 @@ namespace grynca { namespace test_containers {
         indices.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
 
-        std::cout << "Array: " << std::endl;
+        std::cout << "Array " << n() << ":" << std::endl;
         {
             BlockMeasure m(" creation");
             for (size_t i=0; i<n(); ++i) {
@@ -89,7 +89,7 @@ namespace grynca { namespace test_containers {
         indices.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
 
-        std::cout << "Tight Array: " << std::endl;
+        std::cout << "Tight Array " << n() << ":" << std::endl;
         {
             BlockMeasure m(" creation");
             for (size_t i=0; i<n(); ++i) {
@@ -118,7 +118,7 @@ namespace grynca { namespace test_containers {
         vv.reserve(n());
         vv.addAs<MyStuffA, MyStuff>();
 
-        std::cout << "VVector:" << std::endl;
+        std::cout << "VVector " << n() << ":" << std::endl;
         {
             BlockMeasure m(" creation");
             for (size_t i=0; i<n(); ++i) {
@@ -148,6 +148,35 @@ namespace grynca { namespace test_containers {
             for (size_t i=0; i<n(); ++i) {
                 uint32_t id = rand()%vv.getSize();
                 vv.remove(id);
+            }
+        }
+    }
+
+
+    inline void testSortedSet() {
+        SortedSet<MyStuff> sset;
+        sset.reserve(n());
+        fast_vector<unsigned int> order = randomDestructionOrder();
+
+        std::cout << "Sorted Set " << n() << ":" << std::endl;
+        {
+            BlockMeasure m(" creation");
+            for (size_t i=0; i<n(); ++i) {
+                sset.add(i);
+            }
+        }
+
+        {
+            BlockMeasure m(" loop");
+            for (size_t i=0; i<n(); ++i) {
+                sset.get(i).dostuff();
+            }
+        }
+
+        {
+            BlockMeasure m(" destruction");
+            for (size_t i=0; i<n(); ++i) {
+                sset.remove(order[i]);
             }
         }
     }
