@@ -40,7 +40,7 @@ namespace grynca {
         uint8_t* last = &items_data_[last_item_slot_id*item_size_];
 
         // move last item to deleted place
-        memmove(deleted, last, item_size_);
+        memcpy(deleted, last, item_size_);
         // update redirect for last(moved) item
         uint32_t redirect_id = redirect_ids_[last_item_slot_id];
         redirects_[redirect_id].setIndex(deleted_item_slot_id);
@@ -68,7 +68,7 @@ namespace grynca {
         // call destructor on item data
         destructor(deleted);
         // move last item to deleted place
-        memmove(deleted, last, item_size_);
+        memcpy(deleted, last, item_size_);
         // update redirect for last(moved) item
         uint32_t redirect_id = redirect_ids_[last_item_slot_id];
         redirects_[redirect_id].setIndex(deleted_item_slot_id);

@@ -12,7 +12,7 @@ using namespace grynca;
 
 
 int main(int argc, char** argv) {
-    srand(time(NULL));
+    //srand(time(NULL));
 
     MyDomain::init();
 
@@ -20,6 +20,7 @@ int main(int argc, char** argv) {
 
     //test_variants::testVariants();
     test_containers::testStdMap();
+    test_containers::testHashMap();
     test_containers::testArray();
     test_containers::testTightArray();
     test_containers::testSortedSet();

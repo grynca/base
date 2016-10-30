@@ -122,7 +122,6 @@ namespace grynca {
             uint8_t* ptr = getAtPos(i);
             if (ptr) {
                 destructor(ptr);
-                setFree_(i);
             }
         }
         clear();

@@ -15,8 +15,14 @@ namespace grynca { namespace test_containers {
         return destruction_order;
     }
 
+    struct Hasher {
+        size_t operator()(const uint32_t& key)const {
+            return calcHash32(key);
+        }
+    };
+
     inline void testStdMap() {
-        std::unordered_map<uint32_t, MyStuff> stuff_map;
+        std::unordered_map<uint32_t, MyStuff, Hasher> stuff_map;
         stuff_map.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
 
@@ -45,6 +51,45 @@ namespace grynca { namespace test_containers {
             BlockMeasure m(" destruction");
             for (size_t i=0; i<n(); ++i) {
                 stuff_map.erase(destruction_order[i]);
+            }
+        }
+    }
+
+    inline void testHashMap() {
+        HashMap<MyStuff, uint32_t, Hasher> hm;
+        fast_vector<uint32_t> indices;
+        hm.reserve(n());
+        indices.reserve(n());
+        fast_vector<unsigned int> destruction_order = randomDestructionOrder();
+
+        std::cout << "HashMap " << n() << ":" << std::endl;
+        {
+            BlockMeasure m(" creation");
+            for (size_t i=0; i<n(); ++i) {
+                new (hm.addItem(i)) MyStuff();
+                indices.push_back(i);
+            }
+        }
+
+        {
+            BlockMeasure m(" loop(index)");
+            for (size_t i=0; i<n(); ++i) {
+                MyStuff& stuff = hm.getItem(i);
+                stuff.dostuff();
+            }
+        }
+
+        {
+            BlockMeasure m(" loop(w hashing)");
+            for (size_t i=0; i<n(); ++i) {
+                hm.getItem(hm.findItem(i)).dostuff();
+            }
+        }
+
+        {
+            BlockMeasure m(" destruction");
+            for (size_t i=0; i<n(); ++i) {
+                hm.removeItem(indices[destruction_order[i]]);
             }
         }
     }
