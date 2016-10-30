@@ -1,5 +1,6 @@
 #include "Type.h"
 #include "Type_internal.h"
+#include "Call.h"
 
 /// Inline implementation
 
@@ -55,6 +56,13 @@ namespace grynca {
     inline BaseType* Type<T, Domain>::create(void* place, ConstructionArgs&&... args) {
         // static
         return static_cast<BaseType*> (new(place)T(std::forward<ConstructionArgs>(args)...));
+    };
+
+    template <typename T, typename Domain>
+    inline void Type<T, Domain>::defConstruct(void* place) {
+        // static
+        Call<internal::DefConstruct, T>::template ifTrue<std::is_default_constructible<T> >(place);
+        Call<internal::NoDefConstruct, T>::template ifFalse<std::is_default_constructible<T> >();
     };
 
     template <typename T, typename Domain>
@@ -138,6 +146,10 @@ namespace grynca {
         return move_;
     }
 
+    inline DefConstrFunc TypeInfo::getDefaultConstr()const {
+        return def_constr_;
+    }
+
     inline const std::string& TypeInfo::getTypename()const {
         return typename_;
     }
@@ -150,6 +162,7 @@ namespace grynca {
         destroy_ = &Type<T, Domain>::destroy;
         copy_ = &Type<T, Domain>::copy;
         move_ = &Type<T, Domain>::move;
+        def_constr_ = &Type<T, Domain>::defConstruct;
     }
 
     inline uint32_t TypeInfo::getId()const {

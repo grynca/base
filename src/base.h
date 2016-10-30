@@ -17,6 +17,8 @@
 #include "types/containers/RoundBuffer.h"
 #include "types/containers/SortedSet.h"
 #include "types/containers/HashMap.h"
+#include "types/containers/HashSet.h"
+#include "types/containers/MultiPool.h"
 #include "types/CommonPtr.h"
 #include "types/Exception.h"
 #include "types/RefCommonPtr.h"

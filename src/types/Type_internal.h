@@ -32,6 +32,20 @@ namespace grynca {
                 TypeInfoManager<Domain>::template setTypeId<T>(ID);
             }
         };
+
+        struct DefConstruct {
+            template <typename T>
+            static void f(void* ptr) {
+                new (ptr) T();
+            }
+        };
+
+        struct NoDefConstruct {
+            template <typename T>
+            static void f() {
+                NEVER_GET_HERE("Class does not have default constructor.");
+            }
+        };
     }
 
 }

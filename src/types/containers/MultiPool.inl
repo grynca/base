@@ -1,6 +1,6 @@
 #include "MultiPool.h"
 
-#define MP_TPL template <uint32_t MAX_COMPS, typename Domain = void>
+#define MP_TPL template <uint32_t MAX_COMPS, typename Domain>
 #define MP_TYPE MultiPool<MAX_COMPS, Domain>
 
 namespace grynca {
@@ -13,7 +13,8 @@ namespace grynca {
     MP_TPL
     template <typename TP>
     inline void MP_TYPE::initComponents() {
-        TP::callOnTypes<CompsInitLooper>(component_types_);
+        ASSERT(TP::getTypesCount() <= MAX_COMPS);
+        TP::template callOnTypes<CompsInitLooper>(component_types_);
     }
 
     MP_TPL
@@ -34,6 +35,18 @@ namespace grynca {
         unsetFree_(slot_id);
         return Index(slot_id, versions_[slot_id]);
     }
+
+    MP_TPL
+    inline Index MP_TYPE::addAndConstruct() {
+        Index id = add();
+        for (uint32_t i=0; i<component_types_.size(); ++i) {
+            const TypeInfo& ti = getTypeInfo(i);
+            uint8_t* comp_ptr = &data_[i][ti.getSize()*id.getIndex()];
+            ti.getDefaultConstr()(comp_ptr);
+        }
+        return id;
+    }
+
 
     MP_TPL
     inline void MP_TYPE::removeAtPos(uint32_t pos) {
@@ -69,13 +82,13 @@ namespace grynca {
     MP_TPL
     inline uint8_t* MP_TYPE::get(Index index, uint32_t component_id) {
         uint32_t comp_size = getTypeInfo(component_id).getSize();
-        return &data_[component_id][comp_size*component_id];
+        return &data_[component_id][comp_size*index.getIndex()];
     }
 
     MP_TPL
     inline const uint8_t* MP_TYPE::get(Index index, uint32_t component_id)const {
         uint32_t comp_size = getTypeInfo(component_id).getSize();
-        return &data_[component_id][comp_size*component_id];
+        return &data_[component_id][comp_size*index.getIndex()];
     }
 
     MP_TPL

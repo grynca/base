@@ -18,7 +18,8 @@ namespace grynca {
         template <typename TP>
         void initComponents();
 
-        Index add();        // you must get ptrs for components via get() and call constructors on them
+        Index add();        // does not call comps constructors (you can get ptrs to comps and call them yourself via placement new)
+        Index addAndConstruct();  // calls comps default constructors
         void removeAtPos(uint32_t pos);
         void remove(Index index);
         void reserve(size_t count);

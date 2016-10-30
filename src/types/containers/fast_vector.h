@@ -111,17 +111,13 @@ namespace grynca {
 
        // move assignment
        fast_vector<T>& operator=(fast_vector<T>&& x) {
-          if (mCapacity < x.mSize) {
-             _realloc_all(_get_new_capacity(capacity(), x.mSize));
-          }
-          size_t i = 0;
-          for ( ; i< mSize; ++i) {
-             mData[i] = std::move(x.mData[i]);
-          }
-          for ( ; i<x.mSize; ++i) {
-             new (&mData[i]) T(std::move(x.mData[i]));
-          }
-
+          this->~fast_vector();
+          mCapacity = x.mCapacity;
+          mSize = x.mSize;
+          mData = x.mData;
+          x.mData = NULL;
+          x.mSize = 0;
+          x.mCapacity = 0;
           return *this;
        }
 
@@ -184,7 +180,7 @@ namespace grynca {
           if (mSize == mCapacity) {
              _realloc_all(_get_new_capacity(capacity(), capacity() + 1));
           }
-          mData[mSize] = std::move(T(std::forward<ConstructionArgs>(args)...));
+          new (&mData[mSize]) T(std::move(T(std::forward<ConstructionArgs>(args)...)));
           ++mSize;
        }
 

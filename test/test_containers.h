@@ -158,6 +158,41 @@ namespace grynca { namespace test_containers {
         }
     }
 
+    inline void testMultiPool() {
+        MultiPool<3, MyDomain> mp;
+        fast_vector<Index> indices;
+        mp.initComponents<StuffTypes>();
+        mp.reserve(n());
+        indices.reserve(n());
+        fast_vector<unsigned int> destruction_order = randomDestructionOrder();
+
+        std::cout << "Multi Pool " << n() << ":" << std::endl;
+        {
+            BlockMeasure m(" creation");
+            for (size_t i=0; i<n(); ++i) {
+                indices.push_back(mp.addAndConstruct());
+            }
+        }
+
+        {
+            BlockMeasure m(" loop");
+            for (size_t i=0; i<n(); ++i) {
+                if (!mp.isFree(i)) {
+                    ((MyStuff*)mp.getAtPos(i, 0))->dostuff();
+                    ((MyStuffA*)mp.getAtPos(i, 1))->dostuff();
+                    ((MyStuffB*)mp.getAtPos(i, 2))->dostuff();
+                }
+            }
+        }
+
+        {
+            BlockMeasure m(" destruction");
+            for (size_t i=0; i<n(); ++i) {
+                mp.remove(indices[destruction_order[i]]);
+            }
+        }
+    }
+
     inline void testVirtualVector() {
         VVector<MyDomain> vv;
         vv.reserve(n());

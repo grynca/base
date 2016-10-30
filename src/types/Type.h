@@ -9,6 +9,7 @@
 
 namespace grynca {
     typedef void (*DestroyFunc)(void*);
+    typedef void (*DefConstrFunc) (void*);
     typedef void (*CopyFunc)(void* to, const void* from);
     typedef void (*MoveFunc)(void* to, void* from);
 
@@ -38,6 +39,7 @@ namespace grynca {
     public:
         template <typename BaseType, typename... ConstructionArgs>
         static BaseType* create(void* place, ConstructionArgs&&... args);
+        static void defConstruct(void* place);
         static void destroy(void* place);
         static void copy(void *to, const void *from);
         static void move(void *to, void *from);
@@ -65,6 +67,7 @@ namespace grynca {
         DestroyFunc getDestroyFunc()const;
         CopyFunc getCopyFunc()const;
         MoveFunc getMoveFunc()const;
+        DefConstrFunc getDefaultConstr()const;
         const std::string& getTypename()const;
 
         template <typename T, typename Domain>
@@ -75,6 +78,7 @@ namespace grynca {
         std::string getDebugString()const;
     private:
         DestroyFunc destroy_;
+        DefConstrFunc def_constr_;
         CopyFunc copy_;
         MoveFunc move_;
         size_t size_;

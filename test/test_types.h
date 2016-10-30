@@ -11,7 +11,6 @@ namespace grynca { namespace test_types {
         };
 
         inline void test() {
-
             std::cout << "Loop over MyStuff TypePack types info: " << std::endl;
             for (uint32_t i=0; i<StuffTypes::getTypesCount(); ++i) {
                 const TypeInfo& ti = StuffTypes::getTypeInfo(i);
