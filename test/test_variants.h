@@ -3,7 +3,7 @@
 
 namespace grynca { namespace test_variants {
 
-    inline constexpr uint32_t n() {
+    inline constexpr u32 n() {
         return 1e6;
     }
 

@@ -1,13 +1,14 @@
 #include "Type.h"
 #include "Type_internal.h"
 #include "Call.h"
+#include "../functions/string_utils.h"
 
 /// Inline implementation
 
 namespace grynca {
 
     template<typename Domain>
-    inline const TypeInfo& InternalTypes<Domain>::getInfo(uint32_t tid) {
+    inline const TypeInfo& InternalTypes<Domain>::getInfo(u32 tid) {
         // static
         ASSERT_M(isTypeIdSet(tid),
                "Type with this id not set.");
@@ -16,7 +17,7 @@ namespace grynca {
     }
 
     template<typename Domain>
-    inline bool InternalTypes<Domain>::isTypeIdSet(uint32_t tid) {
+    inline bool InternalTypes<Domain>::isTypeIdSet(u32 tid) {
         // static
         if (tid >= getTypes_().size())
             return false;
@@ -27,7 +28,7 @@ namespace grynca {
     inline std::string InternalTypes<Domain>::getDebugString(std::string indent) {
         // static
         std::string s;
-        for (uint32_t i=0; i<getTypes_().size(); ++i) {
+        for (u32 i=0; i<getTypes_().size(); ++i) {
             TypeInfo& ti = getTypes_()[i];
             s += indent + ti.getDebugString() + "\n";
         }
@@ -36,9 +37,9 @@ namespace grynca {
 
     template<typename Domain>
     template <typename T>
-    inline uint32_t InternalTypes<Domain>::getNewId_() {
+    inline u32 InternalTypes<Domain>::getNewId_() {
         // static
-        uint32_t id = uint32_t(getTypes_().size());
+        u32 id = u32(getTypes_().size());
         getTypes_().emplace_back();
         getTypes_().back().template set<T, Domain>(id);
         return id;
@@ -73,9 +74,9 @@ namespace grynca {
     }
 
     template <typename T, typename Domain>
-    inline uint32_t Type<T, Domain>::getInternalTypeId() {
+    inline u32 Type<T, Domain>::getInternalTypeId() {
         //static
-        static uint32_t id = InternalTypes<Domain>::template getNewId_<T>();
+        static u32 id = InternalTypes<Domain>::template getNewId_<T>();
         return id;
     }
 
@@ -104,9 +105,9 @@ namespace grynca {
     }
 
     template <typename T, typename Domain>
-    inline uint32_t& Type<T, Domain>::typeId_() {
+    inline u32& Type<T, Domain>::typeId_() {
     //static
-        static uint32_t tid_= uint32_t(-1);
+        static u32 tid_= u32(-1);
         return tid_;
     }
 
@@ -123,7 +124,7 @@ namespace grynca {
 
 
     inline TypeInfo::TypeInfo()
-     : destroy_(NULL), copy_(NULL), move_(NULL), size_(0), id_(uint32_t(-1))
+     : destroy_(NULL), copy_(NULL), move_(NULL), size_(0), id_(u32(-1))
     {}
 
     inline bool TypeInfo::isNull()const {
@@ -155,7 +156,7 @@ namespace grynca {
     }
 
     template <typename T, typename Domain>
-    inline void TypeInfo::set(uint32_t id) {
+    inline void TypeInfo::set(u32 id) {
         id_ = id;
         size_ = Type<T, Domain>::getSize();
         typename_ = Type<T, Domain>::getTypename();
@@ -165,17 +166,17 @@ namespace grynca {
         def_constr_ = &Type<T, Domain>::defConstruct;
     }
 
-    inline uint32_t TypeInfo::getId()const {
+    inline u32 TypeInfo::getId()const {
         return id_;
     }
 
     inline std::string TypeInfo::getDebugString()const {
-        return std::to_string(id_) + ": " +typename_ + ", size: " + std::to_string(size_);
+        return string_utils::toString(id_) + ": " +typename_ + ", size: " + string_utils::toString(size_);
     }
 
     template <typename Domain>
     template <typename T>
-    inline void TypeInfoManager<Domain>::setTypeId(uint32_t tid) {
+    inline void TypeInfoManager<Domain>::setTypeId(u32 tid) {
     //static
         ASSERT_M(!isTypeIdSet(tid),
                "Type with this id already set.");
@@ -186,7 +187,7 @@ namespace grynca {
     }
 
     template <typename Domain>
-    inline const TypeInfo& TypeInfoManager<Domain>::get(uint32_t tid) {
+    inline const TypeInfo& TypeInfoManager<Domain>::get(u32 tid) {
     //static
         ASSERT_M(isTypeIdSet(tid),
                "Type with this id not set.");
@@ -194,7 +195,7 @@ namespace grynca {
     }
 
     template <typename Domain>
-    inline bool TypeInfoManager<Domain>::isTypeIdSet(uint32_t tid) {
+    inline bool TypeInfoManager<Domain>::isTypeIdSet(u32 tid) {
     //static
         if (tid >= getTypes_().size())
             return false;
@@ -202,9 +203,9 @@ namespace grynca {
     }
 
     template <typename Domain>
-    inline uint32_t TypeInfoManager<Domain>::getTypesCount() {
+    inline u32 TypeInfoManager<Domain>::getTypesCount() {
     //static
-        return uint32_t(getTypes_().size());
+        return u32(getTypes_().size());
     }
 
     template <typename Domain>

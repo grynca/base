@@ -19,7 +19,7 @@ namespace grynca {
         CfgValue operator=(const std::string& val);
 
         std::string asString;
-        float asFloat;
+        f32 asFloat;
         int asInt;
         bool asBool;
     };

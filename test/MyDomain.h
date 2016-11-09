@@ -1,7 +1,7 @@
 #ifndef MYDOMAIN_H
 #define MYDOMAIN_H
 
-#define RAND_DBL() ((double)rand()/RAND_MAX)
+#define RAND_DBL() ((f64)rand()/RAND_MAX)
 
 class MyStuff {
 public:
@@ -20,8 +20,8 @@ public:
 
     virtual void dostuff() { b += RAND_DBL(); }
 
-    double b;
-    float c;
+    f64 b;
+    f32 c;
 };
 
 class MyStuffB : public MyStuff {
@@ -31,7 +31,7 @@ public:
 
     virtual void dostuff() { c *= RAND_DBL(); }
 
-    double c;
+    f64 c;
 };
 
 typedef TypesPack<
@@ -43,7 +43,7 @@ typedef TypesPack<
 class MyStuffVariant : public Variant<StuffTypes> {
 public:
 
-    static fast_vector<MyStuffVariant> generateN(uint32_t n) {
+    static fast_vector<MyStuffVariant> generateN(u32 n) {
         fast_vector<MyStuffVariant> rvar;
         rvar.reserve(n);
         for (size_t i=0; i<n; ++i) {

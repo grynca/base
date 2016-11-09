@@ -3,7 +3,6 @@
 #include "fast_vector.h"
 #include "../Type.h"
 #include "../Index.h"
-#include <stdint.h>
 
 
 namespace grynca {
@@ -12,39 +11,39 @@ namespace grynca {
 
     class TightPool {
     public:
-        TightPool(uint32_t item_size);
+        TightPool(u32 item_size);
 
-        Index add(uint8_t*& new_item_out);
+        Index add(u8*& new_item_out);
 
         void remove(Index index);
         void remove(Index index, DestroyFunc destructor);
         void reserve(size_t count);
 
-        uint8_t* get(Index index);
-        uint8_t* getAtPos(uint32_t pos);      // good for looping through
-        Index getIndexForPos(uint32_t pos);      // get index for data at pos
-        void getIndexForPos2(uint32_t pos, Index& index_out);
+        u8* get(Index index);
+        u8* getAtPos(u32 pos);      // good for looping through
+        Index getIndexForPos(u32 pos);      // get index for data at pos
+        void getIndexForPos2(u32 pos, Index& index_out);
 
-        const uint8_t* get(Index index)const;
-        const uint8_t* getAtPos(uint32_t pos)const;
+        const u8* get(Index index)const;
+        const u8* getAtPos(u32 pos)const;
 
         bool isValidIndex(Index index)const;
 
-        uint8_t* getData();
+        u8* getData();
 
-        uint32_t size()const;
+        u32 size()const;
         bool empty()const;
         void clear();
         void clear(DestroyFunc destructor);
-        uint32_t getItemSize()const { return item_size_; }
+        u32 getItemSize()const { return item_size_; }
     protected:
-        uint32_t item_size_;
-        fast_vector<uint8_t> items_data_;
+        u32 item_size_;
+        fast_vector<u8> items_data_;
         // for each item index of its redirect (needed for removal)
-        fast_vector<uint32_t> redirect_ids_;
+        fast_vector<u32> redirect_ids_;
 
         fast_vector<Index> redirects_;
-        fast_vector<uint32_t> free_redirects_;
+        fast_vector<u32> free_redirects_;
     };
 
 }

@@ -1,7 +1,6 @@
 #ifndef FAST_VECTOR_H
 #define FAST_VECTOR_H
 
-#include <stdint.h>
 #include <algorithm>
 #include <iterator>
 #include <stdexcept>
@@ -10,6 +9,7 @@
 #include <type_traits>
 #include <memory>
 #include <string.h>
+#include "../../functions/defs.h"
 #include "../../functions/debug.h"
 
 namespace grynca {
@@ -29,7 +29,6 @@ namespace grynca {
         typedef const T*                             const_iterator;
         typedef std::reverse_iterator<iterator>       reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
-        typedef ptrdiff_t                             difference_type;
         typedef unsigned int                          size_type;
 
        // constructors
@@ -311,7 +310,7 @@ namespace grynca {
              position = &mData[pos_id];
           }
 
-          memmove(position + 1, position, (uint8_t *)end() - (uint8_t *) position);
+          memmove(position + 1, position, (u8 *)end() - (u8 *) position);
           new (position) T(val);
           ++mSize;
           return position;
@@ -327,7 +326,7 @@ namespace grynca {
              position = &mData[pos_id];
           }
 
-          memmove(position + 1, position, (uint8_t *)end() - (uint8_t *) position);
+          memmove(position + 1, position, (u8 *)end() - (u8 *) position);
           new (position) T(std::forward<ConstructionArgs>(args)...);
           ++mSize;
           return position;
@@ -339,7 +338,7 @@ namespace grynca {
              _realloc_all(_get_new_capacity(capacity(), mSize + n));
              position = &mData[pos_id];
           }
-          memmove(position + n, position, (uint8_t *)end() - (uint8_t *)position);
+          memmove(position + n, position, (u8 *)end() - (u8 *)position);
           mSize += n;
           for (iterator it = position; n--; ++it) {
              new (it) T(val);
@@ -356,7 +355,7 @@ namespace grynca {
              _realloc_all(_get_new_capacity(capacity(), mSize + count));
              position = &mData[pos_id];
           }
-          memmove(position + count, position, (uint8_t *)end() - (uint8_t *)position);
+          memmove(position + count, position, (u8 *)end() - (u8 *)position);
           for (iterator it = position; first != last; ++it, ++first) {
              new (it) T(*first);
           }
@@ -369,7 +368,7 @@ namespace grynca {
           ASSERT(position >= begin());
 
           position->~T();
-          size_t tail_size = (uint8_t *)end() - (uint8_t *)position - sizeof(T);
+          size_t tail_size = (u8 *)end() - (u8 *)position - sizeof(T);
           memmove(position, position+1, tail_size);
           --mSize;
           return position;
@@ -388,7 +387,7 @@ namespace grynca {
              tmp->~T();
              ++tmp;
           }
-          size_t tail_size = (uint8_t *)end() - (uint8_t *)last;
+          size_t tail_size = (u8 *)end() - (u8 *)last;
           memmove(first, last, tail_size);
           mSize -= (last - first);
           return first;

@@ -27,12 +27,12 @@ namespace grynca {
     }
 
     MGR_TPL
-    inline T* MGR_TYPE::getItemAtPos(uint32_t pos) {
+    inline T* MGR_TYPE::getItemAtPos(u32 pos) {
         return items_.getAtPos(pos);
     }
 
     MGR_TPL
-    inline const T* MGR_TYPE::getItemAtPos(uint32_t pos)const {
+    inline const T* MGR_TYPE::getItemAtPos(u32 pos)const {
         return items_.getAtPos(pos);
     }
 
@@ -52,7 +52,7 @@ namespace grynca {
     }
 
     MGR_TPL
-    inline uint32_t MGR_TYPE::getItemsCount()const {
+    inline u32 MGR_TYPE::getItemsCount()const {
         return items_.size();
     }
 
@@ -63,7 +63,7 @@ namespace grynca {
 
     template <typename Derived, typename BaseType>
     inline ManagerSingletons<Derived, BaseType>::~ManagerSingletons() {
-        for (uint32_t i=0; i<items_.size(); ++i) {
+        for (u32 i=0; i<items_.size(); ++i) {
             if (items_[i])
                 delete items_[i];
         }
@@ -72,7 +72,7 @@ namespace grynca {
     template <typename Derived, typename BaseType>
     template <typename T>
     inline T& ManagerSingletons<Derived, BaseType>::get() {
-        uint32_t tid = Type<T,  Derived>::getInternalTypeId();
+        u32 tid = Type<T,  Derived>::getInternalTypeId();
         if (tid >= items_.size()) {
             items_.resize(tid+1, NULL);
         }
@@ -96,7 +96,7 @@ namespace grynca {
     };
 
     template <typename Derived, typename BaseType>
-    inline uint32_t ManagerSingletons<Derived, BaseType>::getSize() {
+    inline u32 ManagerSingletons<Derived, BaseType>::getSize() {
         return items_.size();
     };
 

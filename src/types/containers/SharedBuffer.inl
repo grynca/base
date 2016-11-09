@@ -12,15 +12,15 @@ namespace grynca {
        ref_count_(NULL)
     {}
 
-    inline SharedBuffer::SharedBuffer(uint32_t max_size)
-     : data_(new uint8_t[max_size]),
+    inline SharedBuffer::SharedBuffer(u32 max_size)
+     : data_(new u8[max_size]),
        size_(0),
        allocated_(max_size),
-       ref_count_(new std::atomic<uint32_t>(1))
+       ref_count_(new std::atomic<u32>(1))
     {}
 
-    inline SharedBuffer::SharedBuffer(void* data, uint32_t data_size)
-     : data_((uint8_t*)data),
+    inline SharedBuffer::SharedBuffer(void* data, u32 data_size)
+     : data_((u8*)data),
        size_(data_size),
        allocated_(0),
        ref_count_(NULL)
@@ -71,38 +71,38 @@ namespace grynca {
         return data_==NULL;
     }
 
-    inline void SharedBuffer::setSize(uint32_t s) {
+    inline void SharedBuffer::setSize(u32 s) {
         size_ = s;
     }
 
-    inline uint32_t SharedBuffer::getSize()const {
+    inline u32 SharedBuffer::getSize()const {
         return size_;
     }
 
-    inline uint32_t SharedBuffer::getAllocatedSize()const {
+    inline u32 SharedBuffer::getAllocatedSize()const {
         return allocated_;
     }
 
-    inline const uint8_t* SharedBuffer::getData()const {
+    inline const u8* SharedBuffer::getData()const {
         return data_;
     }
 
-    inline uint8_t* SharedBuffer::getData() {
+    inline u8* SharedBuffer::getData() {
         return data_;
     }
 
-    inline uint8_t* SharedBuffer::getBack() {
+    inline u8* SharedBuffer::getBack() {
         return &data_[size_];
     }
 
-    inline void SharedBuffer::pushBack(const void* buf, uint32_t buf_size) {
+    inline void SharedBuffer::pushBack(const void* buf, u32 buf_size) {
         ASSERT(size_+buf_size <= allocated_);
         memcpy(&data_[size_], buf, buf_size);
         size_ += buf_size;
     }
 
 
-    inline void SharedBuffer::insert(uint32_t id, const void* buf, uint32_t buf_size) {
+    inline void SharedBuffer::insert(u32 id, const void* buf, u32 buf_size) {
         ASSERT(size_+buf_size <= allocated_);
         if (id >= size_) {
             pushBack(buf, buf_size);

@@ -10,7 +10,7 @@
  * class MyStuff : public ManagedItem<StuffManager>
  *     {
  *     public:
- *          void init(int a, double b);
+ *          void init(int a, f64 b);
  *          ...
  *     };
  * class StuffManager : public Manager<MyStuff>
@@ -53,7 +53,7 @@ namespace grynca {
     };
 
     template <typename T>
-    class ManagedItemSingleton : public ManagedItem<T, uint32_t> {
+    class ManagedItemSingleton : public ManagedItem<T, u32> {
     };
 
     // do not store pointers or references to items
@@ -70,14 +70,14 @@ namespace grynca {
         ItemType& addItem(ConstructionArgs&&... args);
         ItemType& getItem(IndexType id);
         const ItemType& getItem(IndexType id)const;
-        ItemType* getItemAtPos(uint32_t pos);
-        const ItemType* getItemAtPos(uint32_t pos)const;
+        ItemType* getItemAtPos(u32 pos);
+        const ItemType* getItemAtPos(u32 pos)const;
         void removeItem(IndexType id);
         void reserveSpaceForItems(size_t count);
 
         bool isValidIndex(IndexType index)const;
 
-        uint32_t getItemsCount()const;
+        u32 getItemsCount()const;
         bool empty();
     private:
         ArrayType items_;
@@ -92,7 +92,7 @@ namespace grynca {
     class ManagerSingletons {
     public:
         typedef BaseType ItemType;
-        typedef uint32_t IndexType;
+        typedef u32 IndexType;
 
         virtual ~ManagerSingletons();
 
@@ -102,7 +102,7 @@ namespace grynca {
         BaseType* getById(IndexType id);
         const BaseType* getById(IndexType id)const;
 
-        uint32_t getSize();
+        u32 getSize();
     private:
         fast_vector<BaseType*> items_;      // items are pointers -> non-volatile
     };

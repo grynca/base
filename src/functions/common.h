@@ -1,7 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <stdint.h>
+#include "defs.h"
+
 
 namespace grynca {
 
@@ -10,7 +11,7 @@ namespace grynca {
     // that recursively "folds" the upper bits into the lower bits. This process yields a bit vector with
     // the same most significant 1 as x, but all 1's below it. Adding 1 to that value yields the next
     // largest power of 2. For a 32-bit value:"
-    inline uint32_t calcNextPowerOfTwo(uint32_t x) {
+    inline u32 calcNextPowerOfTwo(u32 x) {
         x |= (x >> 1);
         x |= (x >> 2);
         x |= (x >> 4);
@@ -20,7 +21,7 @@ namespace grynca {
     }
 
     // Thomas Wang's hash
-    inline uint32_t calcHash32(uint32_t key)
+    inline u32 calcHash32(u32 key)
     {
         key += ~(key << 15);
         key ^=  (key >> 10);
@@ -31,7 +32,7 @@ namespace grynca {
         return key;
     }
 
-    inline uint32_t calcHash64(uint64_t key)
+    inline u32 calcHash64(u64 key)
     {
         key += ~(key << 32);
         key ^= (key >> 22);
@@ -41,7 +42,7 @@ namespace grynca {
         key ^= (key >> 15);
         key += ~(key << 27);
         key ^= (key >> 31);
-        return uint32_t(key);
+        return u32(key);
     }
 
     template <typename T>

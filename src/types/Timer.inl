@@ -1,69 +1,79 @@
 #include "Timer.h"
+#ifdef _WIN32
+#   include "windows.h"
+#endif
 
 namespace grynca {
 
+    inline Freq::Freq() {
+        LARGE_INTEGER li;
+        QueryPerformanceFrequency(&li);
+        f_ = f64(li.QuadPart);
+    }
+
     inline Clock Clock::getNow() {
         Clock c;
-        c.clock_ = HighResolutionClock::now();
+        LARGE_INTEGER li;
+        QueryPerformanceCounter(&li);
+        c.t_ = li.QuadPart;
         return c;
     }
 
-    inline Clock& Clock::operator+=(float secs) {
-        clock_  = clock_ + MsType(secs*1000);
+    inline Clock& Clock::operator+=(f32 secs) {
+        t_ += LONGLONG(secs*getFreq());
         return *this;
     }
 
-    inline Clock& Clock::operator-=(float secs) {
-        clock_ = clock_ - MsType(secs*1000);
+    inline Clock& Clock::operator-=(f32 secs) {
+        t_ -= LONGLONG(secs*getFreq());
         return *this;
     }
 
-    inline float operator-(const Clock& c1, const Clock& c2) {
-        Clock::MsType dur = c1.clock_ - c2.clock_;
-        return (float)dur.count()*0.001f;
+    inline f32 operator-(const Clock& c1, const Clock& c2) {
+        return f32((c1.t_ - c2.t_)/Clock::getFreq());
     }
 
-    inline Clock operator-(const Clock& c, float secs) {
+    inline Clock operator-(const Clock& c, f32 secs) {
         Clock c2;
-        c2.clock_ = c.clock_ - Clock::MsType(secs*1000);
+        c2.t_ = c.t_ - LONGLONG(secs*Clock::getFreq());
         return c2;
     }
 
-    inline Clock operator+(const Clock& c, float secs) {
+    inline Clock operator+(const Clock& c, f32 secs) {
         Clock c2;
-        c2.clock_ = c.clock_ + Clock::MsType(secs*1000);
+        c2.t_ = c.t_ + LONGLONG(secs*Clock::getFreq());
         return c2;
     }
 
     inline bool operator<(const Clock& c1, const Clock& c2) {
-        return c1.clock_ < c2.clock_;
+        return c1.t_ < c2.t_;
     }
 
     inline bool operator>(const Clock& c1, const Clock& c2) {
-        return c1.clock_ > c2.clock_;
+        return c1.t_ > c2.t_;
     }
 
     inline bool operator<=(const Clock& c1, const Clock& c2) {
-        return c1.clock_ <= c2.clock_;
+        return c1.t_ <= c2.t_;
     }
 
     inline bool operator>=(const Clock& c1, const Clock& c2) {
-        return c1.clock_ >= c2.clock_;
+        return c1.t_ >= c2.t_;
     }
 
     inline bool operator==(const Clock& c1, const Clock& c2) {
-        return c1.clock_ == c2.clock_;
+        return c1.t_ == c2.t_;
     }
 
     inline bool operator!=(const Clock& c1, const Clock& c2) {
-        return c1.clock_ != c2.clock_;
+        return c1.t_ != c2.t_;
     }
 
     inline Timer::Timer()
      : start_(Clock::getNow())
     {}
 
-    inline float Timer::getElapsed() {
+    inline f32 Timer::getElapsed() {
         return Clock::getNow() - start_;
     }
 

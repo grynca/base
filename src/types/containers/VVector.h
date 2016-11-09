@@ -21,7 +21,7 @@ namespace grynca {
         VVector& operator=(const VVector & v);
 
         template <typename T, typename ... ConstrArgs>
-        T& add(ConstrArgs&&... args);     // stores casted to uint8_t*
+        T& add(ConstrArgs&&... args);     // stores casted to u8*
 
         template <typename T, typename Base, typename ... ConstrArgs>
         T& addAs(ConstrArgs&&... args);   // stores casted to Base*
@@ -30,21 +30,21 @@ namespace grynca {
         template <typename T>
         bool remove(T& item);
 
-        void remove(uint32_t id);
+        void remove(u32 id);
 
         void clear();
 
-        uint32_t getSize()const;
-        uint8_t* get(uint32_t id);
-        uint8_t* const get(uint32_t id)const;
-        uint32_t getTypeId(uint32_t id)const;
+        u32 getSize()const;
+        u8* get(u32 id);
+        u8* const get(u32 id)const;
+        u32 getTypeId(u32 id)const;
 
-        void reserve(uint32_t size);
+        void reserve(u32 size);
     private:
-        const TypeInfo& getTypeInfo_(uint32_t id)const;
+        const TypeInfo& getTypeInfo_(u32 id)const;
 
-        fast_vector<uint8_t*> items_;
-        fast_vector<uint32_t> type_ids_;
+        fast_vector<u8*> items_;
+        fast_vector<u32> type_ids_;
 
     };
 

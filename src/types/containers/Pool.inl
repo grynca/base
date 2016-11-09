@@ -2,12 +2,12 @@
 
 namespace grynca {
 
-    inline Pool::Pool(uint32_t item_size)
+    inline Pool::Pool(u32 item_size)
      : item_size_(item_size)
     {}
 
-    inline Index Pool::add(uint8_t*& new_item_out) {
-        uint32_t slot_id;
+    inline Index Pool::add(u8*& new_item_out) {
+        u32 slot_id;
         if (!free_slots_.empty()) {
             slot_id = free_slots_.back();
             free_slots_.pop_back();
@@ -23,14 +23,14 @@ namespace grynca {
         return Index(slot_id, versions_[slot_id]);
     }
 
-    inline void Pool::removeAtPos(uint32_t pos) {
+    inline void Pool::removeAtPos(u32 pos) {
         ASSERT(!isFree_(pos));
         free_slots_.push_back(pos);
         ++versions_[pos];
         setFree_(pos);
     }
 
-    inline void Pool::removeAtPos(uint32_t pos, DestroyFunc destructor) {
+    inline void Pool::removeAtPos(u32 pos, DestroyFunc destructor) {
         ASSERT(!isFree_(pos));
         destructor(getAtPos(pos));
         free_slots_.push_back(pos);
@@ -58,33 +58,33 @@ namespace grynca {
         versions_.reserve(count);
     }
 
-    inline uint8_t* Pool::get(Index index) {
+    inline u8* Pool::get(Index index) {
         ASSERT(isValidIndex(index));
         return &data_[index.getIndex()*item_size_];
     }
 
-    inline const uint8_t* Pool::get(Index index)const {
+    inline const u8* Pool::get(Index index)const {
         ASSERT(isValidIndex(index));
         return &data_[index.getIndex()*item_size_];
     }
 
-    inline uint8_t* Pool::getAtPos(uint32_t pos) {
+    inline u8* Pool::getAtPos(u32 pos) {
         if (isFree_(pos))
             return NULL;
         return &data_[pos*item_size_];
     }
 
-    inline const uint8_t* Pool::getAtPos(uint32_t pos)const {
+    inline const u8* Pool::getAtPos(u32 pos)const {
         if (isFree_(pos))
             return NULL;
         return &data_[pos*item_size_];
     }
 
-    inline Index Pool::getIndexForPos(uint32_t pos) {
+    inline Index Pool::getIndexForPos(u32 pos) {
         return Index(pos, versions_[pos]);
     }
 
-    inline void Pool::getIndexForPos2(uint32_t pos, Index& index_out) {
+    inline void Pool::getIndexForPos2(u32 pos, Index& index_out) {
         index_out.setIndex(pos);
         index_out.setVersion(versions_[pos]);
     }
@@ -96,15 +96,15 @@ namespace grynca {
     }
 
 
-    inline uint8_t* Pool::getData() {
+    inline u8* Pool::getData() {
         return &data_[0];
     }
 
-    inline uint32_t Pool::size()const {
+    inline u32 Pool::size()const {
         return versions_.size();
     }
 
-    inline uint32_t Pool::occupiedSize()const {
+    inline u32 Pool::occupiedSize()const {
         return size()-free_slots_.size();
     }
 
@@ -118,8 +118,8 @@ namespace grynca {
     }
 
     inline void Pool::clear(DestroyFunc destructor) {
-        for (uint32_t i=0; i<size(); ++i) {
-            uint8_t* ptr = getAtPos(i);
+        for (u32 i=0; i<size(); ++i) {
+            u8* ptr = getAtPos(i);
             if (ptr) {
                 destructor(ptr);
             }
@@ -127,21 +127,21 @@ namespace grynca {
         clear();
     }
 
-    inline float Pool::getMemoryWaste() {
-        return ((float)free_slots_.size())/size();
+    inline f32 Pool::getMemoryWaste() {
+        return ((f32)free_slots_.size())/size();
     }
 
-    inline bool Pool::isFree_(uint32_t pos)const {
+    inline bool Pool::isFree_(u32 pos)const {
         ASSERT(pos < versions_.size());
-        return (versions_[pos] & uint16_t(1<<15)) != 0;
+        return (versions_[pos] & u16(1<<15)) != 0;
     }
 
-    inline void Pool::setFree_(uint32_t pos) {
+    inline void Pool::setFree_(u32 pos) {
         ASSERT(pos < versions_.size());
         versions_[pos] |= 1<<15;
     }
 
-    inline void Pool::unsetFree_(uint32_t pos) {
+    inline void Pool::unsetFree_(u32 pos) {
         ASSERT(pos < versions_.size());
         versions_[pos] &= ~(1<<15);
     }

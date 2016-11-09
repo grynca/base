@@ -19,14 +19,14 @@ namespace grynca {
     }
 
     template <typename Container, typename ItemType, typename LessThan, typename EqualTo>
-    inline uint32_t bisectFind(Container c, ItemType i, LessThan lt, EqualTo eq) {
+    inline u32 bisectFind(const Container& c, const ItemType& i, LessThan lt, EqualTo eq) {
         int left = 0;
         int right = c.size()-1;
         while (left <= right) {
             int mid  = (left + right)>>1;
             if (eq(i,c[mid])) {
                 // found
-                return (uint32_t)mid;
+                return (u32)mid;
             }
             else if (lt(i, c[mid])) {
                 right = mid-1;
@@ -40,14 +40,14 @@ namespace grynca {
     }
 
     template <typename Container, typename ItemType, typename LessThan, typename EqualTo>
-    inline uint32_t bisectFindInsert(Container c, ItemType i, LessThan lt, EqualTo eq) {
+    inline u32 bisectFindInsert(const Container& c, const ItemType& i, LessThan lt, EqualTo eq) {
         int left = 0;
         int right = c.size()-1;
         while (left <= right) {
             int mid  = (left + right)>>1;
             if (eq(i,c[mid])) {
                 // found
-                return (uint32_t)mid;
+                return (u32)mid;
             }
             else if (lt(i, c[mid])) {
                 right = mid-1;
@@ -57,6 +57,6 @@ namespace grynca {
             }
         }
         // not found
-        return (uint32_t)left;
+        return (u32)left;
     }
 }

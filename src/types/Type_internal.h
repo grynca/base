@@ -19,7 +19,7 @@ namespace grynca {
 
             template <typename TP>
             IF_NOT_EMPTY(TP) setTypeId() {
-                uint32_t type_pos = uint32_t(Types::template pos<HEAD(TP)>());
+                u32 type_pos = u32(Types::template pos<HEAD(TP)>());
                 TypeInfoManager<Types>::template setTypeId<HEAD(TP)>(type_pos);
                 setTypeId<TAIL(TP)>();
             }

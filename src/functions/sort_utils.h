@@ -19,11 +19,11 @@ namespace grynca {
     // find in sorted collection
     // returns InvalidId() when not found
     template <typename Container, typename ItemType, typename LessThan = std::less<ItemType>, typename EqualTo = std::equal_to<ItemType>>
-    static uint32_t bisectFind(Container c, ItemType i, LessThan lt = LessThan(), EqualTo eq = EqualTo());
+    static u32 bisectFind(const Container& c, const ItemType& i, LessThan lt = LessThan(), EqualTo eq = EqualTo());
 
     // returns pos where to add new item
     template <typename Container, typename ItemType, typename LessThan = std::less<ItemType>, typename EqualTo = std::equal_to<ItemType>>
-    static uint32_t bisectFindInsert(Container c, ItemType i, LessThan lt = LessThan(), EqualTo eq = EqualTo());
+    static u32 bisectFindInsert(const Container& c, const ItemType& i, LessThan lt = LessThan(), EqualTo eq = EqualTo());
 }
 
 

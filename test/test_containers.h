@@ -4,8 +4,8 @@
 #include <unordered_map>
 
 namespace grynca { namespace test_containers {
-    inline constexpr uint32_t n() {
-        return 1e5;
+    inline constexpr u32 n() {
+        return 1e6;
     }
 
     inline fast_vector<unsigned int> randomDestructionOrder() {
@@ -16,13 +16,13 @@ namespace grynca { namespace test_containers {
     }
 
     struct Hasher {
-        size_t operator()(const uint32_t& key)const {
+        size_t operator()(const u32& key)const {
             return calcHash32(key);
         }
     };
 
     inline void testStdMap() {
-        std::unordered_map<uint32_t, MyStuff, Hasher> stuff_map;
+        std::unordered_map<u32, MyStuff, Hasher> stuff_map;
         stuff_map.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
 
@@ -56,8 +56,8 @@ namespace grynca { namespace test_containers {
     }
 
     inline void testHashMap() {
-        HashMap<MyStuff, uint32_t, Hasher> hm;
-        fast_vector<uint32_t> indices;
+        HashMap<MyStuff, u32, Hasher> hm;
+        fast_vector<u32> indices;
         hm.reserve(n());
         indices.reserve(n());
         fast_vector<unsigned int> destruction_order = randomDestructionOrder();
@@ -226,41 +226,11 @@ namespace grynca { namespace test_containers {
         {
             BlockMeasure m(" destruction");
             for (size_t i=0; i<n(); ++i) {
-                uint32_t id = rand()%vv.getSize();
+                u32 id = rand()%vv.getSize();
                 vv.remove(id);
             }
         }
     }
-
-
-    inline void testSortedSet() {
-        SortedSet<MyStuff> sset;
-        sset.reserve(n());
-        fast_vector<unsigned int> order = randomDestructionOrder();
-
-        std::cout << "Sorted Set " << n() << ":" << std::endl;
-        {
-            BlockMeasure m(" creation");
-            for (size_t i=0; i<n(); ++i) {
-                sset.add(i);
-            }
-        }
-
-        {
-            BlockMeasure m(" loop");
-            for (size_t i=0; i<n(); ++i) {
-                sset.get(i).dostuff();
-            }
-        }
-
-        {
-            BlockMeasure m(" destruction");
-            for (size_t i=0; i<n(); ++i) {
-                sset.remove(order[i]);
-            }
-        }
-    }
-
 }}
 
 

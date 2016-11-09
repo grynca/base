@@ -5,7 +5,7 @@ namespace grynca {
     inline FileLister::FileLister(const Path& dir_path, const fast_vector<std::string>& extensions, bool dive /*= false*/)
         : _recursive(dive)
     {
-        for (uint32_t i=0; i<extensions.size(); ++i) {
+        for (u32 i=0; i<extensions.size(); ++i) {
             _extensions.push_back(extensions[i]);
         }
 

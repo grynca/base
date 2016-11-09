@@ -8,7 +8,7 @@ namespace grynca {
     //  its owner must still call .destroy()
     class CommonPtr {
     public:
-        CommonPtr() : place_(NULL), type_id_(uint32_t(-1)) {}
+        CommonPtr() : place_(NULL), type_id_(u32(-1)) {}
 
         template <typename T>
         CommonPtr(T* ptr)
@@ -35,7 +35,7 @@ namespace grynca {
             InternalTypes<>::getInfo(type_id_).getDestroyFunc()(place_);
         }
 
-        uint32_t getTypeId() {
+        u32 getTypeId() {
             return type_id_;
         }
 
@@ -47,7 +47,7 @@ namespace grynca {
 
     protected:
         void *place_;
-        uint32_t type_id_;
+        u32 type_id_;
     };
 }
 

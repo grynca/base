@@ -2,7 +2,7 @@
 #define ROUNDBUFFER_H
 
 #include <cassert>
-#include <stdint.h>
+#include "../../functions/defs.h"
 
 namespace grynca {
 
@@ -20,7 +20,7 @@ namespace grynca {
             return size_ == 0;
         }
 
-        uint32_t getSize() {
+        u32 getSize() {
             return size_;
         }
 
@@ -29,8 +29,8 @@ namespace grynca {
             return items_[curr_id_];
         }
 
-        ItemType& getPrev(uint32_t prev_offset = 1) {
-            ASSERT(((int32_t)getSize()-prev_offset) > 0);
+        ItemType& getPrev(u32 prev_offset = 1) {
+            ASSERT(((i32)getSize()-prev_offset) > 0);
             return items_[(curr_id_-prev_offset)%Size];
         }
 
@@ -42,8 +42,8 @@ namespace grynca {
     private:
         // round buffer
         ItemType items_[Size];
-        int32_t curr_id_;
-        uint32_t size_;
+        i32 curr_id_;
+        u32 size_;
     };
 
 }

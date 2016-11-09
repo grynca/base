@@ -1,7 +1,7 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include <stdint.h>
+#include "../functions/defs.h"
 #include <algorithm>
 #include <cassert>
 #include  "containers/fast_vector.h"
@@ -21,12 +21,12 @@ namespace grynca {
     template<typename Domain = void>
     class InternalTypes {
     public:
-        static const TypeInfo& getInfo(uint32_t tid);
-        static bool isTypeIdSet(uint32_t tid);
+        static const TypeInfo& getInfo(u32 tid);
+        static bool isTypeIdSet(u32 tid);
         static std::string getDebugString(std::string indent);
     protected:
         template <typename T>
-        static uint32_t getNewId_();
+        static u32 getNewId_();
 
         // internal type infos
         static fast_vector<TypeInfo>& getTypes_();
@@ -46,7 +46,7 @@ namespace grynca {
 
         // these ids are automatically set (compilation order dependant)
         //  should not be communicated over network or saved between runs
-        static uint32_t getInternalTypeId();
+        static u32 getInternalTypeId();
         static std::string getTypename();
         static size_t getSize();
 
@@ -54,7 +54,7 @@ namespace grynca {
         static bool isTypeInfoSet();
     private:
         template <typename TT> friend class TypeInfoManager;
-        static uint32_t& typeId_();
+        static u32& typeId_();
     };
 
 // Dynamic type info
@@ -71,9 +71,9 @@ namespace grynca {
         const std::string& getTypename()const;
 
         template <typename T, typename Domain>
-        void set(uint32_t id);
+        void set(u32 id);
 
-        uint32_t getId()const;
+        u32 getId()const;
 
         std::string getDebugString()const;
     private:
@@ -82,7 +82,7 @@ namespace grynca {
         CopyFunc copy_;
         MoveFunc move_;
         size_t size_;
-        uint32_t id_;
+        u32 id_;
         std::string typename_;
     };
 
@@ -92,10 +92,10 @@ namespace grynca {
     {
     public:
         template <typename T>
-        static void setTypeId(uint32_t tid);
-        static const TypeInfo& get(uint32_t tid);
-        static bool isTypeIdSet(uint32_t tid);
-        static uint32_t getTypesCount();
+        static void setTypeId(u32 tid);
+        static const TypeInfo& get(u32 tid);
+        static bool isTypeIdSet(u32 tid);
+        static u32 getTypesCount();
     protected:
         static fast_vector<TypeInfo>& getTypes_();
     };

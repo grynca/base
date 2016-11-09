@@ -101,8 +101,8 @@ namespace grynca {
         template <typename VariantType, typename...Args>
         static void call(Args&&... args) {
             static internal::FuncsTypes<TrueFunctor, FalseFunctor, TrueTrait, VariantType, Args...> funcs;
-            uint32_t types_count = VariantType::Types::getTypesCount();
-            for (uint32_t i=0; i<types_count; ++i) {
+            u32 types_count = VariantType::Types::getTypesCount();
+            for (u32 i=0; i<types_count; ++i) {
                 funcs.funcs[i](std::forward<Args>(args)... );
             }
         }
@@ -110,8 +110,8 @@ namespace grynca {
         template <typename VariantType, typename Cond, typename...Args>
         static void callCond(Args&&... args) {
             static internal::FuncsTypes<TrueFunctor, FalseFunctor, Cond, VariantType, Args...> funcs;
-            uint32_t types_count = VariantType::Types::getTypesCount();
-            for (uint32_t i=0; i<types_count; ++i) {
+            u32 types_count = VariantType::Types::getTypesCount();
+            for (u32 i=0; i<types_count; ++i) {
                 funcs.funcs[i](std::forward<Args>(args)... );
             }
         }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(Base)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Werror")
 
 IF (WIN32)
     # for profiling
@@ -36,8 +36,6 @@ ENDIF()
             src/types/containers/Array.inl
             src/types/containers/SharedBuffer.h
             src/types/containers/SharedBuffer.inl
-            src/types/containers/SortedSet.h
-            src/types/containers/SortedSet.inl
             src/types/containers/HashMap.h
             src/types/containers/HashMap.inl
             src/types/containers/HashSet.h
@@ -69,7 +67,8 @@ ENDIF()
             src/types/VariantCaller.h
             src/types/Call.h
             src/functions/common.h
-            )
+            src/functions/defs.h
+            src/types/Mask.h)
 
 set(TEST_FILES
         test/main.cpp

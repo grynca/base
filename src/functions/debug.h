@@ -2,21 +2,16 @@
 #define DEBUG_H
 
 #include <iostream>
-#include "../types/BlockMeasure.h"
+#include <stdio.h>
 
-// Debug printing
-// usage:
-//      dout << "in foobar with x= " << x << " and y= " << y << '\n';
-//
-//  If the preprocessor replaces 'dout' with '0 && cout' note that << has higher precedence
-//  than && and short-circuit evaluation of && makes the whole line evaluate to 0. Since
-//  the 0 is not used the compiler generates no code at all for that line.
-#if !defined(NDEBUG)
-#   define dout std::cout
-#   define DEBUG_BUILD
-#   define PROFILE_BUILD
-#else
-#   define dout 0 && std::cout
+#define DEBUG_BUILD
+#if defined(NDEBUG)
+#   undef DEBUG_BUILD
+#endif
+
+#define PROFILE_BUILD
+#if defined(NPROFILE)
+#   undef PROFILE_BUILD
 #endif
 
 #ifdef _WIN32
@@ -34,7 +29,7 @@
     if (! (condition)) { \
         std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
                   << " line " << __LINE__ << ": " << (message); \
-        uint8_t* ptr = NULL; \
+        u8* ptr = NULL; \
         *ptr = 1; \
     }
 #   define ASSERT(condition) ASSERT_M(condition, "")
@@ -46,11 +41,23 @@
 #       include <csignal>
 #       define DEBUG_BREAK() raise(SIGTRAP)
 #   endif
+#   define dout std::cout
 #else
 #   define ASSERT_M(condition, message)
 #   define ASSERT(condition) ASSERT_M(condition, "")
 #   define NEVER_GET_HERE(msg)
 #   define DEBUG_BREAK()
+#   define dout 0 && std::cout
+#endif
+
+#ifdef PROFILE_BUILD
+#   define PROFILE_MEASURE_FROM(m) m.from()
+#   define PROFILE_MEASURE_TO(m) m.to()
+#   define DEF_MEASURE(m) Measure m
+#else
+#   define PROFILE_MEASURE_FROM(m)
+#   define PROFILE_MEASURE_TO(m)
+#   define DEF_MEASURE(m)
 #endif
 
 #endif // DEBUG_H

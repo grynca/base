@@ -13,7 +13,15 @@ namespace grynca {
 
     template <typename T>
     inline std::string string_utils::toString(const T& t) {
-        return std::to_string(t);
+        std::ostringstream s;
+        s << t;
+        return s.str();
+    }
+
+    inline std::string string_utils::printPerc(f32 p) {
+        if (fabs(p) < 0.00000001)
+            return 0;
+        return toString(((u32)(p*100000))/1000.0f);
     }
 
     inline std::string string_utils::ltrim(const std::string& s) {

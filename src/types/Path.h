@@ -30,8 +30,8 @@ namespace grynca {
 
 // file manipulation
         bool exists()const;
-        bool loadDataFromFile(fast_vector<uint8_t>& data_out);
-        bool saveDataToFile(const fast_vector<uint8_t>& data);
+        bool loadDataFromFile(fast_vector<u8>& data_out);
+        bool saveDataToFile(const fast_vector<u8>& data);
         bool loadStringFromFile(std::string& path_out);
         bool saveStringToFile(const std::string& str);
         bool clearFile();

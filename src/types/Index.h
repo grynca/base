@@ -1,69 +1,68 @@
 #ifndef INDEX_H
 #define INDEX_H
-#include <stdint.h>
+#include "../functions/defs.h"
 #include <iostream>
-#include <stdint.h>
 
 namespace grynca {
 
-    static constexpr uint32_t InvalidId() {
-        return uint32_t(-1);
+    static constexpr u32 InvalidId() {
+        return u32(-1);
     }
 
     class Index {
     public:
         struct Hasher {
-            uint64_t operator()(const Index& vi) const;
+            u64 operator()(const Index& vi) const;
         };
 
         Index()
-         : uid_(uint64_t(-1)) {}
-        Index(uint32_t i, uint16_t v)
-         : version_(v), index_(i), unused_(0) {}
+         : uid_(u64(-1)) {}
+        Index(u32 i, u16 v)
+         : version_(v), unused_(0), index_(i) {}
 
         bool isValid()const;
         static Index Invalid() { return Index(); }
 
-        uint16_t getVersion()const { return version_; }
-        uint16_t getUnused()const { return unused_; }
-        uint32_t getIndex()const { return index_; }
-        uint64_t getUID()const { return uid_; }
+        u16 getVersion()const { return version_; }
+        u16 getUnused()const { return unused_; }
+        u32 getIndex()const { return index_; }
+        u64 getUID()const { return uid_; }
 
-        void setIndex(uint32_t id) { index_ = id; }
-        void setUnused(uint16_t u) { unused_ = u; }
-        void setVersion(uint16_t v) { version_ = v; }
-        void setUID(uint64_t uid) { uid_ = uid; }
+        void setIndex(u32 id) { index_ = id; }
+        void setUnused(u16 u) { unused_ = u; }
+        void setVersion(u16 v) { version_ = v; }
+        void setUID(u64 uid) { uid_ = uid; }
     protected:
 
         union {
             struct {
-                uint16_t version_;
-                uint16_t unused_;
-                uint32_t index_;
+                u16 version_;
+                u16 unused_;
+                u32 index_;
             };
-            uint64_t uid_;
+            u64 uid_;
         };
     };
 
-    static std::ostream& operator<<(std::ostream& os, const Index & ar) {
+    static inline std::ostream& operator<<(std::ostream& os, const Index & ar) {
         os << "VI[" << ar.getIndex() << ", " << ar.getVersion()<< "]";
         return os;
     }
 
-    static bool operator==(const Index& i1, const Index& i2) {
+    static inline bool operator==(const Index& i1, const Index& i2) {
         return i1.getUID() == i2.getUID();
     }
 
-    static bool operator!=(const Index& i1, const Index& i2) {
+    static inline bool operator!=(const Index& i1, const Index& i2) {
         return i1.getUID() != i2.getUID();
     }
 
-    inline uint64_t Index::Hasher::operator()(const Index& vi) const {
+    inline u64 Index::Hasher::operator()(const Index& vi) const {
         return vi.uid_;
     }
 
     inline bool Index::isValid()const {
-        return uid_ != uint64_t(-1);
+        return uid_ != u64(-1);
     }
 }
 

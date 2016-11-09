@@ -10,12 +10,10 @@ using namespace grynca;
 #include "test_types.h"
 #include "test_enum.h"
 
-
 int main(int argc, char** argv) {
-    //srand(time(NULL));
+    srand(time(NULL));
 
     MyDomain::init();
-
     test_types::test();
 
     test_variants::testVariants();
@@ -24,7 +22,6 @@ int main(int argc, char** argv) {
     test_containers::testArray();
     test_containers::testTightArray();
     test_containers::testMultiPool();
-    test_containers::testSortedSet();
     test_containers::testVirtualVector();
 
     test_type_if::test();

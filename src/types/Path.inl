@@ -61,11 +61,11 @@ namespace grynca {
         string_utils::tokenize(rel, relative_dirs, "/");
 
         // Get the shortest of the two paths
-        int length = absolute_dirs.size() < relative_dirs.size() ? absolute_dirs.size() : relative_dirs.size();
+        u32 length = absolute_dirs.size() < relative_dirs.size() ? absolute_dirs.size() : relative_dirs.size();
 
         // Use to determine where in the loop we exited
         int last_common_root = -1;
-        int index;
+        u32 index;
         std::string relative;
 
         // Find common root
@@ -84,14 +84,14 @@ namespace grynca {
         }
 
         // Add on the ..
-        for (index = last_common_root + 1; index < relative_dirs.size(); index++)
+        for (index = u32(last_common_root + 1); index < relative_dirs.size(); index++)
         {
             if (relative_dirs[index].size() > 0)
                 relative += "../";
         }
 
         // Add on the folders
-        for (index = last_common_root + 1; index < absolute_dirs.size() - 1; index++)
+        for (index = u32(last_common_root + 1); index < absolute_dirs.size() - 1; index++)
         {
             relative += absolute_dirs[index];
             relative += "/";
@@ -109,7 +109,7 @@ namespace grynca {
         struct stat buffer;
         return (stat (path_.c_str(), &buffer) == 0);
     }
-    inline bool Path::loadDataFromFile(fast_vector<uint8_t>& data_out) {
+    inline bool Path::loadDataFromFile(fast_vector<u8>& data_out) {
         std::ifstream f(path_, std::ios::binary);
         if (!f.is_open())
             return false;
@@ -126,7 +126,7 @@ namespace grynca {
         return true;
     }
 
-    inline bool Path::saveDataToFile(const fast_vector<uint8_t>& data) {
+    inline bool Path::saveDataToFile(const fast_vector<u8>& data) {
         std::ofstream f(path_, std::ios::binary);
         if (!f.is_open())
             return false;

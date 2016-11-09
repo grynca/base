@@ -18,6 +18,9 @@ namespace grynca {
         template <typename T>
         static std::string toString(const T& t);
 
+        // prints 0.22 to 22% with 3 decimals
+        static std::string printPerc(f32 p);
+
         // trim whitespace from start
         static std::string ltrim(const std::string& s);
         // trim whitespace from end

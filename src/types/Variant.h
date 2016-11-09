@@ -61,7 +61,7 @@ namespace grynca {
         using data_t = typename std::aligned_storage<data_size, data_align>::type;
 
         data_t data_;
-        int32_t curr_pos_;
+        i32 curr_pos_;
     };
 
     // Variant from TypesPack

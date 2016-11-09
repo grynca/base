@@ -18,7 +18,7 @@ namespace grynca {
     ATPL
     template <typename ...ConstructionArgs>
     inline Index ATYPE::add(ConstructionArgs&&... args) {
-        uint8_t* new_item_out;
+        u8* new_item_out;
         Index id = pool_.add(new_item_out);
         new(new_item_out) T(std::forward<ConstructionArgs>(args)...);
         return id;
@@ -31,7 +31,7 @@ namespace grynca {
     }
 
     ATPL
-    inline void ATYPE::removeAtPos(uint32_t pos) {
+    inline void ATYPE::removeAtPos(u32 pos) {
         pool_.removeAtPos(pos, Type<T>::destroy);
     }
 
@@ -48,12 +48,12 @@ namespace grynca {
     }
 
     ATPL
-    inline T* ATYPE::getAtPos(uint32_t pos) {
+    inline T* ATYPE::getAtPos(u32 pos) {
         return (T*)pool_.getAtPos(pos);
     }
 
     ATPL
-    inline Index ATYPE::getIndexForPos(uint32_t pos) {
+    inline Index ATYPE::getIndexForPos(u32 pos) {
         return pool_.getIndexForPos(pos);
     }
 
@@ -63,7 +63,7 @@ namespace grynca {
     }
 
     ATPL
-    inline const T* ATYPE::getAtPos(uint32_t pos)const {
+    inline const T* ATYPE::getAtPos(u32 pos)const {
         return (T*)pool_.getAtPos(pos);
     }
 
@@ -78,7 +78,7 @@ namespace grynca {
     }
 
     ATPL
-    inline uint32_t ATYPE::size()const {
+    inline u32 ATYPE::size()const {
         return pool_.size();
     }
 

@@ -14,7 +14,7 @@ namespace grynca {
     {}
 
     HS_TPL
-    inline HS_TYPE::HashSet(uint32_t initial_size)
+    inline HS_TYPE::HashSet(u32 initial_size)
      : items_count_(0), modulo_mask_(initial_size -1), initial_size_(initial_size)
     {
         ASSERT(isPowerOfTwo_(initial_size));
@@ -28,7 +28,7 @@ namespace grynca {
     }
 
     HS_TPL
-    inline void HS_TYPE::reserve(uint32_t size) {
+    inline void HS_TYPE::reserve(u32 size) {
         hash_table_.reserve(size);
         keys_.reserve(size);
         next_.reserve(size);
@@ -42,10 +42,10 @@ namespace grynca {
     }
 
     HS_TPL
-    inline uint32_t HS_TYPE::addItem(const KeyType& key) {
-        uint32_t inner_hash = hash_(key);
-        uint32_t hash = inner_hash & modulo_mask_;
-        uint32_t id = findInternal_(key, hash);
+    inline u32 HS_TYPE::addItem(const KeyType& key) {
+        u32 inner_hash = hash_(key);
+        u32 hash = inner_hash & modulo_mask_;
+        u32 id = findInternal_(key, hash);
         if (id != InvalidId())
             // already there
             return id;
@@ -54,10 +54,10 @@ namespace grynca {
     }
 
     HS_TPL
-    inline uint32_t HS_TYPE::addItem(const KeyType& key, bool& was_added) {
-        uint32_t inner_hash = hash_(key);
-        uint32_t hash = inner_hash & modulo_mask_;
-        uint32_t id = findInternal_(key, hash);
+    inline u32 HS_TYPE::addItem(const KeyType& key, bool& was_added) {
+        u32 inner_hash = hash_(key);
+        u32 hash = inner_hash & modulo_mask_;
+        u32 id = findInternal_(key, hash);
         if (id != InvalidId()) {
             // already there
             was_added = false;
@@ -69,24 +69,24 @@ namespace grynca {
     }
 
     HS_TPL
-    inline uint32_t HS_TYPE::findItem(const KeyType& key) {
+    inline u32 HS_TYPE::findItem(const KeyType& key) {
         return findInternal_(key, hashKey_(key));
     }
 
     HS_TPL
     inline bool HS_TYPE::removeItem(const KeyType& key) {
-        uint32_t hash = hashKey_(key);
-        uint32_t id = findInternal_(key, hash);
+        u32 hash = hashKey_(key);
+        u32 id = findInternal_(key, hash);
         if (id == InvalidId())
             return false;
 
         ASSERT(cmp_(key, (const KeyType&)keys_[id]));
 
         removeLink_(id, hash);
-        uint32_t last_item_id = items_count_-1;
+        u32 last_item_id = items_count_-1;
         if (last_item_id != id) {
             // remove last pair from its list
-            uint32_t last_hash = hashKey_(keys_[last_item_id]);
+            u32 last_hash = hashKey_(keys_[last_item_id]);
             removeLink_(last_item_id, last_hash);
 
             // move to freed slot and add its link to list
@@ -100,15 +100,15 @@ namespace grynca {
     }
 
     HS_TPL
-    inline bool HS_TYPE::isPowerOfTwo_(uint32_t x) {
+    inline bool HS_TYPE::isPowerOfTwo_(u32 x) {
         while (((x % 2) == 0) && x > 1)
             x /= 2;
         return (x == 1);
     }
 
     HS_TPL
-    inline uint32_t HS_TYPE::findInternal_(const KeyType& key, uint32_t hash) {
-        uint32_t id = hash_table_[hash];
+    inline u32 HS_TYPE::findInternal_(const KeyType& key, u32 hash) {
+        u32 id = hash_table_[hash];
         while (id != InvalidId()) {
             const KeyType& k2 = keys_[id];
             if (cmp_(key, k2)) {
@@ -120,10 +120,10 @@ namespace grynca {
     }
 
     HS_TPL
-    inline void HS_TYPE::removeLink_(uint32_t id, uint32_t hash) {
+    inline void HS_TYPE::removeLink_(u32 id, u32 hash) {
     // remove from linked list and stitch
-        uint32_t prev_offset = InvalidId();
-        uint32_t offset = hash_table_[hash];
+        u32 prev_offset = InvalidId();
+        u32 offset = hash_table_[hash];
 
         while (offset != id) {
             prev_offset = offset;
@@ -144,14 +144,14 @@ namespace grynca {
     }
 
     HS_TPL
-    inline uint32_t HS_TYPE::hashKey_(const KeyType& key) {
+    inline u32 HS_TYPE::hashKey_(const KeyType& key) {
         return hash_(key) & modulo_mask_;
     }
 
     HS_TPL
-    inline uint32_t HS_TYPE::addItemInner_(uint32_t inner_hash, uint32_t hash, const KeyType& key) {
+    inline u32 HS_TYPE::addItemInner_(u32 inner_hash, u32 hash, const KeyType& key) {
         if (items_count_ >= hash_table_.size()) {
-            uint32_t new_size = calcNextPowerOfTwo(items_count_+1);
+            u32 new_size = calcNextPowerOfTwo(items_count_+1);
             modulo_mask_ = new_size - 1;
             hash_table_.resize(new_size);
             std::fill(hash_table_.begin(), hash_table_.end(), InvalidId());
@@ -162,8 +162,8 @@ namespace grynca {
             next_.resize(new_size);
 #endif
             // recalc hashes for keys
-            for (uint32_t i=0; i<items_count_; ++i) {
-                uint32_t new_hash = hashKey_(keys_[i]);
+            for (u32 i=0; i<items_count_; ++i) {
+                u32 new_hash = hashKey_(keys_[i]);
                 next_[i] = hash_table_[new_hash];
                 hash_table_[new_hash] = i;
             }
@@ -171,7 +171,7 @@ namespace grynca {
             hash = inner_hash & modulo_mask_; // recompute hash for added item with new modulo
         }
 
-        uint32_t id = items_count_;
+        u32 id = items_count_;
         keys_[id] = key;
         next_[id] = hash_table_[hash];
         hash_table_[hash] = id;

@@ -23,21 +23,21 @@ namespace grynca {
         Index add(ConstructionArgs&&... args);
 
         void remove(Index index);
-        void removeAtPos(uint32_t pos);
+        void removeAtPos(u32 pos);
         void reserve(size_t count);
 
         T& get(Index index);
-        T* getAtPos(uint32_t pos);      // good for looping through 0-size
-        Index getIndexForPos(uint32_t pos);      // get index for data at pos
+        T* getAtPos(u32 pos);      // good for looping through 0-size
+        Index getIndexForPos(u32 pos);      // get index for data at pos
 
         const T& get(Index index)const;
-        const T* getAtPos(uint32_t pos)const;
+        const T* getAtPos(u32 pos)const;
 
         bool isValidIndex(Index index)const;
 
         T* getData();
 
-        uint32_t size()const;
+        u32 size()const;
         bool empty()const;
 
         PoolType& getPool() { return pool_; }
