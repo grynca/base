@@ -29,7 +29,7 @@
     if (! (condition)) { \
         std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
                   << " line " << __LINE__ << ": " << (message); \
-        u8* ptr = NULL; \
+        uint8_t* ptr = NULL; \
         *ptr = 1; \
     }
 #   define ASSERT(condition) ASSERT_M(condition, "")
@@ -41,13 +41,13 @@
 #       include <csignal>
 #       define DEBUG_BREAK() raise(SIGTRAP)
 #   endif
-#   define dout std::cout
+#   define dout(x) std::cout << x
 #else
 #   define ASSERT_M(condition, message)
 #   define ASSERT(condition) ASSERT_M(condition, "")
 #   define NEVER_GET_HERE(msg)
 #   define DEBUG_BREAK()
-#   define dout 0 && std::cout
+#   define dout(x)
 #endif
 
 #ifdef PROFILE_BUILD

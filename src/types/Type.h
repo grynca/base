@@ -37,7 +37,7 @@ namespace grynca {
     class Type : public InternalTypes<Domain>
     {
     public:
-        template <typename BaseType, typename... ConstructionArgs>
+        template <typename BaseType = T, typename... ConstructionArgs>
         static BaseType* create(void* place, ConstructionArgs&&... args);
         static void defConstruct(void* place);
         static void destroy(void* place);

@@ -40,6 +40,7 @@ ENDIF()
             src/types/containers/HashMap.inl
             src/types/containers/HashSet.h
             src/types/containers/HashSet.inl
+            src/types/containers/Items.h
             src/types/BlockMeasure.h
             src/types/RefCount.h
             src/types/CommonPtr.h
@@ -68,6 +69,7 @@ ENDIF()
             src/types/Call.h
             src/functions/common.h
             src/functions/defs.h
+            src/functions/undefs.h
             src/types/Mask.h)
 
 set(TEST_FILES

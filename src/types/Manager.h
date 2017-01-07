@@ -33,6 +33,8 @@ namespace grynca {
     template <typename T, typename IT = Index>
     class ManagedItem {
     public:
+        void init() {}
+
         typedef T ManagerType;
         typedef IT IndexType;
     protected:
@@ -48,6 +50,8 @@ namespace grynca {
          : manager_(NULL), ref_count_(0) {}
 
         int getRefCount() { return ref_count_.get(); }
+        void ref() { ref_count_.ref(); }
+        bool unref() { return ref_count_.unref(); }
         IndexType getId()const { return id_; }
         ManagerType& getManager()const { return *manager_; }
     };
@@ -70,8 +74,16 @@ namespace grynca {
         ItemType& addItem(ConstructionArgs&&... args);
         ItemType& getItem(IndexType id);
         const ItemType& getItem(IndexType id)const;
+
         ItemType* getItemAtPos(u32 pos);
         const ItemType* getItemAtPos(u32 pos)const;
+
+        //use when you are sure that pos is not hole
+        ItemType& getItemAtPos2(u32 pos);
+        const ItemType& getItemAtPos2(u32 pos)const;
+        Index getIndexForPos(u32 pos);
+
+        u32 getItemPos(Index index)const;
         void removeItem(IndexType id);
         void reserveSpaceForItems(size_t count);
 
@@ -102,6 +114,8 @@ namespace grynca {
         BaseType* getById(IndexType id);
         const BaseType* getById(IndexType id)const;
 
+        const TypeInfo& getTypeInfo(IndexType id)const;
+
         u32 getSize();
     private:
         fast_vector<BaseType*> items_;      // items are pointers -> non-volatile
@@ -115,13 +129,21 @@ namespace grynca {
         ManagedItemRef();
         ManagedItemRef(ManagerType& manager, IndexType index);
         ManagedItemRef(const ManagedItemRef<ItemType>& ref);
+        ManagedItemRef(ManagedItemRef<ItemType>&& ref);
         ManagedItemRef(ItemType& item);
 
         ManagedItemRef<ItemType>& operator =(const ManagedItemRef<ItemType>& ref);
+        ManagedItemRef<ItemType>& operator =(ManagedItemRef<ItemType>&& ref);
 
         ~ManagedItemRef();
 
         ItemType& get()const;
+
+        IndexType getItemId()const;
+        ManagerType& getManager()const;
+
+        ItemType* operator->() { return &get(); }
+        const ItemType* operator->()const { return &get(); }
 
     protected:
         void unref_();

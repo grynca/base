@@ -14,4 +14,6 @@
 #define f32 float
 #define f64 double
 
+#undef UNDEFS_H
+
 #endif //DEFS_H

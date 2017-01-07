@@ -1,6 +1,7 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include "functions/defs.h"
 #include "functions/debug.h"
 #include "functions/meta.h"
 #include "functions/string_utils.h"
@@ -18,6 +19,7 @@
 #include "types/containers/HashMap.h"
 #include "types/containers/HashSet.h"
 #include "types/containers/MultiPool.h"
+#include "types/containers/Items.h"
 #include "types/CommonPtr.h"
 #include "types/Exception.h"
 #include "types/RefCommonPtr.h"

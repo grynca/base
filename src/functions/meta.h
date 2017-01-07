@@ -5,11 +5,22 @@
 #include <type_traits>
 #include "../types/Mask.h"
 
+#define kilobytes(n) u32(1024*(n))
+#define megabytes(n) (1024*kilobytes(n))
+#define gigabytes(n) (1024*megabytes(n))
+
+#define ONES(from, to) (((1<<(to-from+1))-1)<<from)
+#define ZEROS(from, to) (~ONES(from, to))
+
 #define GET_BIT(num, b_id) (bool)(((num)>>(b_id))&1)
-#define SET_BIT(num, b_id, val) (decltype(num))((num)|(1<<(b_id)))
+#define SET_BIT(num, b_id) (decltype(num))((num)|(1<<(b_id)))
 #define CLEAR_BIT(num, b_id) (decltype(num))((num)&~(1<<(b_id)))
 #define TGL_BIT(num, b_id) (decltype(num))((num)^(1<<(b_id)))
 #define SET_BITV(num, b_id, val)  (decltype(num))((num)^((-((int)(bool)val)^(num))&(1<<(b_id))))
+#define GET_BITS(num, bit_from, bits_cnt)  ((num&ONES((bit_from), bit_from+bits_cnt-1))>>(bit_from))
+#define SET_BITS(num, bit_from, bits_cnt, val) ((num&ZEROS((bit_from), bit_from+bits_cnt-1)) | (val << (bit_from))); \
+                                                ASSERT( val < (1<<(bits_cnt)) )
+
 
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(*array))
 

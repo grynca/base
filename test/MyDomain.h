@@ -47,7 +47,7 @@ public:
         fast_vector<MyStuffVariant> rvar;
         rvar.reserve(n);
         for (size_t i=0; i<n; ++i) {
-            rvar.push_back();
+            rvar.push_back(MyStuffVariant());
             switch (rand()%3) {
                 case 0:
                     rvar.back().set<MyStuff>();

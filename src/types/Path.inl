@@ -226,18 +226,37 @@ namespace grynca {
         return p.substr(found+1);
     }
 
-    inline std::string Path::getDirpath()const {
+    inline std::string Path::getFilenameWOExtension()const {
+        std::string p = path_;
+        if (p[p.size()-1] == '/' || p[p.size()-1] == '\\')
+            p.pop_back();
+        size_t slash_pos = p.find_last_of("/\\");
+        size_t dot_pos = path_.find_last_of('.');
+
+        if (dot_pos == std::string::npos) {
+            if (slash_pos == std::string::npos)
+                return p;
+            return p.substr(slash_pos+1);
+        }
+        else if (slash_pos == std::string::npos) {
+            return p.substr(0, dot_pos);
+        }
+        else if (slash_pos>dot_pos) {
+        // dot must be after last slash
+            return p.substr(slash_pos + 1);
+        }
+
+        return p.substr(slash_pos+1, dot_pos-slash_pos-1);
+    }
+
+    inline DirPath Path::getDirpath()const {
         std::string p = path_;
         if (p[p.size()-1] == '/' || p[p.size()-1] == '\\')
             p.pop_back();
         size_t found = p.find_last_of("/\\");
         if (found == std::string::npos)
             return p;
-        return p.substr(0,found);
-    }
-
-    inline void Path::listDirs(fast_vector<Path>& dirsOut, bool dive /*= false*/) {
-        listDirsInner_(path_, dirsOut, dive);
+        return DirPath(p.substr(0,found));
     }
 
     inline std::string Path::normalize_(const std::string& path) {
@@ -251,11 +270,29 @@ namespace grynca {
         return p;
     }
 
-    inline FileLister Path::listFiles(const fast_vector<std::string>& extensions, bool dive /*= false*/) {
+    inline DirPath::DirPath(const char* path)
+     : Path(path)
+    {
+        if (path_.back() != '/')
+            path_ += '/';
+    }
+
+    inline DirPath::DirPath(const std::string& path)
+     : Path(path)
+    {
+        if (path_.back() != '/')
+            path_ += '/';
+    }
+
+    inline void DirPath::listDirs(fast_vector<Path>& dirsOut, bool dive /*= false*/) {
+        listDirsInner_(path_, dirsOut, dive);
+    }
+
+    inline FileLister DirPath::listFiles(const fast_vector<std::string>& extensions, bool dive /*= false*/) {
         return FileLister(*this, extensions, dive);
     }
 
-    inline void Path::listDirsInner_(const Path& dir, fast_vector<Path>& dirs_out, bool dive) {
+    inline void DirPath::listDirsInner_(const Path& dir, fast_vector<Path>& dirs_out, bool dive) {
         DIR *d = opendir(dir.getPath().c_str());
         DIR *d_inner;
         struct dirent *dirp;
@@ -270,7 +307,7 @@ namespace grynca {
                 continue;
             d_inner = opendir( path.c_str() );
             if (d_inner)
-            // is directory
+                // is directory
             {
                 if (dive)
                     // recurse into it and find leafs
@@ -297,11 +334,21 @@ namespace grynca {
 
 
     inline Path operator+(const Path& p1, const std::string& s) {
-        return Path(p1.path_ + "/" + s);
+        return Path(p1.path_ + s);
     }
 
     inline std::ostream& operator << (std::ostream& os, Path& p) {
         os << p.path_;
         return os;
+    }
+
+    inline Path operator+(const DirPath& p1, const std::string& s) {
+        return Path(p1.path_ + s);
+    }
+
+    inline DirPath operator+(const DirPath& p1, const DirPath& p2) {
+        DirPath dp;
+        dp.path_ = p1.path_ + p2.path_;
+        return dp;
     }
 }

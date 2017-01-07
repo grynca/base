@@ -2,7 +2,7 @@
 #include "Path.h"
 
 namespace grynca {
-    inline FileLister::FileLister(const Path& dir_path, const fast_vector<std::string>& extensions, bool dive /*= false*/)
+    inline FileLister::FileLister(const DirPath& dir_path, const fast_vector<std::string>& extensions, bool dive /*= false*/)
         : _recursive(dive)
     {
         for (u32 i=0; i<extensions.size(); ++i) {
@@ -14,10 +14,9 @@ namespace grynca {
             std::transform(_extensions[i].begin(), _extensions[i].end(), _extensions[i].begin(), ::tolower);
 
         // open top lvl dir
-        std::string dirp = dir_path.getDirpath();
-        DIR* dir = opendir(dirp.c_str());
+        DIR* dir = opendir(dir_path.getPath().c_str());
         if (dir)
-            _dirs.push_back(Pair_{dir, dirp});
+            _dirs.push_back(Pair_{dir, dir_path.getPath()});
     }
 
     inline FileLister::~FileLister()
@@ -41,7 +40,7 @@ namespace grynca {
                 if (curr_item_name == "." || curr_item_name == "..")
                     continue;
 
-                Path p = Path(_dirs.back().path) + curr_item_name;
+                Path p = DirPath(_dirs.back().path) + curr_item_name;
 
                 DIR* dir = opendir(p.getPath().c_str());
                 if (dir)

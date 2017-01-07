@@ -20,8 +20,12 @@ namespace grynca {
 
     inline std::string string_utils::printPerc(f32 p) {
         if (fabs(p) < 0.00000001)
-            return 0;
+            return "0";
         return toString(((u32)(p*100000))/1000.0f);
+    }
+
+    inline std::string string_utils::spaces(u32 cnt) {
+        return std::string(cnt, ' ');
     }
 
     inline std::string string_utils::ltrim(const std::string& s) {

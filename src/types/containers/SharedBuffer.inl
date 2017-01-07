@@ -40,7 +40,7 @@ namespace grynca {
         if (ref_count_) {
             if (--*ref_count_ == 0) {
                 delete ref_count_;
-                delete data_;
+                delete[] data_;
             }
         }
     }

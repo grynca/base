@@ -12,13 +12,13 @@ namespace grynca {
         Exception() throw()
          : std::runtime_error("")
         {
-            dout << this->what() << std::endl;
+            dout(this->what() << std::endl);
             DEBUG_BREAK();
         }
         Exception(const std::string& msg) throw()
          : std::runtime_error(msg)
         {
-            dout << this->what() << std::endl;
+            dout(this->what() << std::endl);
             DEBUG_BREAK();
         }
     };

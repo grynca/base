@@ -21,6 +21,8 @@ namespace grynca {
         // prints 0.22 to 22% with 3 decimals
         static std::string printPerc(f32 p);
 
+        static std::string spaces(u32 cnt);
+
         // trim whitespace from start
         static std::string ltrim(const std::string& s);
         // trim whitespace from end

@@ -12,10 +12,13 @@
 #include "../../functions/defs.h"
 #include "../../functions/debug.h"
 
-namespace grynca {
-
+#ifdef DONT_USE_FAST_VECTOR
+#  include <vector>
+#  define fast_vector std::vector
+#else
 #define GROWING_FACTOR 1.5
 
+namespace grynca {
     template<typename T>
     class fast_vector {
     public:
@@ -236,7 +239,7 @@ namespace grynca {
        void resize(size_t n, const T &val = T()) {
           if (n > mSize) {
              if (n > mCapacity) {
-                _realloc_all(n);
+                _realloc_all(_get_new_capacity(capacity(), n));
              }
              for (size_t i=mSize; i<n; ++i) {
                 new (&mData[i]) T(val);
@@ -564,5 +567,13 @@ namespace grynca {
        a.swap(b);
     }
 }
+#undef GROWING_FACTOR
+#endif
+
+#define FAST_VECTOR_1D(T) fast_vector< T >
+#define FAST_VECTOR_2D(T) fast_vector< FAST_VECTOR_1D(T) >
+#define FAST_VECTOR_3D(T) fast_vector< FAST_VECTOR_2D(T) >
+#define FAST_VECTOR_4D(T) fast_vector< FAST_VECTOR_3D(T) >
+#define FAST_VECTOR_5D(T) fast_vector< FAST_VECTOR_4D(T) >
 
 #endif // FAST_VECTOR_H

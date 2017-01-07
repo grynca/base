@@ -1,21 +1,38 @@
 #include "Pool.h"
 
+#define GROWING_FACTOR 1.5f
+#define FREE_BITMASK (1<<15)
+
 namespace grynca {
 
     inline Pool::Pool(u32 item_size)
-     : item_size_(item_size)
-    {}
+     : item_size_(item_size), first_free_pos_(InvalidId())
+    {
+        // when item is not used its data is used for interwined doubly linked free list
+        ASSERT(item_size > sizeof(u32));
+    }
 
     inline Index Pool::add(u8*& new_item_out) {
         u32 slot_id;
-        if (!free_slots_.empty()) {
-            slot_id = free_slots_.back();
-            free_slots_.pop_back();
+        if (first_free_pos_ != InvalidId()) {
+            slot_id = first_free_pos_;
+            first_free_pos_ = getNextFree_(first_free_pos_);
         }
         else {
+            // resize
             slot_id = size();
-            data_.resize((slot_id+1)*item_size_);
-            versions_.resize(slot_id+1, (1<<15));
+
+            u32 new_items_cnt = u32(std::ceil(GROWING_FACTOR*(slot_id+1)));
+
+            data_.resize(new_items_cnt*item_size_);
+            versions_.resize(new_items_cnt, FREE_BITMASK);
+
+            // interwine free ids list to new slots
+            for (u32 i=slot_id+1; i<(new_items_cnt-1); ++i) {
+                setNextFree_(i, i+1);
+            }
+            setNextFree_(new_items_cnt-1, first_free_pos_);
+            first_free_pos_ = slot_id+1;
         }
 
         new_item_out = &data_[slot_id*item_size_];
@@ -25,7 +42,8 @@ namespace grynca {
 
     inline void Pool::removeAtPos(u32 pos) {
         ASSERT(!isFree_(pos));
-        free_slots_.push_back(pos);
+        setNextFree_(pos, first_free_pos_);
+        first_free_pos_ = pos;
         ++versions_[pos];
         setFree_(pos);
     }
@@ -33,29 +51,38 @@ namespace grynca {
     inline void Pool::removeAtPos(u32 pos, DestroyFunc destructor) {
         ASSERT(!isFree_(pos));
         destructor(getAtPos(pos));
-        free_slots_.push_back(pos);
+        setNextFree_(pos, first_free_pos_);
+        first_free_pos_ = pos;
         ++versions_[pos];
         setFree_(pos);
     }
 
     inline void Pool::remove(Index index) {
         ASSERT(isValidIndex(index));
-        free_slots_.push_back(index.getIndex());
-        ++versions_[index.getIndex()];
-        setFree_(index.getIndex());
+        removeAtPos(index.getIndex());
     }
 
     inline void Pool::remove(Index index, DestroyFunc destructor) {
-        // call destructor on item data
-        destructor(get(index));
-        free_slots_.push_back(index.getIndex());
-        ++versions_[index.getIndex()];
-        setFree_(index.getIndex());
+        ASSERT(isValidIndex(index));
+        removeAtPos(index.getIndex(), destructor);
     }
 
     inline void Pool::reserve(size_t count) {
         data_.reserve(item_size_*count);
         versions_.reserve(count);
+    }
+
+    inline u32 Pool::getItemPos(const u8* item)const {
+        u32 ptr_dist = item-&data_[0];
+        ASSERT(ptr_dist%item_size_ == 0);
+        u32 pos = ptr_dist/item_size_;
+        ASSERT(i32(pos)>=0 && pos < size());
+        return pos;
+    }
+
+    inline u32 Pool::getItemPos(Index index)const {
+        ASSERT(isValidIndex(index));
+        return index.getIndex();
     }
 
     inline u8* Pool::get(Index index) {
@@ -77,6 +104,16 @@ namespace grynca {
     inline const u8* Pool::getAtPos(u32 pos)const {
         if (isFree_(pos))
             return NULL;
+        return &data_[pos*item_size_];
+    }
+
+    inline u8* Pool::getAtPos2(u32 pos) {
+        ASSERT(!isFree_(pos));
+        return &data_[pos*item_size_];
+    }
+
+    inline const u8* Pool::getAtPos2(u32 pos)const {
+        ASSERT(!isFree_(pos));
         return &data_[pos*item_size_];
     }
 
@@ -104,8 +141,18 @@ namespace grynca {
         return versions_.size();
     }
 
-    inline u32 Pool::occupiedSize()const {
-        return size()-free_slots_.size();
+    inline u32 Pool::calcFreeSlotsCount()const {
+        u32 next_free = first_free_pos_;
+        u32 free_cnt = 0;
+        while (next_free != InvalidId()) {
+            free_cnt++;
+            next_free = getNextFree_(next_free);
+        }
+        return free_cnt;
+    }
+
+    inline u32 Pool::calcOccupiedSize()const {
+        return size()-calcFreeSlotsCount();
     }
 
     inline bool Pool::empty()const {
@@ -127,24 +174,33 @@ namespace grynca {
         clear();
     }
 
-    inline f32 Pool::getMemoryWaste() {
-        return ((f32)free_slots_.size())/size();
+    inline f32 Pool::calcMemoryWaste() {
+        return f32(calcFreeSlotsCount())/size();
     }
 
     inline bool Pool::isFree_(u32 pos)const {
         ASSERT(pos < versions_.size());
-        return (versions_[pos] & u16(1<<15)) != 0;
+        return (versions_[pos] & u16(FREE_BITMASK)) != 0;
     }
 
     inline void Pool::setFree_(u32 pos) {
         ASSERT(pos < versions_.size());
-        versions_[pos] |= 1<<15;
+        versions_[pos] |= FREE_BITMASK;
     }
 
     inline void Pool::unsetFree_(u32 pos) {
         ASSERT(pos < versions_.size());
-        versions_[pos] &= ~(1<<15);
+        versions_[pos] &= ~FREE_BITMASK;
     }
 
+    inline u32 Pool::getNextFree_(u32 pos)const {
+        return *(u32*)&data_[pos*item_size_];
+    }
 
+    inline void Pool::setNextFree_(u32 pos, u32 next_free_pos) {
+        *(u32*)&data_[pos*item_size_] = next_free_pos;
+    }
 }
+
+#undef FREE_BITMASK
+#undef GROWING_FACTOR

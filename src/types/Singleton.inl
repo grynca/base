@@ -10,6 +10,13 @@ namespace grynca {
     }
 
     template <typename T>
+    template <typename DerType, typename... ConstructionArgs>
+    inline DerType& Singleton<T>::createAs(ConstructionArgs&&... args) {
+        //static
+        return *(DerType*)(instance_() = new DerType(std::forward<ConstructionArgs>(args)...));
+    }
+
+    template <typename T>
     inline T& Singleton<T>::get() {
     //static
         ASSERT_M(instance_(), "Not created.");

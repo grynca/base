@@ -12,6 +12,7 @@ namespace grynca {
 
     // fw
     class FileLister;
+    class DirPath;
 
     class Path {
         friend Path operator+(const Path& p1, const std::string& s);
@@ -43,16 +44,29 @@ namespace grynca {
 // C:/data/obr.jpg , filename == obr.jpg, dirpath == C:/data/
         const std::string& getPath()const;
         std::string getFilename()const;
-        std::string getDirpath()const;
+        std::string getFilenameWOExtension()const;
+        DirPath getDirpath()const;
+    protected:
+        std::string normalize_(const std::string& path);
+
+        std::string path_;
+    };
+
+    class DirPath : public Path
+    {
+        friend Path operator+(const DirPath& p1, const std::string& s);
+        friend DirPath operator+(const DirPath& p1, const DirPath& p2);
+    public:
+        DirPath(const char* path);
+        DirPath(const std::string& path);
 
         void listDirs(fast_vector<Path>& dirsOut, bool dive = false);
         FileLister listFiles(const fast_vector<std::string>& extensions, bool dive = false);
     protected:
-        std::string normalize_(const std::string& path);
+        DirPath() {}
         void listDirsInner_(const Path& dir, fast_vector<Path>& dirs_out, bool dive);
-
-        std::string path_;
     };
+
 }
 
 #include "Path.inl"

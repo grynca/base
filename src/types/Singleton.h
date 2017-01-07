@@ -10,6 +10,10 @@ namespace grynca {
     public:
         template <typename... ConstructionArgs>
         static T& create(ConstructionArgs&&... args);
+
+        template <typename DerType, typename... ConstructionArgs>
+        static DerType& createAs(ConstructionArgs&&... args);
+
         static T& get();
         static T* getptr();
     protected:

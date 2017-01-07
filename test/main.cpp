@@ -11,8 +11,8 @@ using namespace grynca;
 #include "test_enum.h"
 
 int main(int argc, char** argv) {
-    srand(time(NULL));
 
+    srand(time(NULL));
     MyDomain::init();
     test_types::test();
 
