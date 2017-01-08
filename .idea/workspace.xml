@@ -13,44 +13,69 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2c82014f-4e98-4835-a773-e5895247d40a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/functions/undefs.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/types/containers/Items.h" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/Emscripten/main.html" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/Emscripten/main.html.mem" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/Emscripten/main.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/build/RelWithDebInfo/.empty" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/Base.iml" afterPath="$PROJECT_DIR$/.idea/Base.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/base.h" afterPath="$PROJECT_DIR$/include/base.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/common.h" afterPath="$PROJECT_DIR$/include/functions/common.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/debug.h" afterPath="$PROJECT_DIR$/include/functions/debug.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/defs.h" afterPath="$PROJECT_DIR$/include/functions/defs.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/meta.h" afterPath="$PROJECT_DIR$/include/functions/meta.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/random.h" afterPath="$PROJECT_DIR$/include/functions/random.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/sort_utils.h" afterPath="$PROJECT_DIR$/include/functions/sort_utils.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/sort_utils.inl" afterPath="$PROJECT_DIR$/include/functions/sort_utils.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/string_utils.h" afterPath="$PROJECT_DIR$/include/functions/string_utils.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/string_utils.inl" afterPath="$PROJECT_DIR$/include/functions/string_utils.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/functions/undefs.h" afterPath="$PROJECT_DIR$/include/functions/undefs.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/BlockMeasure.h" afterPath="$PROJECT_DIR$/include/types/BlockMeasure.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Call.h" afterPath="$PROJECT_DIR$/include/types/Call.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/CommonPtr.h" afterPath="$PROJECT_DIR$/include/types/CommonPtr.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Config.h" afterPath="$PROJECT_DIR$/include/types/Config.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Config.inl" afterPath="$PROJECT_DIR$/include/types/Config.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Exception.h" afterPath="$PROJECT_DIR$/include/types/Exception.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/FileLister.h" afterPath="$PROJECT_DIR$/include/types/FileLister.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/FileLister.inl" afterPath="$PROJECT_DIR$/include/types/FileLister.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Index.h" afterPath="$PROJECT_DIR$/include/types/Index.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Manager.h" afterPath="$PROJECT_DIR$/include/types/Manager.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Manager.inl" afterPath="$PROJECT_DIR$/include/types/Manager.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Mask.h" afterPath="$PROJECT_DIR$/include/types/Mask.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/OptionsHandler.h" afterPath="$PROJECT_DIR$/include/types/OptionsHandler.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Path.h" afterPath="$PROJECT_DIR$/include/types/Path.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Path.inl" afterPath="$PROJECT_DIR$/include/types/Path.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/RefCommonPtr.h" afterPath="$PROJECT_DIR$/include/types/RefCommonPtr.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/RefCount.h" afterPath="$PROJECT_DIR$/include/types/RefCount.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/RefPtr.h" afterPath="$PROJECT_DIR$/include/types/RefPtr.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Singleton.h" afterPath="$PROJECT_DIR$/include/types/Singleton.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Singleton.inl" afterPath="$PROJECT_DIR$/include/types/Singleton.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Timer.h" afterPath="$PROJECT_DIR$/include/types/Timer.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Timer.inl" afterPath="$PROJECT_DIR$/include/types/Timer.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Type.h" afterPath="$PROJECT_DIR$/include/types/Type.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Type.inl" afterPath="$PROJECT_DIR$/include/types/Type.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Type_internal.h" afterPath="$PROJECT_DIR$/include/types/Type_internal.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Variant.h" afterPath="$PROJECT_DIR$/include/types/Variant.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/Variant.inl" afterPath="$PROJECT_DIR$/include/types/Variant.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/VariantCaller.h" afterPath="$PROJECT_DIR$/include/types/VariantCaller.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/Array.h" afterPath="$PROJECT_DIR$/include/types/containers/Array.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/Array.inl" afterPath="$PROJECT_DIR$/include/types/containers/Array.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/HashMap.h" afterPath="$PROJECT_DIR$/include/types/containers/HashMap.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/HashMap.inl" afterPath="$PROJECT_DIR$/include/types/containers/HashMap.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/HashSet.h" afterPath="$PROJECT_DIR$/include/types/containers/HashSet.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/HashSet.inl" afterPath="$PROJECT_DIR$/include/types/containers/HashSet.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/Items.h" afterPath="$PROJECT_DIR$/include/types/containers/Items.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/MultiPool.h" afterPath="$PROJECT_DIR$/include/types/containers/MultiPool.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/MultiPool.inl" afterPath="$PROJECT_DIR$/include/types/containers/MultiPool.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/Pool.h" afterPath="$PROJECT_DIR$/include/types/containers/Pool.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/Pool.inl" afterPath="$PROJECT_DIR$/include/types/containers/Pool.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/RoundBuffer.h" afterPath="$PROJECT_DIR$/include/types/containers/RoundBuffer.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/SharedBuffer.h" afterPath="$PROJECT_DIR$/include/types/containers/SharedBuffer.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/SharedBuffer.inl" afterPath="$PROJECT_DIR$/include/types/containers/SharedBuffer.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/TightPool.h" afterPath="$PROJECT_DIR$/include/types/containers/TightPool.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/TightPool.inl" afterPath="$PROJECT_DIR$/include/types/containers/TightPool.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/VVector.h" afterPath="$PROJECT_DIR$/include/types/containers/VVector.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/VVector.inl" afterPath="$PROJECT_DIR$/include/types/containers/VVector.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/VVector2.h" afterPath="$PROJECT_DIR$/include/types/containers/VVector2.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/VVector2.inl" afterPath="$PROJECT_DIR$/include/types/containers/VVector2.inl" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/containers/fast_vector.h" afterPath="$PROJECT_DIR$/include/types/containers/fast_vector.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/types/variant_helper.h" afterPath="$PROJECT_DIR$/include/types/variant_helper.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/base.h" afterPath="$PROJECT_DIR$/src/base.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/debug.h" afterPath="$PROJECT_DIR$/src/functions/debug.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/defs.h" afterPath="$PROJECT_DIR$/src/functions/defs.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/meta.h" afterPath="$PROJECT_DIR$/src/functions/meta.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/string_utils.h" afterPath="$PROJECT_DIR$/src/functions/string_utils.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/functions/string_utils.inl" afterPath="$PROJECT_DIR$/src/functions/string_utils.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Exception.h" afterPath="$PROJECT_DIR$/src/types/Exception.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/FileLister.h" afterPath="$PROJECT_DIR$/src/types/FileLister.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/FileLister.inl" afterPath="$PROJECT_DIR$/src/types/FileLister.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Manager.h" afterPath="$PROJECT_DIR$/src/types/Manager.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Manager.inl" afterPath="$PROJECT_DIR$/src/types/Manager.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Mask.h" afterPath="$PROJECT_DIR$/src/types/Mask.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Path.h" afterPath="$PROJECT_DIR$/src/types/Path.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Path.inl" afterPath="$PROJECT_DIR$/src/types/Path.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Singleton.h" afterPath="$PROJECT_DIR$/src/types/Singleton.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Singleton.inl" afterPath="$PROJECT_DIR$/src/types/Singleton.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Timer.h" afterPath="$PROJECT_DIR$/src/types/Timer.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Timer.inl" afterPath="$PROJECT_DIR$/src/types/Timer.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/Type.h" afterPath="$PROJECT_DIR$/src/types/Type.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/Array.h" afterPath="$PROJECT_DIR$/src/types/containers/Array.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/Array.inl" afterPath="$PROJECT_DIR$/src/types/containers/Array.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/Pool.h" afterPath="$PROJECT_DIR$/src/types/containers/Pool.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/Pool.inl" afterPath="$PROJECT_DIR$/src/types/containers/Pool.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/SharedBuffer.inl" afterPath="$PROJECT_DIR$/src/types/containers/SharedBuffer.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/TightPool.h" afterPath="$PROJECT_DIR$/src/types/containers/TightPool.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/TightPool.inl" afterPath="$PROJECT_DIR$/src/types/containers/TightPool.inl" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/types/containers/fast_vector.h" afterPath="$PROJECT_DIR$/src/types/containers/fast_vector.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/MyDomain.h" afterPath="$PROJECT_DIR$/test/MyDomain.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/main.cpp" afterPath="$PROJECT_DIR$/test/main.cpp" />
     </list>
     <ignored path="Base.iws" />
@@ -77,17 +102,19 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="21" column="33" lean-forward="false" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
-              <folding />
+            <state relative-caret-position="30">
+              <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+              <folding>
+                <marker date="1483866706583" expanded="true" signature="285:711" ph="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Type.h" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/types/Type.h">
+      <file leaf-file-name="Type.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/include/types/Type.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="191">
+            <state relative-caret-position="146">
               <caret line="59" column="20" lean-forward="false" selection-start-line="59" selection-start-column="20" selection-end-line="59" selection-end-column="20" />
               <folding />
             </state>
@@ -95,7 +122,7 @@
         </entry>
       </file>
       <file leaf-file-name="Manager.inl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/Manager.inl">
+        <entry file="file://$PROJECT_DIR$/include/types/Manager.inl">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="315">
               <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
@@ -105,7 +132,7 @@
         </entry>
       </file>
       <file leaf-file-name="TightPool.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/containers/TightPool.h">
+        <entry file="file://$PROJECT_DIR$/include/types/containers/TightPool.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="660">
               <caret line="44" column="33" lean-forward="false" selection-start-line="44" selection-start-column="33" selection-end-line="44" selection-end-column="33" />
@@ -115,7 +142,7 @@
         </entry>
       </file>
       <file leaf-file-name="Index.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/Index.h">
+        <entry file="file://$PROJECT_DIR$/include/types/Index.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="465">
               <caret line="31" column="27" lean-forward="false" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
@@ -125,7 +152,7 @@
         </entry>
       </file>
       <file leaf-file-name="Array.inl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/containers/Array.inl">
+        <entry file="file://$PROJECT_DIR$/include/types/containers/Array.inl">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="330">
               <caret line="22" column="67" lean-forward="false" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="67" />
@@ -137,7 +164,7 @@
         </entry>
       </file>
       <file leaf-file-name="Manager.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/Manager.h">
+        <entry file="file://$PROJECT_DIR$/include/types/Manager.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1875">
               <caret line="125" column="36" lean-forward="false" selection-start-line="125" selection-start-column="36" selection-end-line="125" selection-end-column="36" />
@@ -149,7 +176,7 @@
         </entry>
       </file>
       <file leaf-file-name="Call.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/Call.h">
+        <entry file="file://$PROJECT_DIR$/include/types/Call.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="135">
               <caret line="9" column="4" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
@@ -161,18 +188,18 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
+      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="497">
-              <caret line="56" column="32" lean-forward="false" selection-start-line="56" selection-start-column="32" selection-end-line="56" selection-end-column="32" />
+            <state relative-caret-position="150">
+              <caret line="10" column="29" lean-forward="false" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
       <file leaf-file-name="Pool.inl" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/types/containers/Pool.inl">
+        <entry file="file://$PROJECT_DIR$/include/types/containers/Pool.inl">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="660">
               <caret line="44" column="41" lean-forward="false" selection-start-line="44" selection-start-column="41" selection-end-line="44" selection-end-column="41" />
@@ -260,7 +287,6 @@
         <option value="$PROJECT_DIR$/src/functions/meta.h" />
         <option value="$PROJECT_DIR$/test/MyDomain.h" />
         <option value="$PROJECT_DIR$/src/types/Items.h" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/types/containers/Items.h" />
         <option value="$PROJECT_DIR$/src/base.h" />
         <option value="$PROJECT_DIR$/src/types/containers/fast_vector.h" />
@@ -268,8 +294,9 @@
         <option value="$PROJECT_DIR$/src/types/containers/Pool.h" />
         <option value="$PROJECT_DIR$/src/types/containers/TightPool.inl" />
         <option value="$PROJECT_DIR$/src/types/containers/TightPool.h" />
-        <option value="$PROJECT_DIR$/test/main.cpp" />
         <option value="$PROJECT_DIR$/src/types/Manager.h" />
+        <option value="$PROJECT_DIR$/test/main.cpp" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
       </list>
     </option>
   </component>
@@ -281,9 +308,10 @@
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1" />
-    <option name="width" value="1368" />
-    <option name="height" value="738" />
+    <option name="x" value="1649" />
+    <option name="y" value="125" />
+    <option name="width" value="1360" />
+    <option name="height" value="734" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="2" id="Add" />
@@ -325,79 +353,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="test" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Base" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Base" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="types" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Base" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="types" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="containers" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Base" />
-              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="base" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="functions" />
+              <option name="myItemId" value="include" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -664,7 +620,8 @@
       <workItem from="1482345613751" duration="1197000" />
       <workItem from="1482564428639" duration="1215000" />
       <workItem from="1482839310729" duration="47000" />
-      <workItem from="1483802475016" duration="3075000" />
+      <workItem from="1483802475016" duration="3464000" />
+      <workItem from="1483866649204" duration="122000" />
     </task>
     <task id="LOCAL-00001" summary="properties declaration, hasProps type checker&#10;VVector - vector managing objects of arbitrary types via pointers&#10;Call - compile time type-conditional caller&#10;ManagerSingletons - contains single instance of each type&#10;TypeInfoManager - dynamic type info&#10;VariantCaller - calls correctly typed variant into functor&#10;&#10;">
       <created>1438890132660</created>
@@ -743,11 +700,18 @@
       <option name="project" value="LOCAL" />
       <updated>1478720926044</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="added defs for std types&#10;added Items - wraps bytes vector and acts on it as it is vector of objects&#10;free items removed from pool &amp; tightpool (free list is interwined in data now)&#10;added DirPath&#10;Clock - fixed time measurement for Linux &amp; Web&#10;&#10;&#10;">
+      <created>1483826515530</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1483826515530</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="139020000" />
+    <option name="totallyTimeSpent" value="139531000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -759,12 +723,12 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="0" width="1368" height="738" extended-state="4" />
-    <editor active="true" />
+    <frame x="1649" y="125" width="1360" height="734" extended-state="0" />
+    <editor active="false" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22181553" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22164948" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3295099" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27866474" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.27737227" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3416407" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -772,7 +736,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32917964" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.41219157" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.41167882" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -830,7 +794,8 @@
     <MESSAGE value="Added HashMap, HashSet, MultiPool" />
     <MESSAGE value="fixes for MultiPool&#10;defConstruction for MultiPool" />
     <MESSAGE value="added shorted typedefs for basic types&#10;enum macros now also define masks&#10;fixed warnings  &#10;removed SimpleSet&#10;added Mask&#10;Clock inner implementation changed from std::chrono to windows specific (QueryPerformanceTimer ...) (TODO: do for linux), because chrono has shitty precision &amp; performance" />
-    <option name="LAST_COMMIT_MESSAGE" value="added shorted typedefs for basic types&#10;enum macros now also define masks&#10;fixed warnings  &#10;removed SimpleSet&#10;added Mask&#10;Clock inner implementation changed from std::chrono to windows specific (QueryPerformanceTimer ...) (TODO: do for linux), because chrono has shitty precision &amp; performance" />
+    <MESSAGE value="added defs for std types&#10;added Items - wraps bytes vector and acts on it as it is vector of objects&#10;free items removed from pool &amp; tightpool (free list is interwined in data now)&#10;added DirPath&#10;Clock - fixed time measurement for Linux &amp; Web&#10;&#10;&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="added defs for std types&#10;added Items - wraps bytes vector and acts on it as it is vector of objects&#10;free items removed from pool &amp; tightpool (free list is interwined in data now)&#10;added DirPath&#10;Clock - fixed time measurement for Linux &amp; Web&#10;&#10;&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -842,28 +807,28 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/functions/string_utils.h">
+    <entry file="file://$PROJECT_DIR$/include/functions/string_utils.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
           <caret line="18" column="27" lean-forward="false" selection-start-line="18" selection-start-column="27" selection-end-line="18" selection-end-column="27" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/functions/string_utils.inl">
+    <entry file="file://$PROJECT_DIR$/include/functions/string_utils.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
           <caret line="14" column="35" lean-forward="false" selection-start-line="14" selection-start-column="23" selection-end-line="14" selection-end-column="35" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/BlockMeasure.h">
+    <entry file="file://$PROJECT_DIR$/include/types/BlockMeasure.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="6" column="31" lean-forward="false" selection-start-line="6" selection-start-column="31" selection-end-line="6" selection-end-column="31" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/functions/debug.h">
+    <entry file="file://$PROJECT_DIR$/include/functions/debug.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="8" column="36" lean-forward="false" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
@@ -903,21 +868,21 @@
     </entry>
     <entry file="file://C:/MinGW/include/winnt.h" />
     <entry file="file://C:/MinGW/include/windef.h" />
-    <entry file="file://$PROJECT_DIR$/src/types/Path.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/Path.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1380">
           <caret line="92" column="25" lean-forward="false" selection-start-line="92" selection-start-column="25" selection-end-line="92" selection-end-column="25" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/HashMap.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/HashMap.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1425">
           <caret line="95" column="33" lean-forward="false" selection-start-line="95" selection-start-column="33" selection-end-line="95" selection-end-column="33" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/functions/random.h">
+    <entry file="file://$PROJECT_DIR$/include/functions/random.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="765">
           <caret line="51" column="0" lean-forward="false" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
@@ -928,35 +893,35 @@
     <entry file="file:///usr/include/time.h" />
     <entry file="file:///usr/include/x86_64-linux-gnu/bits/types.h" />
     <entry file="file:///usr/include/x86_64-linux-gnu/bits/typesizes.h" />
-    <entry file="file://$PROJECT_DIR$/src/types/Timer.h">
+    <entry file="file://$PROJECT_DIR$/include/types/Timer.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="680">
           <caret line="40" column="18" lean-forward="false" selection-start-line="40" selection-start-column="18" selection-end-line="40" selection-end-column="18" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Timer.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/Timer.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
           <caret line="13" column="23" lean-forward="false" selection-start-line="13" selection-start-column="23" selection-end-line="13" selection-end-column="23" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/functions/undefs.h">
+    <entry file="file://$PROJECT_DIR$/include/functions/undefs.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="2" lean-forward="false" selection-start-line="11" selection-start-column="2" selection-end-line="11" selection-end-column="2" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Mask.h">
+    <entry file="file://$PROJECT_DIR$/include/types/Mask.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="119">
           <caret line="7" column="18" lean-forward="false" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/functions/meta.h">
+    <entry file="file://$PROJECT_DIR$/include/functions/meta.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="221">
           <caret line="13" column="61" lean-forward="false" selection-start-line="13" selection-start-column="61" selection-end-line="13" selection-end-column="61" />
@@ -970,7 +935,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/MultiPool.h">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/MultiPool.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
           <caret line="20" column="16" lean-forward="false" selection-start-line="20" selection-start-column="16" selection-end-line="20" selection-end-column="16" />
@@ -978,35 +943,35 @@
       </provider>
     </entry>
     <entry file="file://C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++/bits/vector.tcc" />
-    <entry file="file://$PROJECT_DIR$/src/types/containers/VVector2.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/VVector2.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="256">
           <caret line="56" column="57" lean-forward="false" selection-start-line="56" selection-start-column="24" selection-end-line="56" selection-end-column="57" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/VVector2.h">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/VVector2.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="256">
           <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Type.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/Type.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="239">
           <caret line="56" column="38" lean-forward="false" selection-start-line="56" selection-start-column="38" selection-end-line="56" selection-end-column="38" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/Items.h">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/Items.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="8" column="29" lean-forward="false" selection-start-line="8" selection-start-column="29" selection-end-line="8" selection-end-column="29" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/MultiPool.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/MultiPool.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="178">
           <caret line="146" column="24" lean-forward="false" selection-start-line="146" selection-start-column="24" selection-end-line="146" selection-end-column="24" />
@@ -1014,14 +979,14 @@
       </provider>
     </entry>
     <entry file="file://C:/MinGW/lib/gcc/mingw32/5.3.0/include/c++/bits/stl_vector.h" />
-    <entry file="file://$PROJECT_DIR$/src/functions/defs.h">
+    <entry file="file://$PROJECT_DIR$/include/functions/defs.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
           <caret line="11" column="19" lean-forward="false" selection-start-line="11" selection-start-column="19" selection-end-line="11" selection-end-column="19" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/base.h">
+    <entry file="file://$PROJECT_DIR$/include/base.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -1035,37 +1000,35 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/fast_vector.h">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/fast_vector.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
           <caret line="17" column="5" lean-forward="false" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/Array.h">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/Array.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="825">
           <caret line="55" column="10" lean-forward="false" selection-start-line="55" selection-start-column="10" selection-end-line="55" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/Pool.h">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/Pool.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="900">
           <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/TightPool.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/TightPool.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1290">
           <caret line="86" column="0" lean-forward="false" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/TightPool.h">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/TightPool.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="660">
           <caret line="44" column="33" lean-forward="false" selection-start-line="44" selection-start-column="33" selection-end-line="44" selection-end-column="33" />
@@ -1073,7 +1036,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Manager.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/Manager.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
           <caret line="21" column="0" lean-forward="false" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
@@ -1081,7 +1044,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Index.h">
+    <entry file="file://$PROJECT_DIR$/include/types/Index.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
           <caret line="31" column="27" lean-forward="false" selection-start-line="31" selection-start-column="27" selection-end-line="31" selection-end-column="27" />
@@ -1089,7 +1052,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/Array.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/Array.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
           <caret line="22" column="67" lean-forward="false" selection-start-line="22" selection-start-column="28" selection-end-line="22" selection-end-column="67" />
@@ -1099,7 +1062,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Manager.h">
+    <entry file="file://$PROJECT_DIR$/include/types/Manager.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1875">
           <caret line="125" column="36" lean-forward="false" selection-start-line="125" selection-start-column="36" selection-end-line="125" selection-end-column="36" />
@@ -1109,7 +1072,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Call.h">
+    <entry file="file://$PROJECT_DIR$/include/types/Call.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="135">
           <caret line="9" column="4" lean-forward="false" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
@@ -1120,7 +1083,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/containers/Pool.inl">
+    <entry file="file://$PROJECT_DIR$/include/types/containers/Pool.inl">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="660">
           <caret line="44" column="41" lean-forward="false" selection-start-line="44" selection-start-column="41" selection-end-line="44" selection-end-column="41" />
@@ -1128,26 +1091,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+    <entry file="file://$PROJECT_DIR$/include/types/Type.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="497">
-          <caret line="56" column="32" lean-forward="false" selection-start-line="56" selection-start-column="32" selection-end-line="56" selection-end-column="32" />
+        <state relative-caret-position="146">
+          <caret line="59" column="20" lean-forward="false" selection-start-line="59" selection-start-column="20" selection-end-line="59" selection-end-column="20" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/test/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="21" column="33" lean-forward="false" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
-          <folding />
+        <state relative-caret-position="30">
+          <caret line="2" column="17" lean-forward="false" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+          <folding>
+            <marker date="1483866706583" expanded="true" signature="285:711" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/types/Type.h">
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="59" column="20" lean-forward="false" selection-start-line="59" selection-start-column="20" selection-end-line="59" selection-end-column="20" />
+        <state relative-caret-position="150">
+          <caret line="10" column="29" lean-forward="false" selection-start-line="10" selection-start-column="29" selection-end-line="10" selection-end-column="29" />
           <folding />
         </state>
       </provider>

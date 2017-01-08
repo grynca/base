@@ -8,69 +8,70 @@ IF (WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fno-omit-frame-pointer -gdwarf-2" )
 ENDIF()
 
-    set(SOURCE_FILES
-            src/base.h
-            src/functions/debug.h
-            src/functions/meta.h
-            src/types/Exception.h
-            src/types/Type.h
-            src/types/Type.inl
-            src/types/Type_internal.h
-            src/types/Variant.h
-            src/types/Variant.inl
-            src/types/variant_helper.h
-            src/types/Index.h
-            src/types/containers/fast_vector.h
-            src/types/containers/VVector.h
-            src/types/containers/VVector.inl
-            src/types/containers/VVector2.h
-            src/types/containers/VVector2.inl
-            src/types/containers/RoundBuffer.h
-            src/types/containers/TightPool.h
-            src/types/containers/TightPool.inl
-            src/types/containers/Pool.h
-            src/types/containers/Pool.inl
-            src/types/containers/MultiPool.h
-            src/types/containers/MultiPool.inl
-            src/types/containers/Array.h
-            src/types/containers/Array.inl
-            src/types/containers/SharedBuffer.h
-            src/types/containers/SharedBuffer.inl
-            src/types/containers/HashMap.h
-            src/types/containers/HashMap.inl
-            src/types/containers/HashSet.h
-            src/types/containers/HashSet.inl
-            src/types/containers/Items.h
-            src/types/BlockMeasure.h
-            src/types/RefCount.h
-            src/types/CommonPtr.h
-            src/types/RefCommonPtr.h
-            src/types/RefPtr.h
-            src/types/Manager.h
-            src/types/Manager.inl
-            src/functions/string_utils.h
-            src/types/Path.h
-            src/types/Path.inl
-            src/types/FileLister.h
-            src/types/FileLister.inl
-            src/types/Config.h
-            src/types/Config.inl
-            src/types/OptionsHandler.h
-            src/types/Singleton.h
-            src/types/Singleton.inl
-            src/types/Timer.h
-            src/types/Timer.inl
-            src/functions/random.h
-            src/functions/sort_utils.h
-            src/functions/sort_utils.inl
-            src/functions/string_utils.h
-            src/functions/string_utils.inl
-            src/types/VariantCaller.h
-            src/types/Call.h
-            src/functions/common.h
-            src/functions/defs.h
-            src/functions/undefs.h
-            src/types/Mask.h)
+include_directories(include/)
+set(SOURCE_FILES
+        include/base.h
+        include/functions/debug.h
+        include/functions/meta.h
+        include/types/Exception.h
+        include/types/Type.h
+        include/types/Type.inl
+        include/types/Type_internal.h
+        include/types/Variant.h
+        include/types/Variant.inl
+        include/types/variant_helper.h
+        include/types/Index.h
+        include/types/containers/fast_vector.h
+        include/types/containers/VVector.h
+        include/types/containers/VVector.inl
+        include/types/containers/VVector2.h
+        include/types/containers/VVector2.inl
+        include/types/containers/RoundBuffer.h
+        include/types/containers/TightPool.h
+        include/types/containers/TightPool.inl
+        include/types/containers/Pool.h
+        include/types/containers/Pool.inl
+        include/types/containers/MultiPool.h
+        include/types/containers/MultiPool.inl
+        include/types/containers/Array.h
+        include/types/containers/Array.inl
+        include/types/containers/SharedBuffer.h
+        include/types/containers/SharedBuffer.inl
+        include/types/containers/HashMap.h
+        include/types/containers/HashMap.inl
+        include/types/containers/HashSet.h
+        include/types/containers/HashSet.inl
+        include/types/containers/Items.h
+        include/types/BlockMeasure.h
+        include/types/RefCount.h
+        include/types/CommonPtr.h
+        include/types/RefCommonPtr.h
+        include/types/RefPtr.h
+        include/types/Manager.h
+        include/types/Manager.inl
+        include/functions/string_utils.h
+        include/types/Path.h
+        include/types/Path.inl
+        include/types/FileLister.h
+        include/types/FileLister.inl
+        include/types/Config.h
+        include/types/Config.inl
+        include/types/OptionsHandler.h
+        include/types/Singleton.h
+        include/types/Singleton.inl
+        include/types/Timer.h
+        include/types/Timer.inl
+        include/functions/random.h
+        include/functions/sort_utils.h
+        include/functions/sort_utils.inl
+        include/functions/string_utils.h
+        include/functions/string_utils.inl
+        include/types/VariantCaller.h
+        include/types/Call.h
+        include/functions/common.h
+        include/functions/defs.h
+        include/functions/undefs.h
+        include/types/Mask.h)
 
 set(TEST_FILES
         test/main.cpp
@@ -78,6 +79,7 @@ set(TEST_FILES
         test/test_containers.h
         test/test_variants.h
         test/test_type_if.h
-        test/test_enum.h test/test_types.h )
+        test/test_enum.h
+        test/test_types.h )
 
 add_executable(Base ${SOURCE_FILES} ${TEST_FILES})

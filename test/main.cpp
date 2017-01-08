@@ -1,6 +1,6 @@
 #include <iostream>
 #include <time.h>
-#include "../src/base.h"
+#include "base.h"
 using namespace std;
 using namespace grynca;
 #include "MyDomain.h"
