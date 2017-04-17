@@ -6,32 +6,32 @@ namespace grynca {
         : _recursive(dive)
     {
         for (u32 i=0; i<extensions.size(); ++i) {
-            _extensions.push_back(extensions[i]);
+            extensions_.push_back(extensions[i]);
         }
 
         // convert extensions to lower case
-        for (unsigned int i=0; i<_extensions.size(); i++)
-            std::transform(_extensions[i].begin(), _extensions[i].end(), _extensions[i].begin(), ::tolower);
+        for (unsigned int i=0; i<extensions_.size(); i++)
+            std::transform(extensions_[i].begin(), extensions_[i].end(), extensions_[i].begin(), ::tolower);
 
         // open top lvl dir
         DIR* dir = opendir(dir_path.getPath().c_str());
         if (dir)
-            _dirs.push_back(Pair_{dir, dir_path.getPath()});
+            dirs_.push_back(Pair_{dir, dir_path.getPath()});
     }
 
     inline FileLister::~FileLister()
     {
         // close all opened dirs
-        for (unsigned int i=0; i<_dirs.size(); i++)
-            closedir(_dirs[i].dir);
+        for (unsigned int i=0; i<dirs_.size(); i++)
+            closedir(dirs_[i].dir);
     }
 
     inline bool FileLister::nextFile(Path& path_out)
     {
         struct dirent *dirp;
-        while (!_dirs.empty())
+        while (!dirs_.empty())
         {
-            while ((dirp = readdir(_dirs.back().dir)) != NULL)
+            while ((dirp = readdir(dirs_.back().dir)) != NULL)
                 // read one item from last dir in _dirs
             {
                 std::string curr_item_name = dirp->d_name;
@@ -40,7 +40,7 @@ namespace grynca {
                 if (curr_item_name == "." || curr_item_name == "..")
                     continue;
 
-                Path p = DirPath(_dirs.back().path) + curr_item_name;
+                Path p = DirPath(dirs_.back().path) + curr_item_name;
 
                 DIR* dir = opendir(p.getPath().c_str());
                 if (dir)
@@ -49,7 +49,7 @@ namespace grynca {
                     if (_recursive)
                         // i care about subdirs
                     {
-                        _dirs.push_back(Pair_{dir, p.getPath()});
+                        dirs_.push_back(Pair_{dir, p.getPath()});
                     }
                     continue;
                 }
@@ -57,9 +57,9 @@ namespace grynca {
                 // else-> item is a file
                 // test if its extension is among those we are looking for
                 std::string extension = p.getExtension();
-                std::vector<std::string>::iterator it;
-                it = std::find(_extensions.begin(), _extensions.end(), extension);
-                if (it == _extensions.end())
+                fast_vector<std::string>::iterator it;
+                it = std::find(extensions_.begin(), extensions_.end(), extension);
+                if (it == extensions_.end())
                     // not a file we are looking for
                     continue;
 
@@ -69,8 +69,8 @@ namespace grynca {
                 return true;
             }
             // close and pop last directory
-            closedir(_dirs.back().dir);
-            _dirs.pop_back();
+            closedir(dirs_.back().dir);
+            dirs_.pop_back();
         }
         // no more files to check
         return false;

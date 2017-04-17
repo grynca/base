@@ -5,47 +5,62 @@ namespace grynca {
     template <typename T>
     template <typename... ConstructionArgs>
     inline T& Singleton<T>::create(ConstructionArgs&&... args) {
-    //static
-        return *(instance_() = new T(std::forward<ConstructionArgs>(args)...));
+        //static
+        instance_() = new T(std::forward<ConstructionArgs>(args)...);
+        return instance_().get();
     }
 
     template <typename T>
     template <typename DerType, typename... ConstructionArgs>
     inline DerType& Singleton<T>::createAs(ConstructionArgs&&... args) {
         //static
-        return *(DerType*)(instance_() = new DerType(std::forward<ConstructionArgs>(args)...));
+        instance_() = new DerType(std::forward<ConstructionArgs>(args)...);
+        return *(DerType*)(instance_().getPtr());
     }
 
     template <typename T>
     inline T& Singleton<T>::get() {
-    //static
-        ASSERT_M(instance_(), "Not created.");
-        return *instance_();
+        //static
+        static T& me = createIfNeeded_();
+        return me;
     }
 
     template <typename T>
-    inline T* Singleton<T>::getptr() {
+    inline T& Singleton<T>::getRef() {
     //static
-        return instance_();
+        ASSERT_M(instance_().getPtr(), "Not created.");
+        return instance_().get();
+    }
+
+    template <typename T>
+    inline T* Singleton<T>::getPtr() {
+    //static
+        return instance_().getPtr();
+    }
+
+    template <typename T>
+    template <typename... ConstructionArgs>
+    inline T& Singleton<T>::createIfNeeded_(ConstructionArgs&&... args) {
+        // static
+        T* ptr = getPtr();
+        if (ptr)
+            return *ptr;
+        //else
+        return create(std::forward<ConstructionArgs>(args)...);
     }
 
     template <typename T>
     inline Singleton<T>::Singleton() {
-        ASSERT_M(!instance_(), "Already created.");
     }
 
     template <typename T>
     inline Singleton<T>::~Singleton() {
-        if (instance_()) {
-            delete instance_();
-            instance_()=NULL;
-        }
     }
 
     template <typename T>
-    inline T*& Singleton<T>::instance_() {
+    inline RefPtr<T>& Singleton<T>::instance_() {
     //static
-        static T* instance = NULL;
+        static RefPtr<T> instance = NULL;
         return instance;
     }
 }

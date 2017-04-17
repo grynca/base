@@ -2,6 +2,7 @@
 #define TYPE_INTERNAL_H_H
 
 #include "Type.h"
+#include "Index.h"
 
 namespace grynca {
 
@@ -22,6 +23,29 @@ namespace grynca {
                 u32 type_pos = u32(Types::template pos<HEAD(TP)>());
                 TypeInfoManager<Types>::template setTypeId<HEAD(TP)>(type_pos);
                 setTypeId<TAIL(TP)>();
+            }
+        };
+
+        template <typename Types, typename Domain>
+        struct TypeIdTypesPackMapper {
+
+            static void map(fast_vector<u32>& ids_mapper_out) {
+                mapInner_<Types>(ids_mapper_out);
+            }
+
+        private:
+            template <typename TP>
+            static IF_EMPTY(TP) mapInner_(fast_vector<u32>& ids_mapper_out) {}
+
+            template <typename TP>
+            static IF_NOT_EMPTY(TP) mapInner_(fast_vector<u32>& ids_mapper_out) {
+                u32 int_tid = Type<HEAD(TP), Domain>::getInternalTypeId();
+                u32 pack_tid = u32(Types::template pos<HEAD(TP)>());
+                if (ids_mapper_out.size() >= int_tid) {
+                    ids_mapper_out.resize(int_tid+1, InvalidId());
+                }
+                ids_mapper_out[int_tid] = pack_tid;
+                mapInner_<TAIL(TP)>(ids_mapper_out);
             }
         };
 

@@ -1,8 +1,5 @@
 #include "Variant.h"
 #include "VariantCaller.h"
-#include <algorithm>
-#include <utility>
-#include <typeinfo>
 #include <cassert>
 
 namespace grynca
@@ -30,26 +27,59 @@ namespace grynca
     }
 
     template <typename ... Ts>
+    template <typename T>
+    inline Variant<Ts...>::Variant(const T& t) {
+        // construct new with placement new
+        new (&data_) T(t);
+        curr_pos_ = getTypeIdOf<T>();
+    }
+
+    template <typename ... Ts>
+    template <typename T>
+    inline Variant<Ts...>::Variant(T&& t) {
+        // construct new with placement new
+        new (&data_) T(t);
+        curr_pos_ = getTypeIdOf<T>();
+    }
+
+    template <typename ... Ts>
     inline Variant<Ts...>::~Variant() {
         if (curr_pos_ != -1)
             getHelper_().destroy(curr_pos_, &data_);
     }
 
     template <typename ... Ts>
-    inline Variant<Ts...>& Variant<Ts...>::operator= (Variant<Ts...> old) {
-        std::swap(curr_pos_, old.curr_pos_);
-        std::swap(data_, old.data_);
+    inline Variant<Ts...>& Variant<Ts...>::operator= (const Variant<Ts...>& v) {
+        curr_pos_ = v.curr_pos_;
+        if (curr_pos_ != -1)
+            getHelper_().copy(curr_pos_, &data_, &v.data_);
         return *this;
     }
 
     template <typename ... Ts>
+    inline Variant<Ts...>& Variant<Ts...>::operator= (Variant<Ts...>&& v) {
+        curr_pos_ = v.curr_pos_;
+        if (curr_pos_ != -1)
+            getHelper_().move(curr_pos_, &data_, &v.data_);
+        return *this;
+    }
+
+    template <typename ... Ts>
+    template <typename T>
+    inline Variant<Ts...>& Variant<Ts...>::operator= (T& t) {
+        set(t);
+        return *this;
+    }
+
+
+    template <typename ... Ts>
     template<typename T>
-    inline bool Variant<Ts...>::is() {
+    inline bool Variant<Ts...>::is()const {
         return (curr_pos_ == getTypeIdOf<T>() );
     }
 
     template <typename ... Ts>
-    inline bool Variant<Ts...>::valid() {
+    inline bool Variant<Ts...>::valid()const {
         return (curr_pos_ != -1);
     }
 
@@ -63,6 +93,12 @@ namespace grynca
         new (&data_) T(std::forward<Args>(args)...);
         curr_pos_ = getTypeIdOf<T>();
         return get<T>();
+    }
+
+    template <typename ... Ts>
+    inline void Variant<Ts...>::unset() {
+        if (curr_pos_ != -1)
+            getHelper_().destroy(curr_pos_, &data_);
     }
 
     template <typename ... Ts>
@@ -109,7 +145,7 @@ namespace grynca
 
     template <typename ... Ts>
     template<typename T>
-    inline int Variant<Ts...>::getTypeIdOf() {
+    inline constexpr int Variant<Ts...>::getTypeIdOf() {
     // static
         return position<T, Ts...>::pos;
     }

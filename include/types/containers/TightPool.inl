@@ -1,4 +1,5 @@
 #include "TightPool.h"
+#define FREE_BITMASK u16(1<<15)
 
 namespace grynca {
 
@@ -21,11 +22,12 @@ namespace grynca {
         }
         else {
             redirect_id = first_free_pos_;
-            first_free_pos_ = getNextFree_(first_free_pos_);
+            first_free_pos_ = takeNextFree_(first_free_pos_);
             redirect_version = redirects_[redirect_id].getVersion();
             redirects_[redirect_id].setIndex(item_pos);
         }
         redirect_ids_.push_back(redirect_id);
+        ASSERT(redirect_version != u16(InvalidId()));
         return Index(redirect_id, redirect_version);
     }
 
@@ -50,9 +52,10 @@ namespace grynca {
 
         redirects_[index.getIndex()].setIndex(u32(-1));
         // increment redirect version of removed item
-        redirects_[index.getIndex()].setVersion(u16(redirects_[index.getIndex()].getVersion()+1));
+        redirects_[index.getIndex()].setVersion(u16());
         // add redirect to free list
         setNextFree_(index.getIndex(), first_free_pos_);
+
         first_free_pos_ = index.getIndex();
     }
 
@@ -65,7 +68,7 @@ namespace grynca {
         u32 last_item_pos = size()-1;
         u8* last = &data_[last_item_pos*item_size_];
 
-        // call destructor on item data
+        // call destructor on item data_
         destructor(deleted);
         // move last item to deleted place
         memcpy(deleted, last, item_size_);
@@ -76,8 +79,6 @@ namespace grynca {
 
         data_.resize(last_item_pos*item_size_);
         redirect_ids_.resize(last_item_pos);
-
-        redirects_[index.getIndex()].setIndex(InvalidId());
 
         // increment redirect version of removed item
         redirects_[index.getIndex()].setVersion(u16(redirects_[index.getIndex()].getVersion()+1));
@@ -145,7 +146,8 @@ namespace grynca {
     inline bool TightPool::isValidIndex(Index index) const {
         if (index.getIndex() >= redirects_.size())
             return false;
-        return redirects_[index.getIndex()].getIndex() != InvalidId();
+
+        return redirects_[index.getIndex()].getVersion() == index.getVersion();
     }
 
     inline u8* TightPool::getData() {
@@ -173,12 +175,28 @@ namespace grynca {
         clear();
     }
 
-    inline u32 TightPool::getNextFree_(u32 pos)const {
-        return *(u32*)&redirects_[pos];
+    inline bool TightPool::isFree_(u32 pos)const {
+        return (redirects_[pos].getVersion() & FREE_BITMASK) != 0;
+    }
+
+    inline void TightPool::setFree_(u32 pos) {
+        redirects_[pos].setVersion(redirects_[pos].getVersion() | FREE_BITMASK);
+    }
+
+    inline void TightPool::unsetFree_(u32 pos) {
+        redirects_[pos].setVersion(redirects_[pos].getVersion() &~ FREE_BITMASK);
+    }
+
+    inline u32 TightPool::takeNextFree_(u32 pos) {
+        unsetFree_(pos);
+        return redirects_[pos].getIndex();
     }
 
     inline void TightPool::setNextFree_(u32 pos, u32 next_free_pos) {
-        *(u32*)&redirects_[pos] = next_free_pos;
+        setFree_(pos);
+        redirects_[pos].setIndex(next_free_pos);
     }
 
 }
+
+#undef FREE_BITMASK

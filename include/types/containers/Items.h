@@ -18,7 +18,7 @@ namespace grynca {
         }
 
         u32 size() {
-            return bytes_->size()/sizeof(ItemType);
+            return u32(bytes_->size()/sizeof(ItemType));
         }
 
         bool empty() {

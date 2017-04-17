@@ -2,7 +2,7 @@
 #define ROUNDBUFFER_H
 
 #include <cassert>
-#include "../../functions/defs.h"
+#include "functions/defs.h"
 
 namespace grynca {
 

@@ -1,12 +1,9 @@
-#include <cstddef>
-#include <string>
-#include <sys/stat.h>
-#include <cassert>
-#include <fstream>
-#include <stdio.h>
-#include <dirent.h>
 #include "Path.h"
 #include "FileLister.h"
+#include <sys/stat.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <fstream>
 
 namespace grynca {
 
@@ -30,7 +27,7 @@ namespace grynca {
         std::string dir;
         int mdret;
 
-        while((pos=path_.find_first_of('/',pre))!=std::string::npos){
+        while((pos=path_.find('/',pre))!=std::string::npos){
             dir=path_.substr(0,pos++);
             pre=pos;
             if(dir.size()==0)
@@ -57,8 +54,8 @@ namespace grynca {
         fast_vector<std::string> absolute_dirs;
         fast_vector<std::string> relative_dirs;
         std::string rel = normalize_(relative_to);
-        string_utils::tokenize(path_, absolute_dirs, "/");
-        string_utils::tokenize(rel, relative_dirs, "/");
+        ssu::tokenize(path_, absolute_dirs, "/");
+        ssu::tokenize(rel, relative_dirs, "/");
 
         // Get the shortest of the two paths
         u32 length = absolute_dirs.size() < relative_dirs.size() ? absolute_dirs.size() : relative_dirs.size();
@@ -136,21 +133,21 @@ namespace grynca {
         return true;
     }
 
-    inline bool Path::loadStringFromFile(std::string& path_out) {
+    inline bool Path::loadTextContentA(std::string& str_out) {
         std::ifstream f(path_);
         if (!f.is_open())
             return false;
         f.seekg(0, std::ios::end);
-        path_out.reserve(f.tellg());
+        u32 len = u32(f.tellg());
+        str_out.resize(len);
         f.seekg(0, std::ios::beg);
-        path_out.assign((std::istreambuf_iterator<char>(f)),
-                        std::istreambuf_iterator<char>());
+        f.read(&str_out[0], len);
         f.close();
         return true;
 
     }
 
-    inline bool Path::saveStringToFile(const std::string& str) {
+    inline bool Path::saveTextContentA(const std::string& str) {
         std::ofstream lf(path_, std::ofstream::app);
         if (!lf.is_open())
             return false;
@@ -263,7 +260,7 @@ namespace grynca {
         // replace backslashes with forward slashes
         std::string p = path;
         std::replace(p.begin(), p.end(), '\\', '/');
-        p = string_utils::trim(p);
+        p = ssu::trim(p);
         // remove trailing slash
         if (p.back() == '/')
             p.pop_back();

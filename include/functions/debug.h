@@ -2,7 +2,6 @@
 #define DEBUG_H
 
 #include <iostream>
-#include <stdio.h>
 
 #define DEBUG_BUILD
 #if defined(NDEBUG)
@@ -38,7 +37,7 @@
 #       include <windows.h>
 #       define DEBUG_BREAK() DebugBreak()
 #   else
-#       include <csignal>
+#       include <signal.h>
 #       define DEBUG_BREAK() raise(SIGTRAP)
 #   endif
 #   define dout(x) std::cout << x
@@ -48,16 +47,6 @@
 #   define NEVER_GET_HERE(msg)
 #   define DEBUG_BREAK()
 #   define dout(x)
-#endif
-
-#ifdef PROFILE_BUILD
-#   define PROFILE_MEASURE_FROM(m) m.from()
-#   define PROFILE_MEASURE_TO(m) m.to()
-#   define DEF_MEASURE(m) Measure m
-#else
-#   define PROFILE_MEASURE_FROM(m)
-#   define PROFILE_MEASURE_TO(m)
-#   define DEF_MEASURE(m)
 #endif
 
 #endif // DEBUG_H

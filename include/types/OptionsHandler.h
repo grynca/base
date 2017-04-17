@@ -1,10 +1,6 @@
 #ifndef OPTIONS_H
 #define OPTIONS_H
 
-#include <map>
-#include <string>
-#include <iostream>
-#include <stdexcept>
 #include "containers/fast_vector.h"
 
 namespace grynca {

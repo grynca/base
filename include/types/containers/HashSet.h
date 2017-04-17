@@ -5,7 +5,7 @@
 
 namespace grynca {
 
-    template <typename KeyType, typename Hasher = std::hash<KeyType>, typename Compare = std::equal_to<KeyType> >
+    template <typename KeyType, typename Hasher, typename Compare = std::equal_to<KeyType> >
     class HashSet {
     public:
         // size/initial_size must be power of 2
@@ -15,7 +15,7 @@ namespace grynca {
         void reserve(u32 size);
         void clear();
         u32 addItem(const KeyType& key);       // returns added item index
-        u32 addItem(const KeyType& key, bool& was_added);
+        u32 findOrAddItem(const KeyType& key, bool& was_added);
         u32 findItem(const KeyType& key);      // InvalidId() if not found
         bool removeItem(const KeyType& key);        // return true if item was found and removed
 

@@ -2,8 +2,12 @@
 #define SINGLETON_H
 
 #include <cassert>
+#include "RefPtr.h"
 
 namespace grynca {
+
+    // when singleton is defaultly constructable you can use get() and it will be automatically constructed upon first get
+    // if not you must use create/createAs and then getRef() or getPtr()
 
     template<class T>
     class Singleton {
@@ -15,8 +19,12 @@ namespace grynca {
         static DerType& createAs(ConstructionArgs&&... args);
 
         static T& get();
-        static T* getptr();
+        static T& getRef();
+        static T* getPtr();
     protected:
+        template <typename... ConstructionArgs>
+        static T& createIfNeeded_(ConstructionArgs&&... args);
+
         Singleton(const Singleton&);
         Singleton(Singleton&&);
         Singleton& operator=(const Singleton&);
@@ -24,7 +32,7 @@ namespace grynca {
 
         virtual ~Singleton();
 
-        static T*& instance_();
+        static RefPtr<T>& instance_();
     };
 
 

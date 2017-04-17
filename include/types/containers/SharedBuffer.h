@@ -1,7 +1,7 @@
 #ifndef SHAREDBUFFER_H
 #define SHAREDBUFFER_H
 
-#include "../../functions/defs.h"
+#include "functions/defs.h"
 #include <atomic>
 
 namespace grynca {

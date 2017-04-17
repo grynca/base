@@ -5,8 +5,7 @@
 #ifndef PATH_H
 #define PATH_H
 
-#include "../functions/string_utils.h"
-#include <iostream>
+#include "functions/ssu.h"
 
 namespace grynca {
 
@@ -33,15 +32,15 @@ namespace grynca {
         bool exists()const;
         bool loadDataFromFile(fast_vector<u8>& data_out);
         bool saveDataToFile(const fast_vector<u8>& data);
-        bool loadStringFromFile(std::string& path_out);
-        bool saveStringToFile(const std::string& str);
+        bool loadTextContentA(std::string& str_out);
+        bool saveTextContentA(const std::string& str);
         bool clearFile();
         bool deleteFile();
 // extension does not contain dot
         std::string getExtension();
         void setExtension(const std::string& ext);
         void removeExtension();
-// C:/data/obr.jpg , filename == obr.jpg, dirpath == C:/data/
+// C:/data_/obr.jpg , filename == obr.jpg, dirpath == C:/data_/
         const std::string& getPath()const;
         std::string getFilename()const;
         std::string getFilenameWOExtension()const;

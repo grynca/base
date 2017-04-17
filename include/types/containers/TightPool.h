@@ -44,7 +44,10 @@ namespace grynca {
         void clear(DestroyFunc destructor);
         u32 getItemSize()const { return item_size_; }
     protected:
-        u32 getNextFree_(u32 pos)const;
+        bool isFree_(u32 pos)const;
+        void setFree_(u32 pos);
+        void unsetFree_(u32 pos);
+        u32 takeNextFree_(u32 pos);
         void setNextFree_(u32 pos, u32 next_free_pos);
 
         u32 item_size_;

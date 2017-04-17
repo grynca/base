@@ -2,47 +2,99 @@
 #define MASK_H
 
 #include "../functions/debug.h"
-#include <bitset>
-#include <stdint.h>
+#include "BitScanner.h"
+#include <cassert>
+#include <cstring>
 
 namespace grynca {
 
-    template <int S>
-    class Mask : public std::bitset<S> {
-        typedef std::bitset<S> Parent;
+    // fw
+    template <size_t Size> class MaskBitIterator;
+
+    template <size_t Size>
+    class Mask {
     public:
-        template <typename BS>
-        Mask(const BS& m) : Parent(m.to_ulong()) { ASSERT(m.size() < 64); }
+        typedef u64	word_type;
+        typedef const Mask<Size>&	ref_self;
+    public:
+        constexpr Mask();
+        constexpr Mask(word_type v);      // set first word
+        constexpr Mask(const std::string& buf);
+        static constexpr Mask<Size> bit(size_t bit_id);        // named constructor for single-bit mask
 
-        constexpr Mask() : Parent(0) {}
-        Mask(Parent&& p) : Parent(p) {}
+        template <size_t Size2>
+        Mask(const Mask<Size2>& m2);
+        void flip(size_t n);
+        void reset();
+        void clear();
+        void set();
+        Mask operator~()const;
+        constexpr static size_t size();
+        size_t capacity()const;
+        bool test(size_t n)const;
+        bool operator[](size_t n)const;
 
-        Mask(const std::initializer_list<uint32_t> il) {
-            for (auto it = il.begin(); it!=il.end(); ++it) {
-                Parent::set(*it);
-            }
-        }
+        /// Flips all the bits in the set.
+        void flip();
+        void set(size_t n);
+        /// Sets or clears bit \p n.
+        void set(size_t n, bool val);
 
-        static constexpr size_t size() { return (size_t)S; }
+        /// Clears the bit \p n.
+        void reset (size_t n);
+        // Returns a string with bits MSB "001101001..." LSB.
+        std::string to_string()const;
 
-        // returns index of first 1 bit or size() if not found
-        uint32_t findFirst() {
-            return Parent::_Find_first();
-        }
+        // words access
+        const word_type* getWords()const;
+        word_type* accWords();
+        static constexpr size_t getWordsCount();
+        word_type getWordMask(size_t first, size_t last)const;      /// Returns the value in bits \p first through \p last.
+        void setWordMask(size_t first, size_t last, word_type v);   // Sets the value of the bitrange \p first through \p last to the equivalent number of bits from \p v.
 
-        // returns index of first 1 bit after prev or size() if not found
-        uint32_t findNext(uint32_t prev) {
-            return Parent::_Find_next(prev);
-        }
+        MaskBitIterator<Size> getIterator()const;
 
-        bool anySet(const Mask<S>& m)const {
-            return ((*this)&m).any();
-        }
+        bool any()const;
+        bool none()const;
 
-        bool allSet(const Mask<S>& m)const {
-            return ((*this)&m) == m;
-        }
+        size_t count()const;
+        constexpr bool operator==(ref_self v)const;
+        constexpr Mask operator&(ref_self v)const;
+        constexpr Mask operator|(ref_self v)const;
+        constexpr Mask operator^(ref_self v)const;
+        constexpr ref_self operator&=(ref_self v);
+        constexpr ref_self operator|=(ref_self v);
+        constexpr ref_self operator^=(ref_self v);
+    private:
+        template <size_t Size2>
+        friend class Mask;
+        template <size_t Size2>
+        friend std::ostream& operator<<(std::ostream& os, const Mask<Size2>& m);
+
+        word_type& accWord_(size_t bit_id);
+        word_type getWord_(size_t bit_id)const;
+        word_type getMask_(size_t n)const;
+        void setWords_(u8 val);
+
+        static constexpr size_t word_bits_ = BITS_IN_TYPE (word_type);
+        static constexpr size_t words_cnt_ = Size / word_bits_ + ((Size % word_bits_) != 0);
+        static constexpr size_t bits_cnt_ = words_cnt_ * word_bits_;
+
+        word_type data_ [words_cnt_];
     };
+
+    template <size_t S>
+    class MaskBitIterator : public BitScanner<typename Mask<S>::word_type> {
+    public:
+        MaskBitIterator(const Mask<S>& m);
+        const Mask<S>& getMask()const;
+    private:
+        const Mask<S>& mask_;
+    };
+
+    template <size_t Size>
+    static std::ostream& operator<<(std::ostream& os, const Mask<Size>& m);
 }
 
+#include "Mask.inl"
 #endif //MASK_H

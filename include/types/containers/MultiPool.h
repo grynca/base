@@ -2,6 +2,7 @@
 #define MULTIPOOL_H
 
 #include "fast_vector.h"
+#include "ChunkedBuffer.h"
 #include "../Index.h"
 #include "../Type.h"
 
@@ -35,7 +36,7 @@ namespace grynca {
         void getIndexForPos2(u32 pos, Index& index_out);
 
         const TypeInfo& getTypeInfo(u32 component_id)const;
-        u8* getCompsData(u32 component_id);
+        //u8* getCompsData(u32 component_id);
         bool isValidIndex(Index index)const;
         u32 size()const;
         u32 occupiedSize()const;
@@ -47,7 +48,8 @@ namespace grynca {
         void unsetFree_(u32 pos);
 
         fast_vector<u16> versions_;        // first bit is 1 when slot is free
-        fast_vector<u8> data_[MAX_COMPS];
+        //fast_vector<u8> data_[MAX_COMPS];
+        ChunkedBuffer data_[MAX_COMPS];
         fast_vector<u32> component_types_;     // type ids of components
         fast_vector<u32> free_slots_;
 

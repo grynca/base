@@ -1,8 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include <chrono>
-#include "../functions/defs.h"
+#include "functions/defs.h"
 
 namespace grynca {
 
@@ -12,9 +11,13 @@ namespace grynca {
     };
 
     class Clock {
-        friend f32 operator-(const Clock&, const Clock&);
-        friend Clock operator-(const Clock&, f32);
-        friend Clock operator+(const Clock&, f32);
+    public:
+        typedef f32 value_type;
+    private:
+
+        friend value_type operator-(const Clock&, const Clock&);
+        friend Clock operator-(const Clock&, value_type);
+        friend Clock operator+(const Clock&, value_type);
         friend bool operator<(const Clock&, const Clock&);
         friend bool operator>(const Clock&, const Clock&);
         friend bool operator<=(const Clock&, const Clock&);
@@ -25,8 +28,8 @@ namespace grynca {
         static Clock getNow();
 
 
-        Clock& operator+=(f32 secs);
-        Clock& operator-=(f32 secs);
+        Clock& operator+=(value_type secs);
+        Clock& operator-=(value_type secs);
     private:
         static f64 getFreq() {
             static Freq f;
@@ -38,9 +41,10 @@ namespace grynca {
     class Timer {
     public:
         Timer();
-        f32 getElapsed();
+        Clock::value_type getElapsed()const;
         void reset();
 
+        Clock& accStart();
     private:
         Clock start_;
     };

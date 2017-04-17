@@ -1,6 +1,7 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 #define u8 uint8_t
@@ -13,6 +14,8 @@
 #define i64 int64_t
 #define f32 float
 #define f64 double
+#define c8 char
+#define c32 char32_t
 
 #undef UNDEFS_H
 

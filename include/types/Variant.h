@@ -4,7 +4,6 @@
 #include "Type.h"
 #include "variant_helper.h"
 #include "../functions/meta.h"
-#include <ostream>
 
 #define GET_BASE(e, BASE) ((BASE&)(e).template getBase<BASE>())
 
@@ -18,19 +17,28 @@ namespace grynca {
         Variant();
         Variant(const Variant<Ts...>& old);
         Variant(Variant<Ts...>&& old);
+        template <typename T>
+        Variant(const T& t);
+        template <typename T>
+        Variant(T&& t);
 
         ~Variant();
 
-        // Serves as both the move and the copy asignment operator.
-        Variant<Ts...>& operator= (Variant<Ts...> old);
+        Variant<Ts...>& operator= (const Variant<Ts...>& v);
+        Variant<Ts...>& operator= (Variant<Ts...>&& v);
 
         template <typename T>
-        bool is();
+        Variant<Ts...>& operator= (T& t);
 
-        bool valid();
+        template <typename T>
+        bool is()const;
+
+        bool valid()const;
 
         template<typename T, typename... Args>
         T& set(Args&&... args);
+
+        void unset();
 
         template<typename T>
         T& get();
@@ -50,7 +58,7 @@ namespace grynca {
         int getTypeId()const { return curr_pos_; }
 
         template <typename T>
-        static int getTypeIdOf();
+        static constexpr int getTypeIdOf();
     protected:
 
         internal::VariantHelper<Ts...>& getHelper_();

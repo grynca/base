@@ -1,8 +1,9 @@
 #ifndef EXCEPTION_H
 #define EXCEPTION_H
 
-#include <stdexcept>
 #include <cassert>
+#include <stdexcept>
+#include "3rdp/ustring.h"
 #include "../functions/debug.h"
 
 namespace grynca {
@@ -15,8 +16,8 @@ namespace grynca {
             dout(this->what() << std::endl);
             DEBUG_BREAK();
         }
-        Exception(const std::string& msg) throw()
-         : std::runtime_error(msg)
+        Exception(const ustring& msg) throw()
+         : std::runtime_error(msg.cpp_str())
         {
             dout(this->what() << std::endl);
             DEBUG_BREAK();

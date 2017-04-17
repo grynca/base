@@ -1,6 +1,6 @@
 #ifndef INDEX_H
 #define INDEX_H
-#include "../functions/defs.h"
+#include "functions/defs.h"
 #include <iostream>
 
 namespace grynca {
@@ -45,7 +45,7 @@ namespace grynca {
     };
 
     static inline std::ostream& operator<<(std::ostream& os, const Index & ar) {
-        os << "VI[" << ar.getIndex() << ", " << ar.getVersion()<< "]";
+        os << "Id[" << ar.getIndex() << ", " << ar.getVersion()<< "]";
         return os;
     }
 

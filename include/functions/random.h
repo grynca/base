@@ -15,8 +15,14 @@ namespace grynca {
         return f32(rand()%RAND_MAX)/RAND_MAX;
     }
 
-    static inline f32 randFloatMinMax(f32 min, f32 max) {
-        return randFloat()*(max-min) + min;
+    // 0-to
+    static inline f32 randFloat(f32 to) {
+        return randFloat()*to;
+    }
+
+    // from-to
+    static inline f32 randFloat(f32 from, f32 to) {
+        return randFloat()*(to-from) + from;
     }
 
     // pick count numbers without repeating, from 0 to (max-1), caller is responsible for seeding his random gen

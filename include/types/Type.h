@@ -1,11 +1,10 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include "../functions/defs.h"
-#include <algorithm>
-#include <cassert>
+#include "functions/defs.h"
 #include  "containers/fast_vector.h"
 #include "../functions/meta.h"
+#include "3rdp/ustring.h"
 
 namespace grynca {
     typedef void (*DestroyFunc)(void*);
@@ -23,7 +22,7 @@ namespace grynca {
     public:
         static const TypeInfo& getInfo(u32 tid);
         static bool isTypeIdSet(u32 tid);
-        static std::string getDebugString(std::string indent);
+        static ustring getDebugString(ustring indent);
     protected:
         template <typename T>
         static u32 getNewId_();
@@ -39,6 +38,8 @@ namespace grynca {
     public:
         template <typename BaseType = T, typename... ConstructionArgs>
         static BaseType* create(void* place, ConstructionArgs&&... args);
+        template <typename... ConstructionArgs>
+        static void create2(void* place, ConstructionArgs&&... args);
         static void defConstruct(void* place);
         static void destroy(void* place);
         static void copy(void *to, const void *from);
@@ -47,7 +48,8 @@ namespace grynca {
         // these ids are automatically set (compilation order dependant)
         //  should not be communicated over network or saved between runs
         static u32 getInternalTypeId();
-        static std::string getTypename();
+        static const TypeInfo& getInternalTypeInfo();
+        static ustring getTypename();
         static size_t getSize();
 
         static const TypeInfo& getTypeInfo();
@@ -68,14 +70,14 @@ namespace grynca {
         CopyFunc getCopyFunc()const;
         MoveFunc getMoveFunc()const;
         DefConstrFunc getDefaultConstr()const;
-        const std::string& getTypename()const;
+        const ustring& getTypename()const;
 
         template <typename T, typename Domain>
         void set(u32 id);
 
         u32 getId()const;
 
-        std::string getDebugString()const;
+        ustring getDebugString()const;
     private:
         DestroyFunc destroy_;
         DefConstrFunc def_constr_;
@@ -83,7 +85,7 @@ namespace grynca {
         MoveFunc move_;
         size_t size_;
         u32 id_;
-        std::string typename_;
+        ustring typename_;
     };
 
 // Type manager for user-defined types
@@ -120,6 +122,9 @@ namespace grynca {
 
         static const TypeInfo& getTypeInfo(int pos) { ASSERT_M(false, "empty types pack"); return Type<void>::getTypeInfo(); }
 
+        template <typename Domain>
+        static void mapIds(fast_vector<u32>& ids_mapper_out) {}
+
         template <typename... Tss>
         static TypesPack<Tss...> expand() {
             return TypesPack<Tss...>();
@@ -144,6 +149,10 @@ namespace grynca {
         static constexpr int empty();
 
         static const TypeInfo& getTypeInfo(int pos);
+
+        // creates mapping array for internal type ids of domain to type ids in pack
+        template <typename Domain>
+        static void mapIds(fast_vector<u32>& ids_mapper_out);
 
         template <typename... Tss>
         static TypesPack<F, R...,Tss...> expand();  // expand with types

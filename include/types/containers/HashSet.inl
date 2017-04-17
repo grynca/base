@@ -54,7 +54,7 @@ namespace grynca {
     }
 
     HS_TPL
-    inline u32 HS_TYPE::addItem(const KeyType& key, bool& was_added) {
+    inline u32 HS_TYPE::findOrAddItem(const KeyType& key, bool& was_added) {
         u32 inner_hash = hash_(key);
         u32 hash = inner_hash & modulo_mask_;
         u32 id = findInternal_(key, hash);

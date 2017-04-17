@@ -35,27 +35,27 @@ namespace grynca {
         return c;
     }
 
-    inline Clock& Clock::operator+=(f32 secs) {
+    inline Clock& Clock::operator+=(Clock::value_type secs) {
         t_ += i64(secs*getFreq());
         return *this;
     }
 
-    inline Clock& Clock::operator-=(f32 secs) {
+    inline Clock& Clock::operator-=(Clock::value_type secs) {
         t_ -= i64(secs*getFreq());
         return *this;
     }
 
-    inline f32 operator-(const Clock& c1, const Clock& c2) {
-        return f32((c1.t_ - c2.t_)/Clock::getFreq());
+    inline Clock::value_type operator-(const Clock& c1, const Clock& c2) {
+        return Clock::value_type((c1.t_ - c2.t_)/Clock::getFreq());
     }
 
-    inline Clock operator-(const Clock& c, f32 secs) {
+    inline Clock operator-(const Clock& c, Clock::value_type secs) {
         Clock c2;
         c2.t_ = c.t_ - i64(secs*Clock::getFreq());
         return c2;
     }
 
-    inline Clock operator+(const Clock& c, f32 secs) {
+    inline Clock operator+(const Clock& c, Clock::value_type secs) {
         Clock c2;
         c2.t_ = c.t_ + i64(secs*Clock::getFreq());
         return c2;
@@ -89,11 +89,15 @@ namespace grynca {
       : start_(Clock::getNow())
     {}
 
-    inline f32 Timer::getElapsed() {
+    inline Clock::value_type Timer::getElapsed()const {
         return Clock::getNow() - start_;
     }
 
     inline void Timer::reset() {
         start_ = Clock::getNow();
+    }
+
+    inline Clock& Timer::accStart() {
+        return start_;
     }
 }

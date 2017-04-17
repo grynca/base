@@ -1,8 +1,6 @@
 #ifndef SCOPEMEASURE_H
 #define SCOPEMEASURE_H
 
-#include <string>
-#include <iostream>
 #include "Timer.h"
 #include "../functions/debug.h"
 
@@ -27,8 +25,14 @@ namespace grynca {
             return acc_/loops_;
         }
 
-        void print(const std::string& msg)const {
-            std::cout << msg << ": " << calcAvgDt() << " sec." << std::endl;
+        f32 calcAvgDt2()const {
+            if (!loops_)
+                return 0.0f;
+            return acc_/loops_;
+        }
+
+        void print(const ustring& msg)const {
+            std::cout << msg << ": " << std::setprecision(4) << calcAvgDt() << " sec." << std::endl;
         }
 
     protected:
@@ -39,7 +43,7 @@ namespace grynca {
 
     class BlockMeasure : public Measure {
     public:
-        BlockMeasure(const std::string& msg)
+        BlockMeasure(const ustring& msg)
          : msg_(msg)
         {
             from();
@@ -50,7 +54,7 @@ namespace grynca {
             print(msg_);
         }
 
-        std::string msg_;
+        ustring msg_;
     };
 }
 

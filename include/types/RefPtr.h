@@ -59,6 +59,10 @@ namespace grynca {
             return ptr_;
         }
 
+        bool operator()()const {
+            return ptr_ != NULL;
+        }
+
     protected:
         void unref_() {
             if (!ref_count_->unref()) {

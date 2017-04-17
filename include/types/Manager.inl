@@ -125,8 +125,73 @@ namespace grynca {
 
     template <typename Derived, typename BaseType>
     inline u32 ManagerSingletons<Derived, BaseType>::getSize() {
-        return items_.size();
+        return u32(items_.size());
     };
+
+    template <typename ItemType>
+    inline ManagedItemPtr<ItemType>::ManagedItemPtr()
+     : manager_(NULL)
+    {}
+
+    template <typename ItemType>
+    inline ManagedItemPtr<ItemType>::ManagedItemPtr(ManagerType& manager, IndexType index)
+     : manager_(&manager), id_(index)
+    {}
+
+    template <typename ItemType>
+    inline ManagedItemPtr<ItemType>::ManagedItemPtr(const ManagedItemRef<ItemType>& ref)
+     : manager_(ref.manager_), id_(ref.id_)
+    {}
+
+    template <typename ItemType>
+    inline ManagedItemPtr<ItemType>::ManagedItemPtr(const ManagedItemPtr<ItemType>& ptr)
+     : manager_(ptr.manager_), id_(ptr.id_)
+    {}
+
+    template <typename ItemType>
+    inline ManagedItemPtr<ItemType>::ManagedItemPtr(ItemType& item)
+     : manager_(item.manager_), id_(item.id_)
+    {}
+
+    template <typename ItemType>
+    inline ManagedItemPtr<ItemType>::ManagedItemPtr(ItemType* item)
+     : manager_(item->manager_), id_(item->id_)
+    {}
+
+
+    template <typename ItemType>
+    inline ItemType& ManagedItemPtr<ItemType>::get()const {
+        ASSERT(manager_);
+        return manager_->getItem(id_);
+    }
+
+    template <typename ItemType>
+    inline ItemType* ManagedItemPtr<ItemType>::getPtr()const {
+        ASSERT(manager_);
+        return &manager_->getItem(id_);
+    }
+
+    template <typename ItemType>
+    inline typename ItemType::IndexType ManagedItemPtr<ItemType>::getItemId()const {
+        return id_;
+    }
+
+    template <typename ItemType>
+    inline typename ItemType::ManagerType& ManagedItemPtr<ItemType>::getManager()const {
+        ASSERT(manager_);
+        return *manager_;
+    }
+
+    template <typename ItemType>
+    inline bool ManagedItemPtr<ItemType>::isNull()const {
+        return manager_!=NULL;
+    }
+
+    template <typename ItemType>
+    inline bool ManagedItemPtr<ItemType>::isValid()const {
+        ASSERT(manager_);
+        return manager_->isValidIndex(id_);
+    }
 
     template <typename ItemType>
     inline ManagedItemRef<ItemType>::ManagedItemRef()
@@ -143,6 +208,14 @@ namespace grynca {
     template <typename ItemType>
     inline ManagedItemRef<ItemType>::ManagedItemRef(const ManagedItemRef<ItemType>& ref)
      : manager_(ref.manager_), id_(ref.id_)
+    {
+        if (manager_)
+            get().ref_count_.ref();
+    }
+
+    template <typename ItemType>
+    inline ManagedItemRef<ItemType>::ManagedItemRef(const ManagedItemPtr<ItemType>& ptr)
+     : manager_(ptr.manager_), id_(ptr.id_)
     {
         if (manager_)
             get().ref_count_.ref();
@@ -195,6 +268,12 @@ namespace grynca {
     }
 
     template <typename ItemType>
+    inline ItemType* ManagedItemRef<ItemType>::getPtr()const {
+        ASSERT(manager_);
+        return &manager_->getItem(id_);
+    }
+
+    template <typename ItemType>
     inline typename ItemType::IndexType ManagedItemRef<ItemType>::getItemId()const {
         return id_;
     }
@@ -203,6 +282,17 @@ namespace grynca {
     typename ItemType::ManagerType& ManagedItemRef<ItemType>::getManager()const {
         ASSERT(manager_);
         return *manager_;
+    }
+
+    template <typename ItemType>
+    inline bool ManagedItemRef<ItemType>::isNull()const {
+        return manager_!=NULL;
+    }
+
+    template <typename ItemType>
+    inline bool ManagedItemRef<ItemType>::isValid()const {
+        ASSERT(manager_);
+        return manager_->isValidIndex(id_);
     }
 
     template <typename ItemType>

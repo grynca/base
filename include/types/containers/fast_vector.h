@@ -1,22 +1,17 @@
 #ifndef FAST_VECTOR_H
 #define FAST_VECTOR_H
 
-#include <algorithm>
-#include <iterator>
-#include <stdexcept>
-#include <cassert>
-#include <cmath>
-#include <type_traits>
-#include <memory>
-#include <string.h>
-#include "../../functions/defs.h"
+#include "functions/defs.h"
 #include "../../functions/debug.h"
+#include <stdexcept>
+#include <cmath>
+#include <cstring>
 
 #ifdef DONT_USE_FAST_VECTOR
 #  include <vector>
 #  define fast_vector std::vector
 #else
-#define GROWING_FACTOR 1.5
+#define GROWING_FACTOR 1.5f
 
 namespace grynca {
     template<typename T>
@@ -52,6 +47,16 @@ namespace grynca {
           mData = (T *) malloc(sizeof(T) * n);
           for (size_t i = 0; i < n; ++i)
              new (&mData[i]) T(val);
+       }
+
+       fast_vector(const_iterator first, const_iterator last)
+       {
+          size_t count = last - first;
+          mCapacity = mSize = count;
+          mData = (T *) malloc(sizeof(T) * count);
+          for (size_t i = 0; i < count; ++i, ++first) {
+             new (&mData[i]) T(*first);
+          }
        }
 
        template<template<class> class InputIterator, class U>
@@ -142,7 +147,7 @@ namespace grynca {
 
        ~fast_vector() {
           for (size_t i=0; i<mSize; ++i) {
-             mData[i].~T();
+              mData[i].~T();
           }
           free(mData);
        }
@@ -182,7 +187,7 @@ namespace grynca {
           if (mSize == mCapacity) {
              _realloc_all(_get_new_capacity(capacity(), capacity() + 1));
           }
-          new (&mData[mSize]) T(std::move(T(std::forward<ConstructionArgs>(args)...)));
+          new (&mData[mSize]) T(std::forward<ConstructionArgs>(args)...);
           ++mSize;
        }
 
@@ -366,6 +371,18 @@ namespace grynca {
           return position;
        }
 
+       template<typename InputIterator>
+       void append(InputIterator first, InputIterator last) {
+          size_t count = last - first;
+          if (mSize + count > mCapacity) {
+             _realloc_all(_get_new_capacity(capacity(), mSize + count));
+          }
+          for (iterator it = end(); first != last; ++it, ++first) {
+             new (it) T(*first);
+          }
+          mSize += count;
+       }
+
        iterator erase(iterator position) {
           ASSERT(position < end() );
           ASSERT(position >= begin());
@@ -399,8 +416,9 @@ namespace grynca {
        // clear
        void clear() {
           size_type i;
-          for (size_t i = 0; i<mSize; ++i)
-             mData[i].~T();
+          for (size_t i = 0; i<mSize; ++i) {
+              mData[i].~T();
+          }
           mSize = 0;
        }
 
@@ -443,12 +461,12 @@ namespace grynca {
     private:
 
        inline size_t _get_new_capacity(size_t curr_capacity, size_t needed_capacity) {
-          return std::max((size_t) std::ceil(curr_capacity * GROWING_FACTOR), needed_capacity);
+          return std::max((size_t) ceilf(curr_capacity * GROWING_FACTOR), needed_capacity);
        }
 
        inline void _realloc_all(size_t new_capacity) {
-          mCapacity = new_capacity;
-          mData = (T *)realloc(mData, new_capacity*sizeof(T));
+           mCapacity = new_capacity;
+           mData = (T *)realloc(mData, new_capacity*sizeof(T));
        }
 
        size_type mCapacity;

@@ -1,15 +1,17 @@
 #ifndef META_H
 #define META_H
 
-#include <cstddef>
-#include <type_traits>
-#include "../types/Mask.h"
+#include <bitset>
+#include <climits>
 
 #define kilobytes(n) u32(1024*(n))
 #define megabytes(n) (1024*kilobytes(n))
 #define gigabytes(n) (1024*megabytes(n))
 
-#define ONES(from, to) (((1<<(to-from+1))-1)<<from)
+// Returns the number of bits in the given type
+#define BITS_IN_TYPE(t)	(sizeof(t) * CHAR_BIT)
+
+#define ONES(from, to) (((u64(1)<<(to-from+1))-1)<<from)
 #define ZEROS(from, to) (~ONES(from, to))
 
 #define GET_BIT(num, b_id) (bool)(((num)>>(b_id))&1)
@@ -21,6 +23,11 @@
 #define SET_BITS(num, bit_from, bits_cnt, val) ((num&ZEROS((bit_from), bit_from+bits_cnt-1)) | (val << (bit_from))); \
                                                 ASSERT( val < (1<<(bits_cnt)) )
 
+/// Returns the mask of type \p t with the lowest \p n bits set.
+#define LSB_MASK(t,n)	(t(~t(0)) >> (BITS_IN_TYPE(t) - (n)))
+
+// float decimal precision
+#define FPR(num, digs) f32(i32((num)*(1e##digs))/(1e##digs))
 
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(*array))
 
@@ -74,8 +81,8 @@
 
 #define _ENUM_ID(NAME) NAME##Id
 #define _DEF_ENUM_MASK(NAME)  \
-    static const Mask<end>& NAME##Mask() { \
-        static Mask<end> v{NAME##Id}; \
+    static const grynca::Mask<end>& NAME##Mask() { \
+        static grynca::Mask<end> v = grynca::Mask<end>::bit(NAME##Id); \
         return v; \
     }
 #define DEFINE_ENUM(NAME, ...) \
@@ -102,7 +109,18 @@
 template<class T> \
 using PROP##_t = decltype(std::declval<T>().PROP);
 
+#define GET_PARENT_STRUCT(STRUCTNAME, MEMBERNAME, MEMBERREF) \
+    grynca::internal::getParentStruct<STRUCTNAME, offsetof(STRUCTNAME, MEMBERNAME)>(MEMBERREF)
+
 namespace grynca {
+
+    namespace internal {
+        template <class Struct, size_t offset, class Member>
+        Struct& getParentStruct(Member &m) {
+            static_assert(std::is_standard_layout<Struct>::value, "Given struct must have a standard layout type");
+            return *reinterpret_cast<Struct *>(reinterpret_cast<char *>(&m) - offset);
+        }
+    }
 
     enum class enabler_t {};
 
@@ -124,6 +142,12 @@ namespace grynca {
         static const size_t value = arg1 >= arg2 ? static_max<arg1, others...>::value :
                                     static_max<arg2, others...>::value;
     };
+
+    /// Selects type result = flag ? T : U
+    template <bool flag, typename T, typename U>
+    struct select { typedef T result; };
+    template <typename T, typename U>
+    struct select<false, T, U> { typedef U result; };
 
 // e.g. position<int, MyType, bool, int>::pos == 2
     template <typename X, typename... Ts>

@@ -12,8 +12,9 @@ namespace grynca {
 
     class Pool {
     public:
-
+        Pool();     // uninitialized, must call init afterwards
         Pool(u32 item_size);
+        void init(u32 item_size);
 
         Index add(u8*& new_item_out);
 

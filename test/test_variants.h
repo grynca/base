@@ -14,29 +14,30 @@ namespace grynca { namespace test_variants {
         }
     };
 
-    inline void testVariants() {
-        std::cout <<"Variants " << n() << ":" << std::endl;
+    struct Test {
+        static void f(void*, Config::ConfigSectionMap&) {
+            std::cout <<"Variants " << n() << ":" << std::endl;
 
-        fast_vector<MyStuffVariant> rvar;
-        {
-            BlockMeasure m(" create:");
-            std::cout << "Variant size: " << sizeof(MyStuffVariant) << std::endl;
-            rvar = MyStuffVariant::generateN(n());
-        }
+            fast_vector<MyStuffVariant> rvar;
+            {
+                BlockMeasure m(" create:");
+                std::cout << "Variant size: " << sizeof(MyStuffVariant) << std::endl;
+                rvar = MyStuffVariant::generateN(n());
+            }
 
-        {
-            BlockMeasure m(" loop:");
-            for (size_t i=0; i<n(); ++i) {
-                VariantCaller<StuffCaller>::call(rvar[i]);
+            {
+                BlockMeasure m(" loop:");
+                for (size_t i=0; i<n(); ++i) {
+                    VariantCaller<StuffCaller>::call(rvar[i]);
+                }
+            }
+
+            {
+                BlockMeasure m(" delete:");
+                rvar.clear();
             }
         }
-
-        {
-            BlockMeasure m(" delete:");
-            rvar.clear();
-        }
-    }
-
+    };
 }}
 
 #endif //TEST_VARIANTS_H

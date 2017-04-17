@@ -5,14 +5,26 @@
 
 namespace grynca {
 
+    inline Pool::Pool()
+     : item_size_(InvalidId()), first_free_pos_(InvalidId())
+    {
+    }
+
     inline Pool::Pool(u32 item_size)
      : item_size_(item_size), first_free_pos_(InvalidId())
     {
-        // when item is not used its data is used for interwined doubly linked free list
+        // when item is not used its data_ is used for interwined doubly linked free list
+        ASSERT(item_size > sizeof(u32));
+    }
+
+    inline void Pool::init(u32 item_size) {
+        item_size_ = item_size;
         ASSERT(item_size > sizeof(u32));
     }
 
     inline Index Pool::add(u8*& new_item_out) {
+        ASSERT_M(item_size_ != InvalidId(), "Not initialized!");
+
         u32 slot_id;
         if (first_free_pos_ != InvalidId()) {
             slot_id = first_free_pos_;
@@ -22,7 +34,7 @@ namespace grynca {
             // resize
             slot_id = size();
 
-            u32 new_items_cnt = u32(std::ceil(GROWING_FACTOR*(slot_id+1)));
+            u32 new_items_cnt = u32(ceilf(GROWING_FACTOR*(slot_id+1)));
 
             data_.resize(new_items_cnt*item_size_);
             versions_.resize(new_items_cnt, FREE_BITMASK);

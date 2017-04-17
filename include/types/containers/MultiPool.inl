@@ -15,6 +15,9 @@ namespace grynca {
     inline void MP_TYPE::initComponents() {
         ASSERT(TP::getTypesCount() <= MAX_COMPS);
         TP::template callOnTypes<CompsInitLooper>(component_types_);
+        for (u32 i=0; i<component_types_.size(); ++i) {
+            data_[i].init(u32(getTypeInfo(i).getSize()));
+        }
     }
 
     MP_TPL
@@ -27,8 +30,7 @@ namespace grynca {
         else {
             slot_id = size();
             for (u32 i=0; i<component_types_.size(); ++i) {
-                u32 comp_size = getTypeInfo(i).getSize();
-                data_[i].resize((slot_id+1)*comp_size);
+                data_[i].resize(slot_id+1);
             }
             versions_.resize(slot_id+1, (1<<15));
         }
@@ -41,7 +43,7 @@ namespace grynca {
         Index id = add();
         for (u32 i=0; i<component_types_.size(); ++i) {
             const TypeInfo& ti = getTypeInfo(i);
-            u8* comp_ptr = &data_[i][ti.getSize()*id.getIndex()];
+            u8* comp_ptr = data_[i].accItem(id.getIndex());
             ti.getDefaultConstr()(comp_ptr);
         }
         return id;
@@ -51,6 +53,12 @@ namespace grynca {
     MP_TPL
     inline void MP_TYPE::removeAtPos(u32 pos) {
         ASSERT(!isFree(pos));
+        // call components' destructors
+        for (u32 i=0; i<component_types_.size(); ++i) {
+            const TypeInfo& ti = getTypeInfo(i);
+            u8* comp_ptr = data_[i].accItem(pos);
+            ti.getDestroyFunc()(comp_ptr);
+        }
         free_slots_.push_back(pos);
         ++versions_[pos];
         setFree_(pos);
@@ -59,17 +67,14 @@ namespace grynca {
     MP_TPL
     inline void MP_TYPE::remove(Index index) {
         ASSERT(isValidIndex(index));
-        free_slots_.push_back(index.getIndex());
-        ++versions_[index.getIndex()];
-        setFree_(index.getIndex());
+        removeAtPos(index.getIndex());
     }
 
     MP_TPL
     inline void MP_TYPE::reserve(size_t count) {
         versions_.reserve(count);
         for (u32 i=0; i<component_types_.size(); ++i) {
-            u32 comp_size = getTypeInfo(i).getSize();
-            data_[i].reserve(comp_size*count);
+            data_[i].reserve(count);
         }
     }
 
@@ -81,33 +86,30 @@ namespace grynca {
 
     MP_TPL
     inline u32 MP_TYPE::getComponentsCount()const {
-        return component_types_.size();
+        return u32(component_types_.size());
     }
 
     MP_TPL
     inline u8* MP_TYPE::get(Index index, u32 component_id) {
-        u32 comp_size = getTypeInfo(component_id).getSize();
-        return &data_[component_id][comp_size*index.getIndex()];
+        return data_[component_id].accItem(index.getIndex());
     }
 
     MP_TPL
     inline const u8* MP_TYPE::get(Index index, u32 component_id)const {
-        u32 comp_size = getTypeInfo(component_id).getSize();
-        return &data_[component_id][comp_size*index.getIndex()];
+        return data_[component_id].getItem(index.getIndex());
     }
 
     MP_TPL
     inline u8* MP_TYPE::getAtPos(u32 pos, u32 component_id) {
         ASSERT(!isFree(pos));
-        u32 comp_size = getTypeInfo(component_id).getSize();
-        return &data_[component_id][pos*comp_size];
+        return data_[component_id].accItem(pos);
     }
 
     MP_TPL
     inline const u8* MP_TYPE::getAtPos(u32 pos, u32 component_id)const {
         ASSERT(!isFree(pos));
-        u32 comp_size = getTypeInfo(component_id).getSize();
-        return &data_[component_id][pos*comp_size];
+        return data_[component_id].getItem(pos);
+
     }
 
     MP_TPL
@@ -126,10 +128,10 @@ namespace grynca {
         return InternalTypes<Domain>::getInfo(component_types_[component_id]);
     }
 
-    MP_TPL
-    inline u8* MP_TYPE::getCompsData(u32 component_id) {
-        return &data_[component_id][0];
-    }
+//    MP_TPL
+//    inline u8* MP_TYPE::getCompsData(u32 component_id) {
+//        return &data_[component_id][0];
+//    }
 
     MP_TPL
     inline bool MP_TYPE::isValidIndex(Index index)const {
@@ -140,12 +142,12 @@ namespace grynca {
 
     MP_TPL
     inline u32 MP_TYPE::size()const {
-        return versions_.size();
+        return u32(versions_.size());
     }
 
     MP_TPL
     inline u32 MP_TYPE::occupiedSize()const {
-        return size()-free_slots_.size();
+        return size()-u32(free_slots_.size());
     }
 
     MP_TPL

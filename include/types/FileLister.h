@@ -2,8 +2,7 @@
 #define FILELISTER_H
 
 #include <dirent.h>
-#include <string>
-#include <vector>
+#include "types/containers/fast_vector.h"
 
 namespace grynca {
     class Path;
@@ -26,8 +25,8 @@ namespace grynca {
         };
 
         bool _recursive;
-        std::vector<std::string> _extensions;
-        std::vector<Pair_> _dirs;
+        fast_vector<std::string> extensions_;
+        fast_vector<Pair_> dirs_;
     };
 }
 

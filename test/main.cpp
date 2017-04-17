@@ -1,32 +1,40 @@
-#include <iostream>
+
 #include <time.h>
 #include "base.h"
-using namespace std;
 using namespace grynca;
 #include "MyDomain.h"
+#include "test_event_handlers.h"
 #include "test_containers.h"
 #include "test_variants.h"
 #include "test_type_if.h"
 #include "test_types.h"
 #include "test_enum.h"
 
+
 int main(int argc, char** argv) {
-
     srand(time(NULL));
+
+    TestBench& tests = TestBenchSton::get();
+
     MyDomain::init();
-    test_types::test();
+    tests.addTestWithoutMeasure<test_types::Test>("test types");
+    tests.addTestWithoutMeasure<test_event_handlers::Test>("test event handlers");
+    tests.addTestWithoutMeasure<test_event_handlers::TestTyped>("test event handlers typed");
+    tests.addTestWithoutMeasure<test_variants::Test>("test variants");
+    tests.addTestWithoutMeasure<test_type_if::Test>("test type if");
+    tests.addTestWithoutMeasure<test_enum::Test>("test enum");
 
-    test_variants::testVariants();
-    test_containers::testStdMap();
-    test_containers::testHashMap();
-    test_containers::testArray();
-    test_containers::testTightArray();
-    test_containers::testMultiPool();
-    test_containers::testVirtualVector();
 
-    test_type_if::test();
+    u32 n = test_containers::n();
+    tests.addTest<test_containers::TestVector>(ssu::format("fast_vector %u", n));
+    tests.addTest<test_containers::TestHashMap>(ssu::format("HashMap %u", n));
+    tests.addTest<test_containers::TestArray>(ssu::format("Array %u", n));
+    tests.addTest<test_containers::TestTightArray>(ssu::format("TightArray %u", n));
+    tests.addTest<test_containers::TestMultiPool>(ssu::format("MultiPool %u", n));
+    tests.addTest<test_containers::TestMask>(ssu::format("Mask %u", n));
+    tests.addTest<test_containers::TestVirtualVector>(ssu::format("VirtualVector %u", n));
 
-    test_enum::test();
+    tests.runAllTests();
 
     WAIT_FOR_KEY_ON_WIN();
     return 0;

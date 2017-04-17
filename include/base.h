@@ -1,13 +1,22 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include "base_cfg.h"
+
+#if USE_SDL2 == 1
+#   include "functions/sdlinclude.h"
+#endif
+
+#include "3rdp/ustring.h"
 #include "functions/defs.h"
 #include "functions/debug.h"
+#include "functions/profiling.h"
 #include "functions/meta.h"
-#include "functions/string_utils.h"
+#include "functions/ssu.h"
 #include "functions/sort_utils.h"
 #include "functions/random.h"
 #include "functions/common.h"
+#include "functions/emsc_utils.h"
 #include "types/containers/fast_vector.h"
 #include "types/containers/TightPool.h"
 #include "types/containers/Pool.h"
@@ -20,6 +29,11 @@
 #include "types/containers/HashSet.h"
 #include "types/containers/MultiPool.h"
 #include "types/containers/Items.h"
+#include "types/containers/Items2.h"
+#include "types/containers/ChunkedBuffer.h"
+#include "types/Bits.h"
+#include "types/TestBench.h"
+#include "types/SimpleFont.h"
 #include "types/CommonPtr.h"
 #include "types/Exception.h"
 #include "types/RefCommonPtr.h"
@@ -38,5 +52,8 @@
 #include "types/Config.h"
 #include "types/OptionsHandler.h"
 #include "types/Singleton.h"
+#include "types/EventsHandler.h"
+#include "types/EventsReciever.h"
+#include "types/ObjFunc.h"
 
 #endif //BASE_H

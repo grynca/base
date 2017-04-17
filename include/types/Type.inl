@@ -1,7 +1,8 @@
 #include "Type.h"
 #include "Type_internal.h"
 #include "Call.h"
-#include "../functions/string_utils.h"
+#include "functions/ssu.h"
+#include <typeinfo>
 
 /// Inline implementation
 
@@ -25,9 +26,9 @@ namespace grynca {
     }
 
     template<typename Domain>
-    inline std::string InternalTypes<Domain>::getDebugString(std::string indent) {
+    inline ustring InternalTypes<Domain>::getDebugString(ustring indent) {
         // static
-        std::string s;
+        ustring s;
         for (u32 i=0; i<getTypes_().size(); ++i) {
             TypeInfo& ti = getTypes_()[i];
             s += indent + ti.getDebugString() + "\n";
@@ -57,6 +58,13 @@ namespace grynca {
     inline BaseType* Type<T, Domain>::create(void* place, ConstructionArgs&&... args) {
         // static
         return static_cast<BaseType*> (new(place)T(std::forward<ConstructionArgs>(args)...));
+    }
+
+    template <typename T, typename Domain>
+    template <typename... ConstructionArgs>
+    inline void Type<T, Domain>::create2(void* place, ConstructionArgs&&... args) {
+        // static
+        new(place)T(std::forward<ConstructionArgs>(args)...);
     };
 
     template <typename T, typename Domain>
@@ -64,7 +72,7 @@ namespace grynca {
         // static
         Call<internal::DefConstruct, T>::template ifTrue<std::is_default_constructible<T> >(place);
         Call<internal::NoDefConstruct, T>::template ifFalse<std::is_default_constructible<T> >();
-    };
+    }
 
     template <typename T, typename Domain>
     inline void Type<T, Domain>::destroy(void* place) {
@@ -81,7 +89,13 @@ namespace grynca {
     }
 
     template <typename T, typename Domain>
-     std::string Type<T, Domain>::getTypename() {
+    inline const TypeInfo& Type<T, Domain>::getInternalTypeInfo() {
+        // static
+        return InternalTypes<Domain>::getInfo(getInternalTypeId());
+    }
+
+    template <typename T, typename Domain>
+     ustring Type<T, Domain>::getTypename() {
         //static
         return typeid(T()).name();
     };
@@ -119,7 +133,7 @@ namespace grynca {
 
     template <typename T, typename Domain>
     inline void Type<T, Domain>::move(void *to, void *from)  {
-        std::move((T*)from, ((T*)from)+1, (T*)to);
+        *(T*)to = std::move(*(T*)from);
     }
 
 
@@ -151,7 +165,7 @@ namespace grynca {
         return def_constr_;
     }
 
-    inline const std::string& TypeInfo::getTypename()const {
+    inline const ustring& TypeInfo::getTypename()const {
         return typename_;
     }
 
@@ -170,8 +184,8 @@ namespace grynca {
         return id_;
     }
 
-    inline std::string TypeInfo::getDebugString()const {
-        return string_utils::toString(id_) + ": " +typename_ + ", size: " + string_utils::toString(size_);
+    inline ustring TypeInfo::getDebugString()const {
+        return ssu::toString(id_) + ": " +typename_.cpp_str() + ", size: " + ssu::toString(size_);
     }
 
     template <typename Domain>
@@ -270,5 +284,12 @@ namespace grynca {
         Functor::template f<TPOrig, HEAD(TP)>(std::forward<Args>(args)...);
         callOnInner_<TPOrig, TAIL(TP), Functor>(std::forward<Args>(args)...);
     }
+
+    template <typename F, typename... R>
+    template <typename Domain>
+    void TypesPack<F, R...>::mapIds(fast_vector<u32>& ids_mapper_out) {
+    // static
+        internal::TypeIdTypesPackMapper<Types, Domain>::map(ids_mapper_out);
+    };
 
 }

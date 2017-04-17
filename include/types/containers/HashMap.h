@@ -19,7 +19,7 @@ namespace grynca {
      * }
      */
 
-    template <typename ItemType, typename KeyType, typename Hasher = std::hash<KeyType>, typename Compare = std::equal_to<KeyType> >
+    template <typename ItemType, typename KeyType, typename Hasher, typename Compare = std::equal_to<KeyType> >
     class HashMap {
     public:
         // size/initial_size must be power of 2
@@ -30,8 +30,10 @@ namespace grynca {
         void reserve(u32 size);
         void clear();
         ItemType* addItem(const KeyType& key);   // returns item ptr where user must construct item himself
-        ItemType* addItem(const KeyType& key, bool& was_added);
-        u32 findItem(const KeyType& key);      // returns Invalid() if not found
+        ItemType* findOrAddItem(const KeyType &key, bool &was_added);
+        u32 findItemId(const KeyType& key)const;      // returns InvalidId() if not found
+        const ItemType* findItem(const KeyType& key)const;
+        ItemType* findItem(const KeyType& key);
         bool removeItem(const KeyType& key);        // return true if item was found and removed
 
         u32 getItemsCount() const { return items_count_; }
@@ -44,10 +46,11 @@ namespace grynca {
         Compare acComparer() { return cmp_; }
     private:
         bool isPowerOfTwo_(u32 x);
-        u32 findInternal_(const KeyType& key, u32 hash);      // returns index
+        u32 findInternal_(const KeyType& key, u32 hash)const;      // returns index
+        ItemType* findInternal2_(const KeyType& key, u32 hash)const;
         void removeLink_(u32 id, u32 hash);
         ItemType* getItemPtr_(u32 id)const;
-        u32 hashKey_(const KeyType& key);
+        u32 hashKey_(const KeyType& key)const;
         ItemType* addItemInner_(u32 inner_hash, u32 hash, const KeyType& key);
 
         fast_vector<u32> hash_table_;
