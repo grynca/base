@@ -76,6 +76,8 @@ namespace grynca {
             tests_[test_id].func(cfg_.accData(tests_[test_id].cfg_section.cpp_str()));
     }
 
+#if USE_SDL2 == 1
+
     template <typename T>
     inline T SDLTest::loadCfgValue(Config::ConfigSectionMap& cfg, const std::string& name, T def_val) {
         T rslt = tryGet(cfg, name, CfgValue(def_val));
@@ -85,7 +87,6 @@ namespace grynca {
         return rslt;
     }
 
-#if USE_SDL2 == 1
     inline SDLTestBench::SDLTestBench(u32 width, u32 height, bool accelerated)
      : window_(NULL), renderer_(NULL), running_test_(InvalidId()),
        update_measure_print_freq_(10.0f), debug_overlay_flags_(u8(-1))
