@@ -1,7 +1,9 @@
 #ifndef TYPE_INTERNAL_H_H
 #define TYPE_INTERNAL_H_H
 
-#include "Type.h"
+#define WITHOUT_IMPL
+#include "TypesPack.h"
+#undef WITHOUT_IMPL
 #include "Index.h"
 
 namespace grynca {
@@ -68,6 +70,20 @@ namespace grynca {
             template <typename T>
             static void f() {
                 NEVER_GET_HERE("Class does not have default constructor.");
+            }
+        };
+
+        struct CopyConstruct {
+            template <typename T>
+            static void f(void* obj, const void* src) {
+                new (obj) T(*(const T*)src);
+            }
+        };
+
+        struct NoCopyConstruct {
+            template <typename T>
+            static void f() {
+                NEVER_GET_HERE("Class does not have copy constructor.");
             }
         };
     }

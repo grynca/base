@@ -23,13 +23,18 @@ namespace grynca { namespace test_type_if {
         Call<YesFunctor>::ifTrue<Cond>();
         Call<NoFunctor>::ifFalse<Cond>();
     }
-    class BLA { BLA(int a) {} };
 
     struct Test {
         static void f(void*, Config::ConfigSectionMap&) {
             checkIf<std::is_same<MyStuff, MyStuff> >("is MyStuff same as MyStuff?");
             checkIf<HasPropTrait<props::a_t>::apply<MyStuff> >("has MyStuff 'a' property?");
             checkIf<HasPropTrait<props::b_t>::apply<MyStuff> >("has MyStuff 'b' property?");
+            checkIf<HasPropTrait<props::func_t>::apply<MyStuff> >("has MyStuff 'func' method?");
+            checkIf<HasPropTrait<props::func_t>::apply<MyStuffA> >("has MyStuffA 'func' method?");
+            checkIf<HasPropTrait<props::func_t>::apply<MyStuffB> >("has MyStuffB 'func' method?");
+            checkIf<HasPropTrait<props::funcStatic_t >::apply<MyStuff> >("has MyStuff 'funcStatic' method?");
+            checkIf<HasPropTrait<props::funcStatic_t >::apply<MyStuffA> >("has MyStuffA 'funcStatic' method?");
+            checkIf<HasPropTrait<props::funcStatic_t >::apply<MyStuffB> >("has MyStuffB 'funcStatic' method?");
             checkIf<CondAll<HasPropTrait<props::b_t>, HasPropTrait<props::c_t> >::apply<MyStuffB> >("has MyStuffB 'b' and 'c' properties?");
             checkIf<CondAll<HasPropTrait<props::b_t>, HasPropTrait<props::c_t> >::apply<MyStuffA> >("has MyStuffA 'b' and 'c' properties?");
 

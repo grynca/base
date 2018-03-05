@@ -9,13 +9,8 @@ namespace grynca {
     template <typename ST, typename T>
     inline T ssu::fromString(const ST& str, const T& default_val) {
         T val = default_val;
-        std::istringstream ( str ) >> val;
+        std::istringstream ( str.c_str() ) >> val;
         return val;
-    }
-
-    template <typename T>
-    inline ustring ssu::toString(const T& t) {
-        return toStringA(t);
     }
 
     template <typename T>
@@ -39,16 +34,11 @@ namespace grynca {
         return s.str();
     };
 
-    inline ustring ssu::printPerc(f32 p) {
-        if (fabsf(p) < 0.00000001f)
-            return "0";
-        return toString(((u32)(p*100000))/1000.0f);
-    }
-
+    template <u32 Precision>
     inline std::string ssu::printPercA(f32 p) {
         if (fabsf(p) < 0.00000001f)
             return "0";
-        return toStringA(((u32)(p*100000))/1000.0f);
+        return toStringA(((u32)(p*static_pow(10, Precision+2)))/f32(static_pow(10, Precision)));
     }
 
     template <typename T>

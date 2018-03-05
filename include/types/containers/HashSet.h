@@ -20,6 +20,7 @@ namespace grynca {
         bool removeItem(const KeyType& key);        // return true if item was found and removed
 
         u32 getItemsCount() const { return items_count_; }
+        KeyType& accItem(u32 item_id) const { return keys_[item_id]; }
         const KeyType& getItem(u32 item_id) const { return keys_[item_id]; }
         Hasher& accHasher() { return hash_; }
         Compare acComparer() { return cmp_; }

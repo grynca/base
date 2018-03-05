@@ -11,7 +11,7 @@ namespace grynca {
     {
     public:
         // extensions without dot
-        FileLister(const DirPath& dir_path, const fast_vector<std::string>& extensions, bool dive = false);
+        FileLister(const DirPath& dir_path, const fast_vector<ustring>& extensions, bool dive = false);
         ~FileLister();
 
         // called iteratively
@@ -21,11 +21,11 @@ namespace grynca {
     protected:
         struct Pair_ {
             DIR* dir;
-            std::string path;
+            ustring path;
         };
 
         bool _recursive;
-        fast_vector<std::string> extensions_;
+        fast_vector<ustring> extensions_;
         fast_vector<Pair_> dirs_;
     };
 }

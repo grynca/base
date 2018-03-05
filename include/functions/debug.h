@@ -33,19 +33,11 @@
     }
 #   define ASSERT(condition) ASSERT_M(condition, "")
 #   define NEVER_GET_HERE(msg) ASSERT_M(false, msg)
-#   ifdef _WIN32
-#       include <windows.h>
-#       define DEBUG_BREAK() DebugBreak()
-#   else
-#       include <signal.h>
-#       define DEBUG_BREAK() raise(SIGTRAP)
-#   endif
 #   define dout(x) std::cout << x
 #else
 #   define ASSERT_M(condition, message)
 #   define ASSERT(condition) ASSERT_M(condition, "")
 #   define NEVER_GET_HERE(msg)
-#   define DEBUG_BREAK()
 #   define dout(x)
 #endif
 

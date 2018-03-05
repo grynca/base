@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #include "containers/fast_vector.h"
-#include <map>
+#include "containers/HashMap.h"
 
 namespace grynca {
 
@@ -10,19 +10,19 @@ namespace grynca {
     {
     public:
         CfgValue();
-        CfgValue(const std::string& val);
+        CfgValue(const ustring& val);
         CfgValue(i32 val);
         CfgValue(bool val);
         CfgValue(f32 val);
 
-        CfgValue operator=(const std::string& val);
+        CfgValue operator=(const ustring& val);
 
-        operator std::string() { return asString; }
+        operator ustring() { return asString; }
         operator f32() { return asFloat; }
         operator i32() { return asInt; }
         operator bool() { return asBool; }
 
-        std::string asString;
+        ustring asString;
         f32 asFloat;
         i32 asInt;
         bool asBool;
@@ -34,37 +34,39 @@ namespace grynca {
     class Config
     {
     public:
-        typedef std::map<std::string/*key*/, CfgValue> ConfigSectionMap;
+        typedef HashMap<CfgValue, ustring, Hasher<ustring> > ConfigSectionMap;
         friend std::istream& operator>>(std::istream& is, Config& c);          //write to config
         friend std::ostream& operator<<(std::ostream& os, Config& c);          //read from config
     public:
-        Config(const std::string& delim="=", const std::string& comment="#", const std::string& section="!!");
+        Config(const ustring& delim="=", const ustring& comment="#", const ustring& section="!!");
 
-        bool loadFromFile(const std::string& filepath, const std::string& section = "");
-        void loadFromVector(const fast_vector<std::string>& vec, const std::string& section = "");
+        bool loadFromFile(const ustring& filepath, const ustring& section = "");
+        void loadFromVector(const fast_vector<ustring>& vec, const ustring& section = "");
 
         // get:     config.getData("section_name")["screen_width"].asInt;
         // set:     config.accData("section_name")["screen_width"]=CfgValue("800");
 
         // global section is empty string
-        const ConfigSectionMap& getData(const std::string& section = "");
-        ConfigSectionMap& accData(const std::string& section = "");
+        ConfigSectionMap& accData(const ustring& section = "");
+        // data of current section
+        ConfigSectionMap& accCurrData();
 
-        const std::string& getCurrentSectionName()const;
-        void setCurrentSectionName(const std::string &section);
+        const ustring& getCurrentSectionName()const;
+        void setCurrentSectionName(const ustring &section);
     protected:
-        static void trim_(std::string &s);
-        void addSourceLine_(const std::string& source_line, ConfigSectionMap*& curr_section);
+        static void trim_(ustring& s);
+        void addSourceLine_(const ustring& source_line, ConfigSectionMap*& curr_section);
+        ConfigSectionMap& findOraddSectionInner_(const ustring& section_name);
 
-        std::string delim_;
-        std::string comment_;
-        std::string section_;
+        ustring delim_;
+        ustring comment_;
+        ustring section_;
 
-        std::string curr_section_name_;
+        ustring curr_section_name_;
 
-        fast_vector<std::string> lines_;    // saved source lines (without parsing)
-        std::map<std::string, u32> to_line_id_;        // maps key to line id
-        std::map<std::string/*section*/, ConfigSectionMap > data_;
+        fast_vector<ustring> lines_;    // saved source lines (without parsing)
+        HashMap<u32, ustring, Hasher<ustring> > to_line_id_;        // maps key to line id
+        HashMap<ConfigSectionMap, ustring/*section*/, Hasher<ustring>> data_;
     };
 }
 

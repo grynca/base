@@ -59,17 +59,17 @@ namespace grynca {
         return test_id;
     }
 
-    template <typename PrintFunc>
-    inline void TestBench::runAllTests(const PrintFunc& pf) {
+    template <typename ProfilingFunc>
+    inline void TestBench::runAllTests(const ProfilingFunc& pf) {
         for (u32 i=0; i<tests_.size(); ++i) {
             runTest(i, pf);
         }
     }
 
-    template <typename PrintFunc>
-    inline void TestBench::runTest(u32 test_id, const PrintFunc& pf) {
+    template <typename ProfilingFunc>
+    inline void TestBench::runTest(u32 test_id, const ProfilingFunc& pf) {
         if (tests_[test_id].measure_id != InvalidId()) {
-            MEASURE_SAMPLE_P(tests_[test_id].measure_id, pf);
+            MEASURE_SAMPLE_F(tests_[test_id].measure_id, pf);
             tests_[test_id].func(cfg_.accData(tests_[test_id].cfg_section.cpp_str()));
         }
         else
@@ -89,7 +89,7 @@ namespace grynca {
 
     inline SDLTestBench::SDLTestBench(u32 width, u32 height, bool accelerated)
      : window_(NULL), renderer_(NULL), running_test_(InvalidId()),
-       update_measure_print_freq_(10.0f), debug_overlay_flags_(u8(-1))
+       update_print_frames_(10), overlay_print_mode_(u8(-1))
     {
         i32 rslt = SDLCall(SDL_Init(SDL_INIT_VIDEO));
         if (rslt != 0) {
@@ -113,6 +113,7 @@ namespace grynca {
     }
 
     inline SDLTestBench::~SDLTestBench() {
+        std::cout << "quiting SDL" << std::endl;
         SDLCall(SDL_Quit());
     }
 
@@ -136,9 +137,7 @@ namespace grynca {
         running_test_ = test_id;
 
         if (!running) {
-            while (running_test_ != InvalidId()) {
-                tests_[running_test_].func(cfg_.accData(tests_[running_test_].cfg_section.cpp_str()));
-            }
+            runCurrentTest_();
         }
     }
 
@@ -154,28 +153,20 @@ namespace grynca {
         return u32(tests_.size());
     }
 
-    inline void SDLTestBench::setUpdateMeasurePrintFreq(f32 freq) {
-        update_measure_print_freq_ = freq;
+    inline void SDLTestBench::setUpdateMeasurePrintFreq(u32 frames) {
+        update_print_frames_ = frames;
     }
 
-    inline f32 SDLTestBench::getUpdateMeasurePrintFreq()const {
-        return update_measure_print_freq_;
+    inline u32 SDLTestBench::getUpdateMeasurePrintFreq()const {
+        return update_print_frames_;
     }
 
-    inline void SDLTestBench::setShowFps(bool val) {
-        debug_overlay_flags_ = SET_BITV(debug_overlay_flags_, 0, val);
+    inline void SDLTestBench::setOverlayPrintMode(u32 opm) {
+        overlay_print_mode_ = opm;
     }
 
-    inline bool SDLTestBench::getShowFps()const {
-        return GET_BIT(debug_overlay_flags_, 0);
-    }
-
-    inline void SDLTestBench::setShowProfileMeasures(bool val) {
-        debug_overlay_flags_ = SET_BITV(debug_overlay_flags_, 1, val);
-    }
-
-    inline bool SDLTestBench::getShowProfileMeasures()const {
-        return GET_BIT(debug_overlay_flags_, 1);
+    inline u32 SDLTestBench::getOverlayPrintMode()const {
+        return overlay_print_mode_;
     }
 
     inline SDL_Window* SDLTestBench::getWindow()const {
@@ -186,6 +177,10 @@ namespace grynca {
         return renderer_;
     }
 
+    inline void SDLTestBench::runCurrentTest_() {
+        tests_[running_test_].func(cfg_.accData(tests_[running_test_].cfg_section.cpp_str()));
+    }
+
     template<typename TObject>
     inline void SDLTestBench::RunnerFunctor<TObject>::f(TObject* obj, Config::ConfigSectionMap& cfg) {
         SDLTestBench& tb = obj->accTestBench();
@@ -194,9 +189,9 @@ namespace grynca {
 
         struct {
             f32 prev_time;
-            f32 update_print_dt;
             f32 last_print_time;
             f32 now;
+            u32 update_print_frames;
             u32 frames;
 
             std::string fps_label;
@@ -204,7 +199,7 @@ namespace grynca {
         } ctx;
 
         ctx.prev_time = 0;
-        ctx.update_print_dt = 1.0f/tb.getUpdateMeasurePrintFreq();
+        ctx.update_print_frames = tb.getUpdateMeasurePrintFreq();
         ctx.last_print_time = 0.0f;
         ctx.now = 0.0f;
         ctx.frames = 0;
@@ -212,29 +207,56 @@ namespace grynca {
         ctx.measure_label = "";
         u32 prev_test = tb.getRunningTest();
 
+#ifdef PROFILE_BUILD
         auto update_print_f = [&ctx](const ProfilingSample& s) {
-            f32 dt = ctx.now - ctx.last_print_time;
-            if (dt > ctx.update_print_dt) {
-                //std::cout << s.printWithPerc() << std::endl;
+            if (ctx.frames == ctx.update_print_frames) {
+                f32 dt = ctx.now - ctx.last_print_time;
+                ctx.last_print_time += dt;
+                f32 fps = f32(ctx.frames)/dt;
+                f32 frame_time = 1000.0f/fps;
+                ctx.fps_label = ssu::formatA("FPS: %.3f (%.3fms)", fps, frame_time);
+                // TODO: barvickama oddelit levely nejak + moznost prepinat mezi acc a avg
+                ctx.measure_label = s.simplePrint(ctx.frames).cpp_str();
+                s.clearMeasureTimes();
+                ctx.frames = 0;
+            }
+        };
+#else
+        auto update_print_f = [&ctx]() {
+            if (ctx.frames == ctx.update_print_frames) {
+                f32 dt = ctx.now - ctx.last_print_time;
                 ctx.last_print_time += dt;
                 f32 fps = f32(ctx.frames)/dt;
                 f32 frame_time = 1000.0f/fps;
                 ctx.fps_label = ssu::formatA("FPS: %.3f (%.3fms)", fps, frame_time);
                 ctx.frames = 0;
-                ctx.measure_label = s.printWithPerc().cpp_str();
+            }
+        };
+#endif
+        F8x8::SDL2Text fps_lbl(tb.renderer_);
+        fps_lbl.setColor(0, 0, 0, 255);
+        u32 fps_lbl_y = 0;
+        F8x8::SDL2Text measure_lbl(tb.renderer_);
+        measure_lbl.setColor(0, 0, 0, 255);
+        u32 measure_lbl_y = 0;
+
+        auto cond_f = [&]() {
+            return prev_test == tb.getRunningTest();
+        };
+
+        auto close_f = [&]() {
+            obj->close();
+            // run next test
+            if (tb.getRunningTest() != InvalidId()) {
+                tb.runCurrentTest_();
             }
         };
 
-        F8x8::SDL2Text fps_lbl(tb.renderer_);
-        u32 fps_lbl_y = 0;
-        F8x8::SDL2Text measure_lbl(tb.renderer_);
-        u32 measure_lbl_y = 0;
-
-        mainLoop([&]() {
-            return prev_test == tb.getRunningTest();
-        },
-        [&]() {
-            PROFILE_SAMPLE_P(tb.getTestInfo(tb.getRunningTest()).measure_id, update_print_f);
+        auto loop_f = [&]() {
+            PROFILE_SAMPLE_F(tb.getTestInfo(tb.getRunningTest()).measure_id, update_print_f);
+#ifndef PROFILE_BUILD
+            update_print_f();
+#endif
             prev_test = tb.getRunningTest();
 
             SDL_Event evt;
@@ -250,18 +272,21 @@ namespace grynca {
                         }
                         else if (evt.key.keysym.sym == SDLK_o) {
                             // toggle debug overlay
-                            if (tb.debug_overlay_flags_)
-                                tb.debug_overlay_flags_ = 0;
-                            else
-                                tb.debug_overlay_flags_ = u8(-1);
+                            if (tb.overlay_print_mode_) {
+                                tb.overlap_print_mode_stored_ = tb.overlay_print_mode_;
+                                tb.overlay_print_mode_ = opmNone;
+                            }
+                            else {
+                                tb.overlay_print_mode_ = tb.overlap_print_mode_stored_;
+                            }
                             break;
                         }
                         else if (evt.key.keysym.sym == SDLK_LEFT) {
-                            tb.runTest((tb.getRunningTest()-1) % tb.getTestsCount());
+                            tb.runTest(wrap(tb.getRunningTest()-1, tb.getTestsCount()));
                             break;
                         }
                         else if (evt.key.keysym.sym == SDLK_RIGHT) {
-                            tb.runTest((tb.getRunningTest()+1) % tb.getTestsCount());
+                            tb.runTest(wrap(tb.getRunningTest()+1, tb.getTestsCount()));
                             break;
                         }
                         // dont break
@@ -279,38 +304,40 @@ namespace grynca {
             u32 h = 0;
             u32 w = 0;
             // print debug overlay
-            if (tb.getShowFps()) {
-                fps_lbl.setText(ctx.fps_label);
-                h += 5;
-                fps_lbl_y = h;
-                h += fps_lbl.getHeight();
-                w = std::max(w, fps_lbl.getWidth()+10);
-            }
-            if (tb.getShowProfileMeasures()) {
-                h += 5;
-                measure_lbl_y = h;
-                measure_lbl.setText(ctx.measure_label);
-                h += measure_lbl.getHeight();
-                w = std::max(w, measure_lbl.getWidth()+10);
-            }
-
-            if (w && h) {
-                SDL_Rect overlay_rect{0, 0, i32(w), i32(h)};
-                SDL_SetRenderDrawColor(tb.renderer_, 255, 255, 255, 200);
-                SDLCall(SDL_RenderFillRect(tb.renderer_, &overlay_rect));
-                if (tb.getShowFps()) {
-                    fps_lbl.draw(0, 0, 0, 255, 5, fps_lbl_y);
+            u32 opm = tb.getOverlayPrintMode();
+            if (opm) {
+                if (opm&opmFPS) {
+                    fps_lbl.setText(ctx.fps_label);
+                    h += 5;
+                    fps_lbl_y = h;
+                    h += fps_lbl.getHeight();
+                    w = std::max(w, fps_lbl.getWidth()+10);
                 }
-                if (tb.getShowProfileMeasures()) {
-                    measure_lbl.draw(0, 0, 0, 255, 5, measure_lbl_y);
+                if (opm&opmProfileMeasures) {
+                    h += 5;
+                    measure_lbl_y = h;
+                    measure_lbl.setText(ctx.measure_label);
+                    h += measure_lbl.getHeight();
+                    w = std::max(w, measure_lbl.getWidth()+10);
+                }
+
+                if (w && h) {
+                    SDL_Rect overlay_rect{0, 0, i32(w), i32(h)};
+                    SDL_SetRenderDrawColor(tb.renderer_, 255, 255, 255, 200);
+                    SDLCall(SDL_RenderFillRect(tb.renderer_, &overlay_rect));
+                    if (opm&opmFPS) {
+                        fps_lbl.draw(5, fps_lbl_y);
+                    }
+                    if (opm&opmProfileMeasures) {
+                        measure_lbl.draw(5, measure_lbl_y);
+                    }
                 }
             }
-
 
             SDLCall(SDL_RenderPresent(tb.renderer_));
-        });
+        };
 
-        obj->close();
+        mainLoop(cond_f, loop_f, close_f);
     }
 #endif
 }

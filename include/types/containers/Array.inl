@@ -1,4 +1,4 @@
-#include "Array.h"
+    #include "Array.h"
 
 #define ATPL template <typename T, typename PT>
 #define ATYPE Array<T, PT>
@@ -12,7 +12,7 @@ namespace grynca {
 
     ATPL
     inline ATYPE::~Array() {
-        pool_.clear(Type<T>::destroy);
+        clear();
     }
 
     ATPL
@@ -33,14 +33,23 @@ namespace grynca {
     }
 
     ATPL
-    inline void ATYPE::remove(Index index) {
-        ASSERT_M(isValidIndex(index), "Invalid index.");
-        pool_.remove(index, Type<T>::destroy);
+    template <typename ...ConstructionArgs>
+    inline typename ATYPE::IRefPtr ATYPE::addRC(ConstructionArgs&&... args) {
+        u8* new_item_out;
+        Index index = pool_.add(new_item_out);
+        new(new_item_out) T(std::forward<ConstructionArgs>(args)...);
+        return IRefPtr(*this, index);
     }
 
     ATPL
-    inline void ATYPE::removeAtPos(u32 pos) {
-        pool_.removeAtPos(pos, Type<T>::destroy);
+    inline void ATYPE::removeItem(Index index) {
+        ASSERT_M(isValidIndex(index), "Invalid index.");
+        pool_.removeItem(index, Type<T>::destroy);
+    }
+
+    ATPL
+    inline void ATYPE::removeItemAtPos(u32 pos) {
+        pool_.removeItemAtPos(pos, Type<T>::destroy);
     }
 
     ATPL
@@ -59,35 +68,48 @@ namespace grynca {
     }
 
     ATPL
-    inline T& ATYPE::get(Index index) {
-        ASSERT_M(isValidIndex(index), "Invalid index.");
-
-        return *((T*)pool_.get(index));
+    inline T& ATYPE::accItem(Index index) {
+        return *((T*)pool_.accItem(index));
     }
 
     ATPL
-    inline T* ATYPE::getAtPos(u32 pos) {
-        return (T*)pool_.getAtPos(pos);
+    inline T* ATYPE::accItemAtPos(u32 pos) {
+        return (T*)pool_.accItemAtPos(pos);
     }
 
     ATPL
-    inline T& ATYPE::getAtPos2(u32 pos) {
-        return *(T*)pool_.getAtPos2(pos);
+    inline T& ATYPE::accItemAtPos2(u32 pos) {
+        return *(T*)pool_.accItemAtPos2(pos);
     }
 
     ATPL
-    inline Index ATYPE::getIndexForPos(u32 pos) {
+    inline Index ATYPE::getIndexForPos(u32 pos)const {
         return pool_.getIndexForPos(pos);
     }
 
     ATPL
-    inline const T& ATYPE::get(Index index)const {
-        return *((T*)pool_.get(index));
+    inline Index ATYPE::getFullIndex(u32 index_id)const {
+        return pool_.getFullIndex(index_id);
     }
 
     ATPL
-    inline const T* ATYPE::getAtPos(u32 pos)const {
-        return (T*)pool_.getAtPos(pos);
+    inline T& ATYPE::accItemWithInnerIndex(u32 inner_id) {
+        return *(T*)pool_.accItemWithInnerIndex(inner_id);
+    }
+
+    ATPL
+    inline const T& ATYPE::getItemWithInnerIndex(u32 inner_id)const {
+        return *(T*)pool_.getItemWithInnerIndex(inner_id);
+    }
+
+    ATPL
+    inline const T& ATYPE::getItem(Index index)const {
+        return *((T*)pool_.getItem(index));
+    }
+
+    ATPL
+    inline const T* ATYPE::getItemAtPos(u32 pos)const {
+        return (T*)pool_.getItemAtPos(pos);
     }
 
     ATPL
@@ -98,6 +120,11 @@ namespace grynca {
     ATPL
     inline T* ATYPE::getData() {
         return (T*)pool_.getData();
+    }
+
+    ATPL
+    inline void ATYPE::clear() {
+        pool_.clear(Type<T>::destroy);
     }
 
     ATPL

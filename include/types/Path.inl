@@ -16,7 +16,7 @@ namespace grynca {
     {
     }
 
-    inline Path::Path(const std::string& path)
+    inline Path::Path(const ustring& path)
      : path_(path)
     {
     }
@@ -24,10 +24,10 @@ namespace grynca {
     inline bool Path::createPathDirs() {
         size_t pre=0,
                pos;
-        std::string dir;
+        ustring dir;
         int mdret;
 
-        while((pos=path_.find('/',pre))!=std::string::npos){
+        while((pos=path_.find('/',pre))!=ustring::npos){
             dir=path_.substr(0,pos++);
             pre=pos;
             if(dir.size()==0)
@@ -50,12 +50,12 @@ namespace grynca {
     }
 
 
-    inline bool Path::convertToRelative(const std::string& relative_to) {
-        fast_vector<std::string> absolute_dirs;
-        fast_vector<std::string> relative_dirs;
-        std::string rel = normalize_(relative_to);
-        ssu::tokenize(path_, absolute_dirs, "/");
-        ssu::tokenize(rel, relative_dirs, "/");
+    inline bool Path::convertToRelative(const ustring& relative_to) {
+        fast_vector<ustring> absolute_dirs;
+        fast_vector<ustring> relative_dirs;
+        ustring rel = normalize_(relative_to);
+        ssu::tokenize(path_, absolute_dirs, U"/");
+        ssu::tokenize(rel, relative_dirs, U"/");
 
         // Get the shortest of the two paths
         u32 length = absolute_dirs.size() < relative_dirs.size() ? absolute_dirs.size() : relative_dirs.size();
@@ -63,7 +63,7 @@ namespace grynca {
         // Use to determine where in the loop we exited
         int last_common_root = -1;
         u32 index;
-        std::string relative;
+        ustring relative;
 
         // Find common root
         for (index = 0; index < length; index++)
@@ -107,7 +107,7 @@ namespace grynca {
         return (stat (path_.c_str(), &buffer) == 0);
     }
     inline bool Path::loadDataFromFile(fast_vector<u8>& data_out) {
-        std::ifstream f(path_, std::ios::binary);
+        std::ifstream f(path_.c_str(), std::ios::binary);
         if (!f.is_open())
             return false;
 
@@ -124,7 +124,7 @@ namespace grynca {
     }
 
     inline bool Path::saveDataToFile(const fast_vector<u8>& data) {
-        std::ofstream f(path_, std::ios::binary);
+        std::ofstream f(path_.c_str(), std::ios::binary);
         if (!f.is_open())
             return false;
 
@@ -133,31 +133,39 @@ namespace grynca {
         return true;
     }
 
-    inline bool Path::loadTextContentA(std::string& str_out) {
-        std::ifstream f(path_);
-        if (!f.is_open())
+    inline bool Path::loadTextContent(ustring& str_out) {
+        std::ifstream fin = std::ifstream(path_.c_str(), std::ios::binary);
+        if (!fin.is_open())
             return false;
-        f.seekg(0, std::ios::end);
-        u32 len = u32(f.tellg());
-        str_out.resize(len);
-        f.seekg(0, std::ios::beg);
-        f.read(&str_out[0], len);
-        f.close();
+        fin >> str_out;
+        fin.close();
         return true;
-
     }
 
-    inline bool Path::saveTextContentA(const std::string& str) {
-        std::ofstream lf(path_, std::ofstream::app);
-        if (!lf.is_open())
+    inline bool Path::saveTextContent(const ustring& str) {
+        std::ofstream fout( path_.c_str() , std::ios::binary | std::ofstream::trunc );
+        if (!fout.is_open())
             return false;
-        lf << str;
-        lf.close();
+
+        // prepend byte order mark
+        fout << ustring().cpp_str(true);
+        fout << str;
+        fout.close();
+        return true;
+    }
+
+    inline bool Path::appendTextContent(const ustring& str) {
+        // TODO: check if file is already utf8 ?
+        std::ofstream fout( path_.c_str() , std::ios::binary | std::ofstream::app );
+        if (!fout.is_open())
+            return false;
+        fout << str;
+        fout.close();
         return true;
     }
 
     inline bool Path::clearFile() {
-        std::ofstream f(path_, std::ofstream::out | std::ofstream::trunc);
+        std::ofstream f(path_.c_str(), std::ofstream::out | std::ofstream::trunc);
         if (!f.is_open())
             return false;
         f.close();
@@ -168,74 +176,76 @@ namespace grynca {
         return remove(path_.c_str()) == 0;
     }
 
-    inline std::string Path::getExtension() {
-        size_t dot_pos = path_.find_last_of('.');
-        if (dot_pos == std::string::npos)
+    inline ustring Path::getExtension() {
+        size_t dot_pos = path_.find(U'.');
+        if (dot_pos == ustring::npos)
             return "";
 
         // dot must be after last slash
-        size_t slash_pos = path_.find_last_of('/');
-        if (slash_pos != std::string::npos && slash_pos>dot_pos)
+        size_t slash_pos = path_.find(U'/');
+        if (slash_pos != ustring::npos && slash_pos>dot_pos)
             return "";
 
         // get extension
-        std::string ext = path_.substr(dot_pos+1);
+        ustring ext = path_.substr(dot_pos+1);
         //change to lower case
         std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
         return ext;
     }
 
-    inline void Path::setExtension(const std::string& ext) {
-        size_t dot_pos = path_.find_last_of('.');
-        if (dot_pos != std::string::npos)
+    inline void Path::setExtension(const ustring& ext) {
+        size_t dot_pos = path_.find(U'.');
+        if (dot_pos != ustring::npos)
         {
-            size_t slash_pos = path_.find_last_of('/');
-            if (slash_pos != std::string::npos)
+            size_t slash_pos = path_.find(U'/');
+            if (slash_pos != ustring::npos)
             {
                 // dot must be after last slash
                 if ( dot_pos>slash_pos )
                     // remove everything from dot to end
-                    path_.erase(dot_pos);
+                    path_.erase(dot_pos, path_.size()-dot_pos);
             }
             else
                 path_.erase(dot_pos);
         }
         // append new extension
-        if (!ext.empty())
-            path_.append("."+ext);
+        if (!ext.empty()) {
+            path_.push_back(U'.');
+            path_.append(ext);
+        }
     }
 
     inline void Path::removeExtension() {
         setExtension("");
     }
 
-    inline const std::string& Path::getPath()const {
+    inline const ustring& Path::getPath()const {
         return path_;
     }
 
-    inline std::string Path::getFilename()const {
-        std::string p = path_;
+    inline ustring Path::getFilename()const {
+        ustring p = path_;
         if (p[p.size()-1] == '/' || p[p.size()-1] == '\\')
             p.pop_back();
-        size_t found = p.find_last_of("/\\");
-        if (found == std::string::npos)
+        size_t found = p.find_last_of(U"/\\");
+        if (found == ustring::npos)
             return p;
         return p.substr(found+1);
     }
 
-    inline std::string Path::getFilenameWOExtension()const {
-        std::string p = path_;
+    inline ustring Path::getFilenameWOExtension()const {
+        ustring p = path_;
         if (p[p.size()-1] == '/' || p[p.size()-1] == '\\')
             p.pop_back();
-        size_t slash_pos = p.find_last_of("/\\");
-        size_t dot_pos = path_.find_last_of('.');
+        size_t slash_pos = p.find_last_of(U"/\\");
+        size_t dot_pos = path_.find(U'.');
 
-        if (dot_pos == std::string::npos) {
-            if (slash_pos == std::string::npos)
+        if (dot_pos == ustring::npos) {
+            if (slash_pos == ustring::npos)
                 return p;
             return p.substr(slash_pos+1);
         }
-        else if (slash_pos == std::string::npos) {
+        else if (slash_pos == ustring::npos) {
             return p.substr(0, dot_pos);
         }
         else if (slash_pos>dot_pos) {
@@ -247,18 +257,18 @@ namespace grynca {
     }
 
     inline DirPath Path::getDirpath()const {
-        std::string p = path_;
+        ustring p = path_;
         if (p[p.size()-1] == '/' || p[p.size()-1] == '\\')
             p.pop_back();
-        size_t found = p.find_last_of("/\\");
-        if (found == std::string::npos)
+        size_t found = p.find_last_of(U"/\\");
+        if (found == ustring::npos)
             return p;
         return DirPath(p.substr(0,found));
     }
 
-    inline std::string Path::normalize_(const std::string& path) {
+    inline ustring Path::normalize_(const ustring& path) {
         // replace backslashes with forward slashes
-        std::string p = path;
+        ustring p = path;
         std::replace(p.begin(), p.end(), '\\', '/');
         p = ssu::trim(p);
         // remove trailing slash
@@ -271,21 +281,21 @@ namespace grynca {
      : Path(path)
     {
         if (path_.back() != '/')
-            path_ += '/';
+            path_.push_back(U'/');
     }
 
-    inline DirPath::DirPath(const std::string& path)
+    inline DirPath::DirPath(const ustring& path)
      : Path(path)
     {
         if (path_.back() != '/')
-            path_ += '/';
+            path_.push_back(U'/');
     }
 
     inline void DirPath::listDirs(fast_vector<Path>& dirsOut, bool dive /*= false*/) {
         listDirsInner_(path_, dirsOut, dive);
     }
 
-    inline FileLister DirPath::listFiles(const fast_vector<std::string>& extensions, bool dive /*= false*/) {
+    inline FileLister DirPath::listFiles(const fast_vector<ustring>& extensions, bool dive /*= false*/) {
         return FileLister(*this, extensions, dive);
     }
 
@@ -298,8 +308,8 @@ namespace grynca {
         while ( (dirp = readdir(d)) )
         {
             // ignore . and ..
-            std::string name(dirp->d_name);
-            std::string path = (dir+name).getPath();
+            ustring name(dirp->d_name);
+            ustring path = (dir+name).getPath();
             if (name == "." || name == "..")
                 continue;
             d_inner = opendir( path.c_str() );
@@ -330,7 +340,7 @@ namespace grynca {
     }
 
 
-    inline Path operator+(const Path& p1, const std::string& s) {
+    inline Path operator+(const Path& p1, const ustring& s) {
         return Path(p1.path_ + s);
     }
 
@@ -339,7 +349,7 @@ namespace grynca {
         return os;
     }
 
-    inline Path operator+(const DirPath& p1, const std::string& s) {
+    inline Path operator+(const DirPath& p1, const ustring& s) {
         return Path(p1.path_ + s);
     }
 

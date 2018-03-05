@@ -6,8 +6,7 @@
 
 namespace grynca {
 
-    // TODO: predelat Line na Text a SDLText
-    //       ktery si bude uvnitr resit radky sam
+    // TODO: pridat line spacing
 
     class F8x8 {
     public:
@@ -16,6 +15,7 @@ namespace grynca {
 
         class Text {
         public:
+            Text();
             Text(const std::string& text);
 
             // size in pixels
@@ -38,21 +38,34 @@ namespace grynca {
         };
 
 #if USE_SDL2 == 1
-        // not meant to be used as virtual Line
+        // not meant to be used as virtual Text
         class SDL2Text : public Text {
         public:
+            SDL2Text();
             SDL2Text(SDL_Renderer* renderer, const std::string& text = "");
             ~SDL2Text();
 
+            void setRenderer(SDL_Renderer* renderer);
             void setText(const std::string& text);
+            void setColor(u8 r, u8 g, u8 b, u8 a = 255);
 
-            void draw(u8 r, u8 g, u8 b, u8 a, i32 x, i32 y);
-            void draw(u8 r, u8 g, u8 b, u8 a, i32 x, i32 y, u32 w, u32 h);      // can specify size of destination rect
+            u8 getColorR()const;
+            u8 getColorG()const;
+            u8 getColorB()const;
+            u8 getColorA()const;
+            u8& accColorR();
+            u8& accColorG();
+            u8& accColorB();
+            u8& accColorA();
+
+            void draw(i32 x, i32 y);
+            void draw(i32 x, i32 y, u32 w, u32 h);      // can specify size of destination rect
         private:
             void setTexture_();
 
             SDL_Renderer* renderer_;
             SDL_Texture* texture_;
+            u8 clr_r_, clr_g_, clr_b_, clr_a_;
         };
 #endif
 

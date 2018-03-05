@@ -241,19 +241,54 @@ namespace grynca {
           return const_reverse_iterator(mData);
        }
 
-       void resize(size_t n, const T &val = T()) {
+       // with copy constructor
+       void resize(size_t n, const T& val) {
           if (n > mSize) {
-             if (n > mCapacity) {
-                _realloc_all(_get_new_capacity(capacity(), n));
-             }
-             for (size_t i=mSize; i<n; ++i) {
-                new (&mData[i]) T(val);
-             }
+             enlarge(n, val);
           }
           else {
-             for (size_t i=n; i<mSize; ++i) {
-                mData[i].~T();
-             }
+             shrink(n);
+          }
+       }
+
+       // with def.constructor
+       void resize(size_t n) {
+          if (n > mSize) {
+              enlarge(n);
+          }
+          else {
+              shrink(n);
+          }
+       }
+
+       // with copy constructor
+       void enlarge(size_t n, const T& val) {
+          ASSERT(n >= mSize);
+          if (n > mCapacity) {
+             _realloc_all(_get_new_capacity(capacity(), n));
+          }
+          for (size_t i=mSize; i<n; ++i) {
+             new (&mData[i]) T(val);
+          }
+          mSize = n;
+       }
+
+       // with def.constructor
+       void enlarge(size_t n) {
+          ASSERT(n >= mSize);
+          if (n > mCapacity) {
+              _realloc_all(_get_new_capacity(capacity(), n));
+          }
+          for (size_t i=mSize; i<n; ++i) {
+              new (&mData[i]) T();
+          }
+          mSize = n;
+       }
+
+       void shrink(size_t n) {
+          ASSERT(n <= mSize);
+          for (size_t i=n; i<mSize; ++i) {
+             mData[i].~T();
           }
           mSize = n;
        }
@@ -415,7 +450,6 @@ namespace grynca {
 
        // clear
        void clear() {
-          size_type i;
           for (size_t i = 0; i<mSize; ++i) {
               mData[i].~T();
           }

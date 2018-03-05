@@ -19,6 +19,13 @@ namespace grynca {
     }
 
     template <typename T>
+    inline void Singleton<T>::destroy() {
+        T*& ptr = instance_().accPtr();
+        delete ptr;
+        ptr = NULL;
+    }
+
+    template <typename T>
     inline T& Singleton<T>::get() {
         //static
         static T& me = createIfNeeded_();
@@ -33,16 +40,22 @@ namespace grynca {
     }
 
     template <typename T>
-    inline T* Singleton<T>::getPtr() {
+    inline const T* Singleton<T>::getPtr() {
     //static
         return instance_().getPtr();
+    }
+
+    template <typename T>
+    inline T*& Singleton<T>::accPtr() {
+    // static
+        return instance_().accPtr();
     }
 
     template <typename T>
     template <typename... ConstructionArgs>
     inline T& Singleton<T>::createIfNeeded_(ConstructionArgs&&... args) {
         // static
-        T* ptr = getPtr();
+        T* ptr = accPtr();
         if (ptr)
             return *ptr;
         //else

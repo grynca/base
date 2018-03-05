@@ -1,5 +1,7 @@
 #include "BitScanner.h"
 #include "Index.h"
+#include "base_cfg.h"
+#include "functions/common.h"
 #include "functions/meta.h"
 
 #define BS_TPL template <typename WordType>
@@ -92,7 +94,7 @@ namespace grynca {
 
     BS_TPL
     inline bool BS_TYPE::testBit_(size_t bit_id) {
-        return words_[bit_id / BITS_IN_TYPE(WordType)] & (1 << (bit_id % BITS_IN_TYPE(WordType)));
+        return words_[bit_id / BITS_IN_TYPE(WordType)] & (WordType(1) << (bit_id % BITS_IN_TYPE(WordType)));
     }
 
 }

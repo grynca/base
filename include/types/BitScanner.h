@@ -1,7 +1,7 @@
 #ifndef BITSCANNER_H
 #define BITSCANNER_H
 
-#include "functions/common.h"
+#include "functions/defs.h"
 
 namespace grynca {
 

@@ -18,9 +18,12 @@ namespace grynca {
         template <typename DerType, typename... ConstructionArgs>
         static DerType& createAs(ConstructionArgs&&... args);
 
+        static void destroy();
+
         static T& get();
         static T& getRef();
-        static T* getPtr();
+        static const T* getPtr();
+        static T*& accPtr();
     protected:
         template <typename... ConstructionArgs>
         static T& createIfNeeded_(ConstructionArgs&&... args);

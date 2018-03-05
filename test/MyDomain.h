@@ -3,14 +3,48 @@
 
 #define RAND_DBL() ((f64)rand()/RAND_MAX)
 
-class MyStuff {
+// fw
+class MyStuff;
+
+class MyStuffManager : public TightManager<MyStuff> {};
+
+class MyStuff : public ManagedItem<MyStuffManager> {
 public:
     MyStuff() : a(rand()) {}
     virtual ~MyStuff() {}
 
     virtual void dostuff() { a -= rand(); }
+    virtual void ble()const {}
+
+    void func() {}
 
     int a;
+};
+
+class MyStuffSorted {
+public:
+    MyStuffSorted(u32 sk) : id_(InvalidId()), sorting_key_(sk) {}
+
+    u32 getId()const { return id_; }
+    u32 getSortingKey()const { return sorting_key_; }
+
+    void dostuff() { val_ -= rand(); }
+private:
+    friend class SortedArray<MyStuffSorted>;
+
+    u32& accId_() { return id_; }
+    void setLast_() { sorting_key_ = InvalidId(); }
+
+    struct Comparator {
+        // returns if i1 is before i2
+        bool operator()(const MyStuffSorted& i1, const MyStuffSorted& i2) {
+            return i1.getSortingKey() < i2.getSortingKey();
+        }
+    };
+
+    u32 id_;
+    u32 sorting_key_;
+    int val_;
 };
 
 class MyStuffA : public MyStuff {
@@ -19,6 +53,8 @@ public:
     virtual ~MyStuffA() {}
 
     virtual void dostuff() { b += RAND_DBL(); }
+
+    static void funcStatic() {}
 
     f64 b;
     f32 c;
@@ -41,33 +77,14 @@ typedef TypesPack<
     > StuffTypes;
 
 class MyStuffVariant : public Variant<StuffTypes> {
-public:
-
-    static fast_vector<MyStuffVariant> generateN(u32 n) {
-        fast_vector<MyStuffVariant> rvar;
-        rvar.reserve(n);
-        for (size_t i=0; i<n; ++i) {
-            rvar.push_back(MyStuffVariant());
-            switch (rand()%3) {
-                case 0:
-                    rvar.back().set<MyStuff>();
-                    break;
-                case 1:
-                    rvar.back().set<MyStuffA>();
-                    break;
-                case 2:
-                    rvar.back().set<MyStuffB>();
-                    break;
-            }
-        }
-        return rvar;
-    }
 };
 
 namespace props {
-    DECLARE_PROP(a);
-    DECLARE_PROP(b);
-    DECLARE_PROP(c);
+    DECLARE_PROP_DATA(a);
+    DECLARE_PROP_DATA(b);
+    DECLARE_PROP_DATA(c);
+    DECLARE_PROP_FUNC(func);
+    DECLARE_PROP_FUNC(funcStatic);
 }
 
 class MyDomain {

@@ -74,7 +74,7 @@ namespace grynca { namespace test_event_handlers {
                 }
                 int num = 0;
                 std::cout << msg << std::endl;
-                bool forced_end = handlers.emit(e_type, num, msg);
+                bool forced_end = handlers.emitBreakable(e_type, num, msg);
                 std::cout << " handlers " << num;
                 if (forced_end)
                     std::cout << ", forced_end";

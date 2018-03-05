@@ -12,7 +12,7 @@ namespace grynca {
 
         template <typename T>
         CommonPtr(T* ptr)
-          : place_(ptr), type_id_(Type<T>::getInternalTypeId())
+          : place_((u8*)ptr), type_id_(Type<T>::getInternalTypeId())
         {}
 
         CommonPtr(const CommonPtr& ptr)
@@ -21,13 +21,22 @@ namespace grynca {
 
         virtual ~CommonPtr() {}
 
-        void* getPtr() {
+        const u8* getPtr()const {
+            return place_;
+        }
+
+        u8* accPtr() {
             return place_;
         }
 
         template <typename T>
-        T* getAs() {
+        T* accAs() {
             return (T*)place_;
+        }
+
+        template <typename T>
+        const T* getAs()const {
+            return (const T*)place_;
         }
 
         void destroy() {
@@ -35,18 +44,18 @@ namespace grynca {
             InternalTypes<>::getInfo(type_id_).getDestroyFunc()(place_);
         }
 
-        u32 getTypeId() {
+        u32 getTypeId()const {
             return type_id_;
         }
 
-        const TypeInfo& getTypeInfo() {
+        const TypeInfo& getTypeInfo()const {
             return InternalTypes<>::getInfo(type_id_);
         }
 
-        bool isNull() { return place_==NULL; }
+        bool isNull()const { return place_==NULL; }
 
     protected:
-        void *place_;
+        u8 *place_;
         u32 type_id_;
     };
 }

@@ -139,6 +139,10 @@ namespace grynca {
         return f_[char_id][row_id];
     }
 
+    inline F8x8::Text::Text()
+     : lines_cnt_(0), line_size_(0)
+    {}
+
     inline F8x8::Text::Text(const std::string& text)
      : text_(text)
     {
@@ -215,8 +219,15 @@ namespace grynca {
     }
 
 #if USE_SDL2 == 1
+
+    inline F8x8::SDL2Text::SDL2Text()
+     : Text(), renderer_(NULL), texture_(NULL),
+       clr_r_(255), clr_g_(255), clr_b_(255), clr_a_(255)
+    {}
+
     inline F8x8::SDL2Text::SDL2Text(SDL_Renderer* renderer, const std::string& text)
-     : Text(text), renderer_(renderer), texture_(NULL)
+     : Text(text), renderer_(renderer), texture_(NULL),
+       clr_r_(255), clr_g_(255), clr_b_(255), clr_a_(255)
     {
         setTexture_();
     }
@@ -226,12 +237,56 @@ namespace grynca {
             SDLCall(SDL_DestroyTexture(texture_));
     }
 
+    inline void F8x8::SDL2Text::setRenderer(SDL_Renderer* renderer) {
+        renderer_ = renderer;
+    }
+
     inline void F8x8::SDL2Text::setText(const std::string& text) {
         Text::setText(text);
         setTexture_();
     }
 
+    inline void F8x8::SDL2Text::setColor(u8 r, u8 g, u8 b, u8 a) {
+        clr_r_ = r;
+        clr_g_ = g;
+        clr_b_ = b;
+        clr_a_ = a;
+    }
+
+    inline u8 F8x8::SDL2Text::getColorR()const {
+        return clr_r_;
+    }
+
+    inline u8 F8x8::SDL2Text::getColorG()const {
+        return clr_g_;
+    }
+
+    inline u8 F8x8::SDL2Text::getColorB()const {
+        return clr_b_;
+    }
+
+    inline u8 F8x8::SDL2Text::getColorA()const {
+        return clr_a_;
+    }
+
+    inline u8& F8x8::SDL2Text::accColorR() {
+        return clr_r_;
+    }
+
+    inline u8& F8x8::SDL2Text::accColorG() {
+        return clr_g_;
+    }
+
+    inline u8& F8x8::SDL2Text::accColorB() {
+        return clr_b_;
+    }
+
+    inline u8& F8x8::SDL2Text::accColorA() {
+        return clr_a_;
+    }
+
     inline void F8x8::SDL2Text::setTexture_() {
+        ASSERT(renderer_);
         if (texture_)
             SDLCall(SDL_DestroyTexture(texture_));
         if (!text_.empty()) {
@@ -240,18 +295,17 @@ namespace grynca {
         }
     }
 
-    inline void F8x8::SDL2Text::draw(u8 r, u8 g, u8 b, u8 a, i32 x, i32 y) {
-        draw(r, g, b, a, x, y, getWidth(), getHeight());
+    inline void F8x8::SDL2Text::draw(i32 x, i32 y) {
+        draw(x, y, getWidth(), getHeight());
     }
 
-    inline void F8x8::SDL2Text::draw(u8 r, u8 g, u8 b, u8 a, i32 x, i32 y, u32 w, u32 h) {
+    inline void F8x8::SDL2Text::draw(i32 x, i32 y, u32 w, u32 h) {
         if (!texture_)
             return;
-
-        u32 clr = (r<<24) | (g<<16) | (b<<8) | a;
+        u32 clr = (clr_r_<<24) | (clr_g_<<16) | (clr_b_<<8) | clr_a_;
         void* pixels;
         i32 pitch;
-        SDLCall(SDL_SetTextureAlphaMod(texture_, a));
+        SDLCall(SDL_SetTextureAlphaMod(texture_, clr_a_));
         SDLCall(SDL_LockTexture(texture_, NULL, &pixels, &pitch));
         ASSERT(pixels);
         u32* upixels = (u32*)pixels;

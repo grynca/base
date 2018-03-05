@@ -4,14 +4,14 @@
 
 #define HM_TPL template <typename ItemType, typename KeyType, typename Hasher, typename Compare>
 #define HM_TYPE HashMap<ItemType, KeyType, Hasher, Compare>
-#define DEF_SIZE 64
 
 namespace grynca {
 
     HM_TPL
     inline HM_TYPE::HashMap()
-     : HashMap(DEF_SIZE)
+     : items_count_(0), modulo_mask_(0), initial_size_(0)
     {
+        hash_table_.push_back(InvalidId());
     }
 
     HM_TPL
@@ -104,12 +104,16 @@ namespace grynca {
         removeLink_(id, hash);
         u32 last_item_id = items_count_-1;
         if (last_item_id != id) {
+            // destruct removed item
+            ItemType* removed_item = getItemPtr_(id);
+            removed_item->~ItemType();
+
             // remove last pair from its list
             u32 last_hash = hashKey_(keys_[last_item_id]);
             removeLink_(last_item_id, last_hash);
 
             // move to freed slot and add its link to list
-            memcpy(getItemPtr_(id), getItemPtr_(last_item_id), sizeof(ItemType));
+            memcpy(removed_item, getItemPtr_(last_item_id), sizeof(ItemType));
             keys_[id] = keys_[last_item_id];
             next_[id] = hash_table_[last_hash];
             hash_table_[last_hash] = id;
@@ -120,12 +124,43 @@ namespace grynca {
     }
 
     HM_TPL
+    template <typename BeforeRemoveFunc>
+    inline void HM_TYPE::removeItem(const KeyType& key, const BeforeRemoveFunc& cb) {
+        u32 hash = hashKey_(key);
+        u32 id = findInternal_(key, hash);
+        if (id == InvalidId())
+            return;
+        cb();
+        ASSERT(cmp_(key, (const KeyType&)keys_[id]));
+
+        removeLink_(id, hash);
+        u32 last_item_id = items_count_-1;
+        if (last_item_id != id) {
+            // destruct removed item
+            ItemType* removed_item = getItemPtr_(id);
+            removed_item->~ItemType();
+
+            // remove last pair from its list
+            u32 last_hash = hashKey_(keys_[last_item_id]);
+            removeLink_(last_item_id, last_hash);
+
+            // move to freed slot and add its link to list
+            memcpy(removed_item, getItemPtr_(last_item_id), sizeof(ItemType));
+            keys_[id] = keys_[last_item_id];
+            next_[id] = hash_table_[last_hash];
+            hash_table_[last_hash] = id;
+        }
+
+        --items_count_;
+    }
+
+    HM_TPL
     inline const KeyType& HM_TYPE::getKey(u32 item_id) const {
         return keys_[item_id];
     }
 
     HM_TPL
-    inline ItemType& HM_TYPE::getItem(u32 item_id) {
+    inline ItemType& HM_TYPE::accItem(u32 item_id) {
         return *getItemPtr_(item_id);
     }
 
@@ -208,7 +243,7 @@ namespace grynca {
 
     HM_TPL
     inline ItemType* HM_TYPE::addItemInner_(u32 inner_hash, u32 hash, const KeyType& key) {
-        if (items_count_ >= hash_table_.size()) {
+        if (items_count_ >= keys_.size()) {
             u32 new_size = calcNextPowerOfTwo(items_count_+1);
             modulo_mask_ = new_size - 1;
             hash_table_.resize(new_size);

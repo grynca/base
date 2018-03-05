@@ -6,6 +6,18 @@
 #include "3rdp/ustring.h"
 #include "../functions/debug.h"
 
+#ifdef DEBUG_BUILD
+#   ifdef _WIN32
+#       include <windows.h>
+#       define DEBUG_BREAK() DebugBreak()
+#   else
+#       include <signal.h>
+#       define DEBUG_BREAK() raise(SIGTRAP)
+#   endif
+#else
+#   define DEBUG_BREAK()
+#endif
+
 namespace grynca {
 
     struct Exception : public std::runtime_error

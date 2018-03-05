@@ -2,12 +2,33 @@
 // Created by lutza on 26.6.2015.
 //
 
-#ifndef STRING_UTILS_H
-#define STRING_UTILS_H
+#ifndef SSU_H
+#define SSU_H
 
+#include "../3rdp/ustring.h"
 #include "../types/containers/fast_vector.h"
 
 // String&Stream utils
+
+#define FLOAT_TO_STR(val, DigitsTotal, DigitsAfterDot) \
+    [](f32 v) { \
+        std::string rslt; \
+        rslt.resize(DigitsTotal); \
+        int cnt = snprintf(&rslt[0], DigitsTotal+1, "%"#DigitsTotal"."#DigitsAfterDot"f", v); \
+        ASSERT(cnt >= 0 && cnt <= (DigitsTotal+1) ); \
+        (void)cnt; \
+        return rslt; \
+    }(val)
+
+#define DOUBLE_TO_STR(val, DigitsTotal, DigitsAfterDot) \
+    [](f64 v) { \
+        std::string rslt; \
+        rslt.resize(DigitsTotal); \
+        int cnt = snprintf(&rslt[0], DigitsTotal+1, "%"#DigitsTotal"."#DigitsAfterDot"lf", v); \
+        ASSERT(cnt >= 0 && cnt <= (DigitsTotal+1) ); \
+        (void)cnt; \
+        return rslt; \
+    }(val)
 
 namespace grynca {
     class ssu {
@@ -17,8 +38,6 @@ namespace grynca {
         static T fromString(const ST& str, const T& default_val);
 
         template <typename T>
-        static ustring toString(const T& t);
-        template <typename T>
         static std::string toStringA(const T& t);
 
         template <typename Container>
@@ -26,8 +45,8 @@ namespace grynca {
         template <typename Container>
         static std::string arrToStringA(const Container& t);
 
-        // prints 0.22 to 22% with 3 decimals
-        static ustring printPerc(f32 p);
+        // e.g: prints 0.22 to 22%
+        template <u32 Precision=3>
         static std::string printPercA(f32 p);
 
         // converts array of n T's to string of '1'&'0's, MSB is on left
@@ -85,4 +104,4 @@ namespace grynca {
 
 
 #include "ssu.inl"
-#endif //STRING_UTILS_H
+#endif //SSU_H

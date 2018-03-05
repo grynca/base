@@ -32,6 +32,13 @@ namespace grynca {
             ref_count_->ref();
         }
 
+        template <typename T>
+        RefCommonPtr(const RefPtr<T>& ptr)
+            : CommonPtr(ptr.getPtr()), ref_count_(ptr.ref_count_)
+        {
+            ref_count_->ref();
+        }
+
         RefCommonPtr& operator =(const RefCommonPtr& ptr) {
             unref_();
             place_ = ptr.place_;
@@ -46,6 +53,7 @@ namespace grynca {
         }
 
     private:
+        template <typename> friend class RefPtr;
         void unref_() {
             if (!ref_count_->unref()) {
                 delete ref_count_;

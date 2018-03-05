@@ -1,29 +1,29 @@
 #include "Variant.h"
-#include "VariantCaller.h"
+#include "TypedFuncs.h"
 #include <cassert>
 
 namespace grynca
 {
     template <typename ... Ts>
     inline Variant<Ts...>::Variant()
-        : curr_pos_(-1)
+        : type_id_(-1)
     {
     }
 
     template <typename ... Ts>
     inline Variant<Ts...>::Variant(const Variant<Ts...>& old)
-        : curr_pos_(old.curr_pos_)
+        : type_id_(old.type_id_)
     {
-        if (curr_pos_ != -1)
-            getHelper_().copy(curr_pos_, &data_, &old.data_);
+        auto &f = TypedFuncs<internal::VariantCopyConstructorF, TypesWithDummy>::funcs[type_id_ + 1];
+        f.callFor(&data_, &old.data_);
     }
 
     template <typename ... Ts>
     inline Variant<Ts...>::Variant(Variant<Ts...>&& old)
-        : curr_pos_(old.curr_pos_)
+        : type_id_(old.type_id_)
     {
-        if (curr_pos_ != -1)
-            getHelper_().move(curr_pos_, &data_, &old.data_);
+        auto &f = TypedFuncs<internal::VariantMoveConstructorF, TypesWithDummy>::funcs[type_id_ + 1];
+        f.callFor(&data_, &old.data_);
     }
 
     template <typename ... Ts>
@@ -31,116 +31,147 @@ namespace grynca
     inline Variant<Ts...>::Variant(const T& t) {
         // construct new with placement new
         new (&data_) T(t);
-        curr_pos_ = getTypeIdOf<T>();
+        type_id_ = getTypeIdOf<T>();
     }
 
     template <typename ... Ts>
     template <typename T>
     inline Variant<Ts...>::Variant(T&& t) {
         // construct new with placement new
-        new (&data_) T(t);
-        curr_pos_ = getTypeIdOf<T>();
+        new (&data_) T(std::move(t));
+        type_id_ = getTypeIdOf<T>();
     }
 
     template <typename ... Ts>
     inline Variant<Ts...>::~Variant() {
-        if (curr_pos_ != -1)
-            getHelper_().destroy(curr_pos_, &data_);
+        auto& f = TypedFuncs<internal::VariantDestructorF, TypesWithDummy>::funcs[type_id_+1];
+        f.callFor(&data_);
     }
 
     template <typename ... Ts>
     inline Variant<Ts...>& Variant<Ts...>::operator= (const Variant<Ts...>& v) {
-        curr_pos_ = v.curr_pos_;
-        if (curr_pos_ != -1)
-            getHelper_().copy(curr_pos_, &data_, &v.data_);
+        unset();
+        type_id_ = v.type_id_;
+        auto &f = TypedFuncs<internal::VariantCopyConstructorF, TypesWithDummy>::funcs[type_id_ + 1];
+        f.callFor(&data_, &v.data_);
         return *this;
     }
 
     template <typename ... Ts>
     inline Variant<Ts...>& Variant<Ts...>::operator= (Variant<Ts...>&& v) {
-        curr_pos_ = v.curr_pos_;
-        if (curr_pos_ != -1)
-            getHelper_().move(curr_pos_, &data_, &v.data_);
+        unset();
+        type_id_ = v.type_id_;
+        auto &f = TypedFuncs<internal::VariantMoveConstructorF, TypesWithDummy>::funcs[type_id_ + 1];
+        f.callFor(&data_, &v.data_);
         return *this;
     }
-
-    template <typename ... Ts>
-    template <typename T>
-    inline Variant<Ts...>& Variant<Ts...>::operator= (T& t) {
-        set(t);
-        return *this;
-    }
-
 
     template <typename ... Ts>
     template<typename T>
     inline bool Variant<Ts...>::is()const {
-        return (curr_pos_ == getTypeIdOf<T>() );
+        return (type_id_ == getTypeIdOf<T>() );
     }
 
     template <typename ... Ts>
     inline bool Variant<Ts...>::valid()const {
-        return (curr_pos_ != -1);
+        return (type_id_ != -1);
+    }
+
+    template <typename ... Ts>
+    template<typename T, typename... Args>
+    inline T& Variant<Ts...>::create(Args&&... args) {
+        new (&data_) T(std::forward<Args>(args)...);
+        type_id_ = getTypeIdOf<T>();
+        return acc<T>();
+    };
+
+    template <typename ... Ts>
+    template<typename T>
+    inline T& Variant<Ts...>::set(const T& src) {
+        return innerSet_<T>(src);
+    }
+
+    template <typename ... Ts>
+    template<typename T>
+    inline T& Variant<Ts...>::set(T&& src) {
+        return innerSet_<T>(std::forward<T>(src));
     }
 
     template <typename ... Ts>
     template<typename T, typename... Args>
     inline T& Variant<Ts...>::set(Args&&... args) {
-        // First we destroy the current contents
-        if (curr_pos_ != -1)
-            getHelper_().destroy(curr_pos_, &data_);
-        // construct new with placement new
-        new (&data_) T(std::forward<Args>(args)...);
-        curr_pos_ = getTypeIdOf<T>();
-        return get<T>();
+        return innerSet_<T>(std::forward<Args>(args)...);
+    }
+
+    template <typename ... Ts>
+    template<typename... Args>
+    inline void Variant<Ts...>::setByTypeId(i32 type_id, Args&&... args) {
+        unset();
+        type_id_ = type_id;
+        auto& f = TypedFuncs<internal::VariantConstructorF<Args...>, TypesWithDummy>::funcs[type_id_+1];
+        f.callFor(&data_, std::forward(args)...);
+    }
+
+    template <typename ... Ts>
+    inline void Variant<Ts...>::setFromData(i32 type_id, const void* source) {
+        unset();
+        type_id_ = type_id;
+        auto& f = TypedFuncs<internal::VariantCopyConstructorF, TypesWithDummy>::funcs[type_id_+1];
+        f.callFor(&data_, source);
     }
 
     template <typename ... Ts>
     inline void Variant<Ts...>::unset() {
-        if (curr_pos_ != -1)
-            getHelper_().destroy(curr_pos_, &data_);
+        auto& f = TypedFuncs<internal::VariantDestructorF, TypesWithDummy>::funcs[type_id_+1];
+        f.callFor(&data_);
+        type_id_ = -1;
     }
 
     template <typename ... Ts>
-    template <typename T>
-    inline T& Variant<Ts...>::get() {
-        ASSERT_M(getTypeIdOf<T>() == curr_pos_,
-               "This type is not currently set in Variant.");
+    template<typename T>
+    inline T& Variant<Ts...>::acc() {
+        ASSERT_M(getTypeIdOf<T>() == type_id_,
+                 "This type is not currently set in Variant.");
         return *(T*)(&data_);
     }
 
     template <typename ... Ts>
-    template<typename IfaceT>
-    inline IfaceT& Variant<Ts...>::getBase() {
-        IfaceT *ptr = NULL;
-        VariantCaller<internal::VariantIfaceCaster>::call<Variant<Ts...> >(*this, ptr);
-        return *ptr;
+    template<typename BaseT>
+    inline BaseT& Variant<Ts...>::accBase() {
+        ASSERT(valid());
+        auto& f = TypedFuncs<internal::BaseCasterF<BaseT>, TypesWithDummy>::funcs[type_id_+1];
+        return *f.callFor(&data_);
     }
 
     template <typename ... Ts>
-    template<typename IfaceT>
-    inline const IfaceT& Variant<Ts...>::getBase()const {
-        IfaceT *ptr = NULL;
-        VariantCaller<internal::VariantIfaceCaster>::call<Variant<Ts...> >(*const_cast<Variant<Ts...>*>(this), ptr);
-        return *ptr;
+    template<typename BaseT>
+    inline const BaseT& Variant<Ts...>::getBase()const {
+        ASSERT(valid());
+        auto& f = TypedFuncs<internal::BaseCasterF<BaseT>, TypesWithDummy>::funcs[type_id_+1];
+        return *f.callFor(const_cast<data_t*>(&data_));
     }
 
     template <typename ... Ts>
     template<typename T>
     inline const T& Variant<Ts...>::get()const {
-        ASSERT_M(getTypeIdOf<T>() == curr_pos_,
+        ASSERT_M(getTypeIdOf<T>() == type_id_,
                "This type is not currently set in Variant.");
         return *(const T*)(&data_);
     }
 
     template <typename ... Ts>
-    inline void* Variant<Ts...>::getData() {
+    inline void* Variant<Ts...>::accData() {
         return &data_;
     }
 
     template <typename ... Ts>
     inline const void* Variant<Ts...>::getData()const {
         return &data_;
+    }
+
+    template <typename ... Ts>
+    inline u32 Variant<Ts...>::getDataSize() {
+        return sizeof(data_t);
     }
 
     template <typename ... Ts>
@@ -151,8 +182,29 @@ namespace grynca
     }
 
     template <typename ... Ts>
-    inline internal::VariantHelper<Ts...>& Variant<Ts...>::getHelper_() {
-        static internal::VariantHelper<Ts...> helper;
-        return helper;
+    template <typename Functor, typename... Args>
+    inline constexpr auto Variant<Ts...>::callFunctor(Args&&... args)const {
+        ASSERT(valid());
+        auto& f = TypedFuncs<Functor, Types>::funcs[type_id_];
+        return f.callFor((void*)&data_, std::forward<Args>(args)...);
+    }
+
+    template <typename ... Ts>
+    template <typename Cond, typename TrueFunctor, typename FalseFunctor, typename... Args>
+    inline constexpr auto Variant<Ts...>::callFunctorCond(Args&&... args) {
+        ASSERT(valid());
+        auto& f = TypedFuncs<internal::CallCondF<Cond, TrueFunctor, FalseFunctor>, Types>::funcs[type_id_];
+        return f.callFor(&data_, std::forward(args)...);
+    }
+
+    template <typename ... Ts>
+    template<typename T, typename... Args>
+    inline T& Variant<Ts...>::innerSet_(Args&&... args) {
+        // First we destroy the current contents
+        unset();
+        // construct new with placement new
+        new (&data_) T(std::forward<Args>(args)...);
+        type_id_ = getTypeIdOf<T>();
+        return acc<T>();
     }
 }

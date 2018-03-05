@@ -1,8 +1,21 @@
 #ifndef META_H
 #define META_H
 
-#include <bitset>
 #include <climits>
+#include <cstddef>
+#include <type_traits>
+
+#if __GNUC__
+#   if __x86_64__ || __ppc64__
+#       define ENV64 1
+#       define ENV32 0
+#   else
+#       define ENV64 0
+#       define ENV32 1
+#   endif
+#endif
+
+#define UNUSED(x) ((void)(x))
 
 #define kilobytes(n) u32(1024*(n))
 #define megabytes(n) (1024*kilobytes(n))
@@ -11,16 +24,21 @@
 // Returns the number of bits in the given type
 #define BITS_IN_TYPE(t)	(sizeof(t) * CHAR_BIT)
 
-#define ONES(from, to) (((u64(1)<<(to-from+1))-1)<<from)
-#define ZEROS(from, to) (~ONES(from, to))
+// positive modulo, M must be power of 2
+#define PMOD(VAL, M) ((VAL)&(M-1))
 
+#define BIT_MASK(b_id) (1<<(b_id))
+#define ONES(from, to) (((u64(1)<<(to-from))-1)<<from)
+#define ZEROS(from, to) (~ONES(from, to))
 #define GET_BIT(num, b_id) (bool)(((num)>>(b_id))&1)
 #define SET_BIT(num, b_id) (decltype(num))((num)|(1<<(b_id)))
+#define SET_BITS2(num, b_id1, b_id2) (decltype(num))((num)|(1<<(b_id1))|(1<<(b_id2)))
+#define SET_BITS3(num, b_id1, b_id2, b_id3) (decltype(num))((num)|(1<<(b_id1))|(1<<(b_id2))|(1<<(b_id3)))
 #define CLEAR_BIT(num, b_id) (decltype(num))((num)&~(1<<(b_id)))
 #define TGL_BIT(num, b_id) (decltype(num))((num)^(1<<(b_id)))
 #define SET_BITV(num, b_id, val)  (decltype(num))((num)^((-((int)(bool)val)^(num))&(1<<(b_id))))
-#define GET_BITS(num, bit_from, bits_cnt)  ((num&ONES((bit_from), bit_from+bits_cnt-1))>>(bit_from))
-#define SET_BITS(num, bit_from, bits_cnt, val) ((num&ZEROS((bit_from), bit_from+bits_cnt-1)) | (val << (bit_from))); \
+#define GET_BITS(num, bit_from, bits_cnt)  ((num&ONES((bit_from), bit_from+bits_cnt))>>(bit_from))
+#define SET_BITS(num, bit_from, bits_cnt, val) ((num&ZEROS((bit_from), bit_from+bits_cnt)) | (val << (bit_from))); \
                                                 ASSERT( val < (1<<(bits_cnt)) )
 
 /// Returns the mask of type \p t with the lowest \p n bits set.
@@ -32,12 +50,14 @@
 #define ARRAY_SIZE(array) (sizeof(array)/sizeof(*array))
 
 /* This counts the number of args (does not work for 0 args) */
-#define NARGS_SEQ(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10, N,...) N
-#define NARGS(...) NARGS_SEQ(__VA_ARGS__, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+#define NARGS_SEQ(_1,_2,_3,_4,_5,_6,_7,_8,_9,_10,_11, _12,_13,_14,_15, N,...) N
+#define NARGS(...) NARGS_SEQ(__VA_ARGS__, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
 /* This will let macros expand before concating them */
 #define PRIMITIVE_CAT(x, y) x ## y
 #define CAT(x, y) PRIMITIVE_CAT(x, y)
+
+#define SINGLE_ARG(...) __VA_ARGS__
 
 /* This will call a macro on each argument passed in */
 // with space in between
@@ -52,6 +72,11 @@
 #define APPLY_SPACE_8(m, x1, x2, x3, x4, x5, x6, x7, x8) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8)
 #define APPLY_SPACE_9(m, x1, x2, x3, x4, x5, x6, x7, x8, x9) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8) m(x9)
 #define APPLY_SPACE_10(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8) m(x9) m(x10)
+#define APPLY_SPACE_11(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8) m(x9) m(x10) m(x11)
+#define APPLY_SPACE_12(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8) m(x9) m(x10) m(x11) m(x12)
+#define APPLY_SPACE_13(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8) m(x9) m(x10) m(x11) m(x12) m(x13)
+#define APPLY_SPACE_14(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8) m(x9) m(x10) m(x11) m(x12) m(x13) m(x14)
+#define APPLY_SPACE_15(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15) m(x1) m(x2) m(x3) m(x4) m(x5) m(x6) m(x7) m(x8) m(x9) m(x10) m(x11) m(x12) m(x13) m(x14) m(x15)
 
 // with comma in between
 #define APPLY_COMMA(macro, ...) CAT(APPLY_COMMA_, NARGS(__VA_ARGS__))(macro, __VA_ARGS__)
@@ -65,6 +90,11 @@
 #define APPLY_COMMA_8(m, x1, x2, x3, x4, x5, x6, x7, x8) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8)
 #define APPLY_COMMA_9(m, x1, x2, x3, x4, x5, x6, x7, x8, x9) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8), m(x9)
 #define APPLY_COMMA_10(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8), m(x9), m(x10)
+#define APPLY_COMMA_11(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8), m(x9), m(x10), m(x11)
+#define APPLY_COMMA_12(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8), m(x9), m(x10), m(x11), m(x12)
+#define APPLY_COMMA_13(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8), m(x9), m(x10), m(x11), m(x12), m(x13)
+#define APPLY_COMMA_14(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8), m(x9), m(x10), m(x11), m(x12), m(x13), m(x14)
+#define APPLY_COMMA_15(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15) m(x1), m(x2), m(x3), m(x4), m(x5), m(x6), m(x7), m(x8), m(x9), m(x10), m(x11), m(x12), m(x13), m(x14), m(x15)
 
 // with && in between
 #define APPLY_AND_ALL(macro, ...) CAT(APPLY_AND_ALL_, NARGS(__VA_ARGS__))(macro, __VA_ARGS__)
@@ -78,39 +108,75 @@
 #define APPLY_AND_ALL_8(m, x1, x2, x3, x4, x5, x6, x7, x8) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)
 #define APPLY_AND_ALL_9(m, x1, x2, x3, x4, x5, x6, x7, x8, x9) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)
 #define APPLY_AND_ALL_10(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)
+#define APPLY_AND_ALL_11(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)&& m(x11)
+#define APPLY_AND_ALL_12(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x12) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)&& m(x11)&& m(x12)
+#define APPLY_AND_ALL_13(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x12, x13) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)&& m(x11)&& m(x12)&& m(x13)
+#define APPLY_AND_ALL_14(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x12, x13, x14) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)&& m(x11)&& m(x12)&& m(x13)&& m(x14)
+#define APPLY_AND_ALL_15(m, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x12, x13, x14, x15) m(x1)&& m(x2)&& m(x3)&& m(x4)&& m(x5)&& m(x6)&& m(x7)&& m(x8)&& m(x9)&& m(x10)&& m(x11)&& m(x12)&& m(x13)&& m(x14)&& m(x15)
 
-#define _ENUM_ID(NAME) NAME##Id
-#define _DEF_ENUM_MASK(NAME)  \
-    static const grynca::Mask<end>& NAME##Mask() { \
-        static grynca::Mask<end> v = grynca::Mask<end>::bit(NAME##Id); \
-        return v; \
-    }
-#define DEFINE_ENUM(NAME, ...) \
-    struct NAME { \
-        enum { \
-            APPLY_COMMA(_ENUM_ID, __VA_ARGS__), \
-            end \
-        }; \
-        APPLY_SPACE(_DEF_ENUM_MASK, __VA_ARGS__) \
-    };
-#define DEFINE_ENUM_E(NAME, BASE, FIRST, ...) \
-    struct NAME: public BASE { \
-        enum { \
-            _ENUM_ID(FIRST) = BASE::end, \
-            APPLY_COMMA(_ENUM_ID, __VA_ARGS__), \
-            end \
-        }; \
-        _DEF_ENUM_MASK(FIRST) \
-        APPLY_SPACE(_DEF_ENUM_MASK, __VA_ARGS__) \
-    };
+#define MAKE_PARAMS_0()
+#define MAKE_PARAMS_1(type) type arg1
+#define MAKE_PARAMS_2(type1, type2) type1 arg1, type2 arg2
+#define MAKE_PARAMS_3(type1, type2, type3) type1 arg1, type2 arg2, type3 arg3
+#define MAKE_PARAMS_4(type1, type2, type3, type4) type1 arg1, type2 arg2, type3 arg3, type4 arg4
+#define MAKE_PARAMS_5(type1, type2, type3, type4, type5) type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5
+//.. add as many MAKE_PARAMS_* as you need
 
-// works correctly only on static member functions
-#define DECLARE_PROP(PROP) \
+#define MAKE_PARAMS_N(N, ...) MAKE_PARAMS_##N(__VA_ARGS__)
+#define MAKE_PARAMS_FORCE_N(N, ...) MAKE_PARAMS_N(N, __VA_ARGS__)
+#define MAKE_PARAMS(...) MAKE_PARAMS_FORCE_N(NARGS(__VA_ARGS__), __VA_ARGS__)
+
+
+#define MAKE_ARGS_0()
+#define MAKE_ARGS_1(t) arg1
+#define MAKE_ARGS_2(t1, t2) arg1, arg2
+#define MAKE_ARGS_3(t1, t2, t3) arg1, arg2, arg3
+#define MAKE_ARGS_4(t1, t2, t3, t4) arg1, arg2, arg3, arg4
+#define MAKE_ARGS_5(t1, t2, t3, t4, t5) arg1, arg2, arg3, arg4, arg5
+//.. add as many MAKE_ARGS_* as you have MAKE_PARAMS_*
+
+#define MAKE_ARGS_N(N, ...) MAKE_ARGS_##N(__VA_ARGS__)
+#define MAKE_ARGS_FORCE_N(N, ...) MAKE_ARGS_N(N, __VA_ARGS__)
+#define MAKE_ARGS(...) MAKE_ARGS_FORCE_N(NARGS(__VA_ARGS__), __VA_ARGS__)
+
+
+// good for preprocessor messages
+// e.g.: #pragma message "The value of ABC: " STR(ABC)
+#define STR(x) _XSTR(x)
+#define _XSTR(x) #x
+
+#define OBJ_TYPE_FROM_PTR(ptr) std::remove_reference<decltype(*(ptr))>::type
+
+#define DISALLOW_COPY_AND_ASSIGN(T) \
+  T(const T&) = delete;      \
+  void operator=(const T&) = delete
+
+#define MOVE_ONLY(T) \
+    DISALLOW_COPY_AND_ASSIGN(T); \
+    T(T&&) = default; \
+    T& operator=(T&&) = default
+
+#define DEF_CONSTR_AND_MOVE_ONLY(T) \
+    MOVE_ONLY(T); \
+    T() = default
+
+#define INHERIT_CONSTRUCTORS(BASE) \
+    using BASE::BASE
+
+#define DECLARE_PROP_DATA(PROP) \
 template<class T> \
 using PROP##_t = decltype(std::declval<T>().PROP);
 
+#define DECLARE_PROP_FUNC(PROP) \
+template<class T> \
+using PROP##_t = decltype(std::declval<T>().PROP());
+
+// not exactly safe on non-POD structs/classes
 #define GET_PARENT_STRUCT(STRUCTNAME, MEMBERNAME, MEMBERREF) \
     grynca::internal::getParentStruct<STRUCTNAME, offsetof(STRUCTNAME, MEMBERNAME)>(MEMBERREF)
+
+#define COND_TYPEDEF(Cond, TypeIfTrue, TypeIfFalse, TypeDef) \
+    typedef typename std::conditional<Cond, TypeIfTrue, TypeIfFalse>::type TypeDef;
 
 namespace grynca {
 
@@ -219,8 +285,42 @@ namespace grynca {
         };
     };
 
+    struct EmptyFunctor {
+        template <typename... Args>
+        static void f(Args&&...) {}
+    };
+
+    struct EmptyFunctorT {
+        template <typename T, typename... Args>
+        static void f(Args&&...) {}
+    };
+
+
+    template <bool RSLT = true>
+    struct BoolFunctor {
+        template <typename... Args>
+        static bool f(Args&&...) { return RSLT; }
+    };
+
+    // signum function, returns [-1, 0, 1]
     template <typename T> int sgn(T val) {
         return (T(0) < val) - (val < T(0));
+    }
+
+    // 0 i always same sign
+    template <typename T> bool sameSign(T val1, T val2) {
+        return (val1*val2)>=0;
+    }
+
+    template <typename Derived, typename Base>
+    inline i32 calcBaseOffset() {
+        return (u8*)((Base*)((Derived*)0x10000000)) - (u8*)0x10000000;
+    }
+
+    template<class T>
+    inline constexpr T static_pow(const T base, unsigned const exponent)
+    {
+        return (exponent == 0) ? 1 : (base * static_pow(base, exponent-1));
     }
 }
 

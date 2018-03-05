@@ -19,7 +19,9 @@ option(USE_SDL2 "Use SDL2" ON)
 IF (USE_SDL2)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_SDL2=1" )
     IF (WIN32)
-        # TODO:
+        include_directories(c:/DEV/ENV/msys64/mingw64/include/)
+        link_directories(c:/DEV/ENV/msys64/mingw64/lib/)
+        set(LIBS "-lglew32 -lglu32 -lopengl32 -lmingw32 -lSDL2main -lSDL2")
     ELSE()
         set(LIBS "-lGLEW -lGL -lGLU -lSDL2")
     ENDIF()
@@ -35,12 +37,14 @@ set(SOURCE_FILES
         include/functions/profiling.h
         include/functions/profiling.inl
         include/functions/meta.h
+        include/functions/enum.h
         include/functions/random.h
         include/functions/sort_utils.h
         include/functions/sort_utils.inl
         include/functions/ssu.h
         include/functions/ssu.inl
         include/functions/common.h
+        include/functions/hash.h
         include/functions/defs.h
         include/functions/undefs.h
         include/functions/emsc_utils.h
@@ -48,29 +52,34 @@ set(SOURCE_FILES
         include/types/Type.h
         include/types/Type.inl
         include/types/Type_internal.h
+        include/types/TypesPack.h
+        include/types/TypesPack.inl
+        include/types/TypesCombiner.h
         include/types/Variant.h
         include/types/Variant.inl
         include/types/variant_helper.h
+        include/types/VariantTypesLooper.h
         include/types/Index.h
         include/types/Mask.h
         include/types/Mask.inl
         include/types/EventsHandler.h
-        include/types/EventHandlers.inl
+        include/types/EventsHandler.inl
         include/types/containers/fast_vector.h
-        include/types/containers/VVector.h
-        include/types/containers/VVector.inl
-        include/types/containers/VVector2.h
-        include/types/containers/VVector2.inl
+        include/types/containers/VArray.h
+        include/types/containers/VArray.inl
         include/types/containers/RoundBuffer.h
         include/types/containers/ChunkedBuffer.h
+        include/types/containers/ChunkedBuffer.inl
         include/types/containers/TightPool.h
         include/types/containers/TightPool.inl
         include/types/containers/Pool.h
         include/types/containers/Pool.inl
-        include/types/containers/MultiPool.h
-        include/types/containers/MultiPool.inl
+        include/types/containers/CompsPool.h
+        include/types/containers/CompsPool.inl
         include/types/containers/Array.h
         include/types/containers/Array.inl
+        include/types/containers/SortedArray.h
+        include/types/containers/SortedArray.inl
         include/types/containers/SharedBuffer.h
         include/types/containers/SharedBuffer.inl
         include/types/containers/HashMap.h
@@ -79,6 +88,13 @@ set(SOURCE_FILES
         include/types/containers/HashSet.inl
         include/types/containers/Items.h
         include/types/containers/Items2.h
+        include/types/containers/PolyPool.h
+        include/types/containers/PolyPool.inl
+        include/types/containers/ItemPtr.h
+        include/types/containers/ItemPtr.inl
+        include/types/containers/ItemAutoPtr.h
+        include/types/containers/ItemRefPtr.h
+        include/types/containers/ItemRefPtr.inl
         include/types/Bits.h
         include/types/Bits.inl
         include/types/TestBench.h
@@ -93,6 +109,8 @@ set(SOURCE_FILES
         include/types/Manager.h
         include/types/Manager.inl
         include/types/ObjFunc.h
+        include/types/ObjFunc.inl
+        include/types/TypedFuncs.h
         include/types/Path.h
         include/types/Path.inl
         include/types/FileLister.h
@@ -104,12 +122,12 @@ set(SOURCE_FILES
         include/types/Singleton.inl
         include/types/Timer.h
         include/types/Timer.inl
-        include/types/VariantCaller.h
         include/types/Call.h
         include/types/BitScanner.h
         include/types/BitScanner.inl
         include/types/EventsReciever.h
-        include/3rdp/ustring.h)
+        include/3rdp/ustring.h
+        )
 
 set(TEST_FILES
         test/main.cpp

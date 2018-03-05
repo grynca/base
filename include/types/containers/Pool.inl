@@ -1,6 +1,5 @@
 #include "Pool.h"
 
-#define GROWING_FACTOR 1.5f
 #define FREE_BITMASK (1<<15)
 
 namespace grynca {
@@ -29,59 +28,56 @@ namespace grynca {
         if (first_free_pos_ != InvalidId()) {
             slot_id = first_free_pos_;
             first_free_pos_ = getNextFree_(first_free_pos_);
+            unsetFree_(slot_id);
         }
         else {
             // resize
             slot_id = size();
-
-            u32 new_items_cnt = u32(ceilf(GROWING_FACTOR*(slot_id+1)));
-
-            data_.resize(new_items_cnt*item_size_);
-            versions_.resize(new_items_cnt, FREE_BITMASK);
-
-            // interwine free ids list to new slots
-            for (u32 i=slot_id+1; i<(new_items_cnt-1); ++i) {
-                setNextFree_(i, i+1);
-            }
-            setNextFree_(new_items_cnt-1, first_free_pos_);
-            first_free_pos_ = slot_id+1;
+            data_.enlarge((slot_id+1)*item_size_);
+            item_ctxs_.emplace_back(0, 0);
         }
 
         new_item_out = &data_[slot_id*item_size_];
-        unsetFree_(slot_id);
-        return Index(slot_id, versions_[slot_id]);
+        return Index(slot_id, item_ctxs_[slot_id].version);
     }
 
-    inline void Pool::removeAtPos(u32 pos) {
+    inline Index Pool::add(u8*& new_item_out, u16 aux_id) {
+        Index id = add(new_item_out);
+        item_ctxs_[id.getIndex()].aux_id = aux_id;
+        id.setAuxIndex(aux_id);
+        return id;
+    }
+
+    inline void Pool::removeItemAtPos(u32 pos) {
         ASSERT(!isFree_(pos));
         setNextFree_(pos, first_free_pos_);
         first_free_pos_ = pos;
-        ++versions_[pos];
+        ++item_ctxs_[pos].version;
         setFree_(pos);
     }
 
-    inline void Pool::removeAtPos(u32 pos, DestroyFunc destructor) {
+    inline void Pool::removeItemAtPos(u32 pos, DestroyFunc destructor) {
         ASSERT(!isFree_(pos));
-        destructor(getAtPos(pos));
+        destructor(accItemAtPos(pos));
         setNextFree_(pos, first_free_pos_);
         first_free_pos_ = pos;
-        ++versions_[pos];
+        ++item_ctxs_[pos].version;
         setFree_(pos);
     }
 
-    inline void Pool::remove(Index index) {
+    inline void Pool::removeItem(Index index) {
         ASSERT(isValidIndex(index));
-        removeAtPos(index.getIndex());
+        removeItemAtPos(index.getIndex());
     }
 
-    inline void Pool::remove(Index index, DestroyFunc destructor) {
+    inline void Pool::removeItem(Index index, DestroyFunc destructor) {
         ASSERT(isValidIndex(index));
-        removeAtPos(index.getIndex(), destructor);
+        removeItemAtPos(index.getIndex(), destructor);
     }
 
     inline void Pool::reserve(size_t count) {
         data_.reserve(item_size_*count);
-        versions_.reserve(count);
+        item_ctxs_.reserve(count);
     }
 
     inline u32 Pool::getItemPos(const u8* item)const {
@@ -97,51 +93,64 @@ namespace grynca {
         return index.getIndex();
     }
 
-    inline u8* Pool::get(Index index) {
+    inline u8* Pool::accItem(Index index) {
         ASSERT(isValidIndex(index));
         return &data_[index.getIndex()*item_size_];
     }
 
-    inline const u8* Pool::get(Index index)const {
+    inline const u8* Pool::getItem(Index index)const {
         ASSERT(isValidIndex(index));
         return &data_[index.getIndex()*item_size_];
     }
 
-    inline u8* Pool::getAtPos(u32 pos) {
+    inline u8* Pool::accItemWithInnerIndex(u32 inner_id) {
+        return accItemAtPos(inner_id);
+    }
+
+    inline const u8* Pool::getItemWithInnerIndex(u32 inner_id)const {
+        return getItemAtPos(inner_id);
+    }
+
+    inline u8* Pool::accItemAtPos(u32 pos) {
         if (isFree_(pos))
             return NULL;
         return &data_[pos*item_size_];
     }
 
-    inline const u8* Pool::getAtPos(u32 pos)const {
+    inline const u8* Pool::getItemAtPos(u32 pos)const {
         if (isFree_(pos))
             return NULL;
         return &data_[pos*item_size_];
     }
 
-    inline u8* Pool::getAtPos2(u32 pos) {
+    inline u8* Pool::accItemAtPos2(u32 pos) {
         ASSERT(!isFree_(pos));
         return &data_[pos*item_size_];
     }
 
-    inline const u8* Pool::getAtPos2(u32 pos)const {
+    inline const u8* Pool::getItemAtPos2(u32 pos)const {
         ASSERT(!isFree_(pos));
         return &data_[pos*item_size_];
     }
 
-    inline Index Pool::getIndexForPos(u32 pos) {
-        return Index(pos, versions_[pos]);
+    inline Index Pool::getIndexForPos(u32 pos)const {
+        // for Pool with holes pos == Index.index
+        return getFullIndex(pos);
     }
 
-    inline void Pool::getIndexForPos2(u32 pos, Index& index_out) {
+    inline void Pool::getIndexForPos2(u32 pos, Index& index_out)const {
         index_out.setIndex(pos);
-        index_out.setVersion(versions_[pos]);
+        index_out.setVerAux(item_ctxs_[pos].ver_aux);
+    }
+
+    inline Index Pool::getFullIndex(u32 index_id)const {
+        return Index(index_id, item_ctxs_[index_id].version, item_ctxs_[index_id].aux_id);
     }
 
     inline bool Pool::isValidIndex(Index index)const {
         if (index.getIndex() >= size())
             return false;
-        return versions_[index.getIndex()] == index.getVersion();
+        return item_ctxs_[index.getIndex()].version == index.getVersion();
     }
 
 
@@ -150,7 +159,7 @@ namespace grynca {
     }
 
     inline u32 Pool::size()const {
-        return versions_.size();
+        return u32(item_ctxs_.size());
     }
 
     inline u32 Pool::calcFreeSlotsCount()const {
@@ -173,12 +182,12 @@ namespace grynca {
 
     inline void Pool::clear() {
         data_.clear();
-        versions_.clear();
+        item_ctxs_.clear();
     }
 
     inline void Pool::clear(DestroyFunc destructor) {
         for (u32 i=0; i<size(); ++i) {
-            u8* ptr = getAtPos(i);
+            u8* ptr = accItemAtPos(i);
             if (ptr) {
                 destructor(ptr);
             }
@@ -191,18 +200,18 @@ namespace grynca {
     }
 
     inline bool Pool::isFree_(u32 pos)const {
-        ASSERT(pos < versions_.size());
-        return (versions_[pos] & u16(FREE_BITMASK)) != 0;
+        ASSERT(pos < item_ctxs_.size());
+        return (item_ctxs_[pos].version & u16(FREE_BITMASK)) != 0;
     }
 
     inline void Pool::setFree_(u32 pos) {
-        ASSERT(pos < versions_.size());
-        versions_[pos] |= FREE_BITMASK;
+        ASSERT(pos < item_ctxs_.size());
+        item_ctxs_[pos].version |= FREE_BITMASK;
     }
 
     inline void Pool::unsetFree_(u32 pos) {
-        ASSERT(pos < versions_.size());
-        versions_[pos] &= ~FREE_BITMASK;
+        ASSERT(pos < item_ctxs_.size());
+        item_ctxs_[pos].version &= ~FREE_BITMASK;
     }
 
     inline u32 Pool::getNextFree_(u32 pos)const {
@@ -215,4 +224,3 @@ namespace grynca {
 }
 
 #undef FREE_BITMASK
-#undef GROWING_FACTOR

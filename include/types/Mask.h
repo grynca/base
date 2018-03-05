@@ -28,11 +28,22 @@ namespace grynca {
         void reset();
         void clear();
         void set();
+        void reverse();
         Mask operator~()const;
         constexpr static size_t size();
         size_t capacity()const;
         bool test(size_t n)const;
         bool operator[](size_t n)const;
+
+        // error when called on empty Mask, check with .any() before
+        // returns id of last set bit
+        size_t findLastSetBit();
+        // cnt rightmost bits from last word are lost,
+        //  inserted bits are zeroed
+        void insert(size_t bit_id, size_t cnt);
+        // bits are shifted to fill the gap,
+        //  last word is padded with zeros on right
+        void remove(size_t bit_id, size_t cnt);
 
         /// Flips all the bits in the set.
         void flip();
@@ -58,23 +69,29 @@ namespace grynca {
         bool none()const;
 
         size_t count()const;
-        constexpr bool operator==(ref_self v)const;
-        constexpr Mask operator&(ref_self v)const;
-        constexpr Mask operator|(ref_self v)const;
-        constexpr Mask operator^(ref_self v)const;
         constexpr ref_self operator&=(ref_self v);
         constexpr ref_self operator|=(ref_self v);
         constexpr ref_self operator^=(ref_self v);
     private:
-        template <size_t Size2>
+        template <size_t S>
         friend class Mask;
-        template <size_t Size2>
-        friend std::ostream& operator<<(std::ostream& os, const Mask<Size2>& m);
+
+        template <size_t S>
+        friend constexpr bool operator==(const Mask<S>& m1, const Mask<S>& m2);
+        template <size_t S>
+        friend constexpr Mask<S> operator&(const Mask<S>& m1, const Mask<S>& m2);
+        template <size_t S1, size_t S2>
+        friend constexpr Mask<std::max(S1, S2)> operator|(const Mask<S1>& m1, const Mask<S2>& m2);
+        template <size_t S>
+        friend constexpr Mask<S> operator^(const Mask<S>& m1, const Mask<S>& m2);
+        template <size_t S>
+        friend std::ostream& operator<<(std::ostream& os, const Mask<S>& m);
 
         word_type& accWord_(size_t bit_id);
         word_type getWord_(size_t bit_id)const;
         word_type getMask_(size_t n)const;
         void setWords_(u8 val);
+        word_type reverseBits_(word_type x);
 
         static constexpr size_t word_bits_ = BITS_IN_TYPE (word_type);
         static constexpr size_t words_cnt_ = Size / word_bits_ + ((Size % word_bits_) != 0);

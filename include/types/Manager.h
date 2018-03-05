@@ -2,7 +2,8 @@
 #define MANAGER_H
 
 #include "containers/Array.h"
-#include "RefCount.h"
+#include "containers/ItemPtr.h"
+#include "containers/ItemRefPtr.h"
 
 /*
  * EXAMPLE:
@@ -27,40 +28,80 @@
 
 namespace grynca {
 
-    // fw
-    template <typename IT> class ManagedItemRef;
-    template <typename IT> class ManagedItemPtr;
+    template <typename ItemType>
+    class ManagedItemPtr : public ItemPtr<typename ItemType::ManagerType, ItemType> {
+        typedef typename ItemType::ManagerType ContainerType;
+        typedef typename ContainerType::ItemIndexType IndexType;
+        typedef ItemPtr<ContainerType, ItemType> Base;
+    public:
+        ManagedItemPtr();
+        ManagedItemPtr(ContainerType& container, IndexType index);
+        ManagedItemPtr(const ItemRefPtr<ContainerType, ItemType>& ref);
+        ManagedItemPtr(const ItemPtr<ContainerType, ItemType>& ptr);
+
+        ManagedItemPtr(const ItemType& item);
+        ManagedItemPtr(const ItemType* item);
+    };
+
+    template <typename ItemType>
+    class ManagedItemAutoPtr : public ItemAutoPtr<typename ItemType::ManagerType, ItemType> {
+        typedef typename ItemType::ManagerType ContainerType;
+        typedef typename ContainerType::ItemIndexType IndexType;
+        typedef ItemAutoPtr<ContainerType, ItemType> Base;
+    public:
+        ManagedItemAutoPtr();
+        ManagedItemAutoPtr(ContainerType& container, IndexType index);
+        ManagedItemAutoPtr(const ItemRefPtr<ContainerType, ItemType>& ref);
+        ManagedItemAutoPtr(const ItemPtr<ContainerType, ItemType>& ptr);
+        ManagedItemAutoPtr(ItemAutoPtr<ContainerType, ItemType>&& ptr);
+
+        ManagedItemAutoPtr(const ItemType& item);
+        ManagedItemAutoPtr(const ItemType* item);
+    };
+
+    template <typename ItemType>
+    class ManagedItemRefPtr : public ItemRefPtr<typename ItemType::ManagerType, ItemType> {
+        typedef typename ItemType::ManagerType ContainerType;
+        typedef typename ItemType::IndexType IndexType;
+        typedef ItemRefPtr<ContainerType, ItemType> Base;
+    public:
+        ManagedItemRefPtr();
+        ManagedItemRefPtr(ContainerType& container, IndexType index);
+        ManagedItemRefPtr(const ItemRefPtr<ContainerType, ItemType>& ref);
+        ManagedItemRefPtr(const ItemPtr<ContainerType, ItemType>& ptr);
+        ManagedItemRefPtr(ItemRefPtr<ContainerType, ItemType>&& ref);
+
+        ManagedItemRefPtr(const ItemType& item);
+        ManagedItemRefPtr(const ItemType* item);
+    };
 
     template <typename T, typename IT = Index>
-    class ManagedItem {
+    class ManagedItem : public RefCounted {
     public:
-        void init() {}
-
         typedef T ManagerType;
         typedef IT IndexType;
+
     protected:
         template<typename TT, typename TTT> friend class Manager;
-        template<typename TT> friend class ManagedItemRef;
-        template<typename TT> friend class ManagedItemPtr;
+        template<typename TT> friend class ManagerSingletons;
 
-        template<typename TT, typename TTT> friend class ManagerSingletons;
+        // called by manager, override by subclass if needed
+        void afterAdded() {}
 
         IndexType id_;
         ManagerType* manager_;
-        RefCount ref_count_;
     public:
-        ManagedItem()
-         : manager_(NULL), ref_count_(0) {}
+        ManagedItem() : manager_(NULL){}
 
-        int getRefCount() { return ref_count_.get(); }
-        void ref() { ref_count_.ref(); }
-        bool unref() { return ref_count_.unref(); }
         IndexType getId()const { return id_; }
         ManagerType& getManager()const { return *manager_; }
     };
 
     template <typename T>
     class ManagedItemSingleton : public ManagedItem<T, u32> {
+    public:
+        // called by manager, override by subclass if needed
+        void initSingleton() {}
     };
 
     // do not store pointers or references to items
@@ -68,30 +109,34 @@ namespace grynca {
 
     template <typename T, class ArrayType = Array<T> >
     class Manager {
+        typedef Manager<T,ArrayType> MyType;
     public:
         typedef T ItemType;
-        typedef Index IndexType;
-        typedef ManagedItemPtr<ItemType> ItemPtr;
-        typedef ManagedItemRef<ItemType> ItemRef;
+        typedef Index ItemIndexType;
+        typedef ManagedItemPtr<ItemType> IPtr;
+        typedef ManagedItemAutoPtr<ItemType> IAutoPtr;
+        typedef ManagedItemRefPtr<ItemType> IRefPtr;
 
         template <typename...ConstructionArgs>
         ItemType& addItem(ConstructionArgs&&... args);
-        ItemType& getItem(IndexType id);
-        const ItemType& getItem(IndexType id)const;
+        ItemType& accItem(ItemIndexType id);
+        const ItemType& getItem(ItemIndexType id)const;
 
-        ItemType* getItemAtPos(u32 pos);
+        ItemType* accItemAtPos(u32 pos);
         const ItemType* getItemAtPos(u32 pos)const;
 
         //use when you are sure that pos is not hole
-        ItemType& getItemAtPos2(u32 pos);
+        ItemType& accItemAtPos2(u32 pos);
         const ItemType& getItemAtPos2(u32 pos)const;
         Index getIndexForPos(u32 pos);
 
         u32 getItemPos(Index index)const;
-        void removeItem(IndexType id);
+        void removeItem(ItemIndexType id);
         void reserveSpaceForItems(size_t count);
 
-        bool isValidIndex(IndexType index)const;
+        bool isValidIndex(ItemIndexType index)const;
+
+        void clear();
 
         u32 getItemsCount()const;
         bool empty();
@@ -102,95 +147,59 @@ namespace grynca {
     template <typename ItemType>
     class TightManager : public Manager<ItemType, TightArray<ItemType> > {};
 
-
     // manages singletons derived from BaseType
-    template <typename Derived, typename BaseType>
+    template <typename BaseType>
     class ManagerSingletons {
+        typedef ManagerSingletons<BaseType> Domain;
     public:
         typedef BaseType ItemType;
-        typedef u32 IndexType;
+        typedef u32 ItemIndexType;
 
         virtual ~ManagerSingletons();
 
+        template <typename Types, typename... InitArgs>
+        void initSingletons(InitArgs&&... args);
+
+        template <typename T, typename... InitArgs>
+        T& initSingleton(InitArgs&&... args);
+
+        // creates item lazyly if needed (does not call init)
         template <typename T>
         T& get();
 
-        BaseType* getById(IndexType id);
-        const BaseType* getById(IndexType id)const;
+        // does not checks if item was created
+        template <typename T>
+        T& getFast();
 
-        const TypeInfo& getTypeInfo(IndexType id)const;
+        const BaseType* tryGetById(ItemIndexType id)const;
+        BaseType* tryGetById(ItemIndexType id);
 
-        u32 getSize();
+        BaseType* getById(ItemIndexType id);
+        const BaseType* getById(ItemIndexType id)const;
+
+        const TypeInfo& getTypeInfo(ItemIndexType id)const;
+
+        template <typename T>
+        static u32 getTypeIdOf();
+
+        u32 getSize()const;
     private:
-        fast_vector<BaseType*> items_;      // items are pointers -> non-volatile
-    };
+        struct TypesInitializer_ {
+            template <typename TP, typename T, typename... InitArgs>
+            static void f(ManagerSingletons& mgr, InitArgs&&... args);
+        };
 
-    template <typename ItemType>
-    class ManagedItemPtr {
-    public:
-        typedef typename ItemType::ManagerType ManagerType;
-        typedef typename ItemType::IndexType IndexType;
+        struct ItemCtx {
+            ItemCtx() : offset_to_base(0) {}
 
-        ManagedItemPtr();
-        ManagedItemPtr(ManagerType& manager, IndexType index);
-        ManagedItemPtr(const ManagedItemRef<ItemType>& ref);
-        ManagedItemPtr(const ManagedItemPtr<ItemType>& ptr);
-        ManagedItemPtr(ItemType& item);
-        ManagedItemPtr(ItemType* item);
+            CommonPtr ptr;
+            i32 offset_to_base;
+        };
 
-        ItemType& get()const;
-        ItemType* getPtr()const;
+        template <typename T>
+        u32 addTypeIfNeeded_();
 
-        IndexType getItemId()const;
-        ManagerType& getManager()const;
-
-        bool isNull()const;
-        bool isValid()const;
-
-        ItemType* operator->() { return &get(); }
-        const ItemType* operator->()const { return &get(); }
-    protected:
-        friend class ManagedItemRef<ItemType>;
-
-        typename ItemType::ManagerType* manager_;       // manager must be non-volatile (e.g. not in another manager)
-        typename ItemType::IndexType id_;
-    };
-
-    template <typename ItemType>
-    class ManagedItemRef {
-        typedef typename ItemType::ManagerType ManagerType;
-        typedef typename ItemType::IndexType IndexType;
-    public:
-        ManagedItemRef();
-        ManagedItemRef(ManagerType& manager, IndexType index);
-        ManagedItemRef(const ManagedItemRef<ItemType>& ref);
-        ManagedItemRef(const ManagedItemPtr<ItemType>& ptr);
-        ManagedItemRef(ManagedItemRef<ItemType>&& ref);
-        ManagedItemRef(ItemType& item);
-
-        ManagedItemRef<ItemType>& operator =(const ManagedItemRef<ItemType>& ref);
-        ManagedItemRef<ItemType>& operator =(ManagedItemRef<ItemType>&& ref);
-
-        ~ManagedItemRef();
-
-        ItemType& get()const;
-        ItemType* getPtr()const;
-
-        IndexType getItemId()const;
-        ManagerType& getManager()const;
-
-        bool isNull()const;
-        bool isValid()const;
-
-        ItemType* operator->() { return &get(); }
-        const ItemType* operator->()const { return &get(); }
-    protected:
-        friend class ManagedItemPtr<ItemType>;
-
-        void unref_();
-
-        typename ItemType::ManagerType* manager_;       // manager must be non-volatile (e.g. not in another manager)
-        typename ItemType::IndexType id_;
+        fast_vector<ItemCtx> items_;      // items are pointers -> non-volatile
     };
 }
 

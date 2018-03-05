@@ -8,12 +8,12 @@ namespace grynca {
     {
     }
 
-    inline CfgValue::CfgValue(const std::string& val)
+    inline CfgValue::CfgValue(const ustring& val)
      : asString(val),
        asFloat(0.0f)
     {
-        std::string s_upper = val;
-        std::string::iterator it;
+        ustring s_upper = val;
+        ustring::iterator it;
         for( it = s_upper.begin(); it!=s_upper.end(); it++ )
             *it = toupper(*it);  // make all caps
         if ( !s_upper.compare("FALSE") || !s_upper.compare("NO"))
@@ -48,18 +48,18 @@ namespace grynca {
       asBool(val!=0.0f)
     {}
 
-    inline CfgValue CfgValue::operator=(const std::string& val) {
+    inline CfgValue CfgValue::operator=(const ustring& val) {
         return CfgValue(val);
     }
 
 
-    inline Config::Config(const std::string& delim /* ="=" */, const std::string& comment /* ="#" */, const std::string& section /*="!!"*/)
+    inline Config::Config(const ustring& delim /* ="=" */, const ustring& comment /* ="#" */, const ustring& section /*="!!"*/)
      : delim_(delim), comment_(comment), section_(section)
     {
     }
 
-    inline bool Config::loadFromFile(const std::string& filepath, const std::string& section /*= ""*/) {
-        std::ifstream fs(filepath);
+    inline bool Config::loadFromFile(const ustring& filepath, const ustring& section /*= ""*/) {
+        std::ifstream fs(filepath.cpp_str());
         if (!fs.good()) {
             std::cerr << "[Warning] Config: Could not open config file " << filepath << std::endl;
             return false;
@@ -70,9 +70,9 @@ namespace grynca {
         return true;
     }
 
-    inline void Config::loadFromVector(const fast_vector<std::string>& vec, const std::string& section /*= ""*/) {
+    inline void Config::loadFromVector(const fast_vector<ustring>& vec, const ustring& section /*= ""*/) {
         curr_section_name_ = section;
-        ConfigSectionMap* curr_section = &data_[curr_section_name_];
+        ConfigSectionMap * curr_section  = data_.findItem(curr_section_name_);
 
         std::istringstream ss;
         for (size_t i=0; i<vec.size(); ++i) {
@@ -80,45 +80,45 @@ namespace grynca {
         }
     }
 
-    inline const Config::ConfigSectionMap& Config::getData(const std::string& section /*= ""*/) {
-        return data_[section];
+    inline Config::ConfigSectionMap& Config::accData(const ustring& section /*= ""*/) {
+        return findOraddSectionInner_(curr_section_name_);
     }
 
-    inline Config::ConfigSectionMap& Config::accData(const std::string& section /*= ""*/) {
-        return data_[section];
+    inline Config::ConfigSectionMap& Config::accCurrData() {
+        return findOraddSectionInner_(curr_section_name_);
     }
 
-    inline const std::string& Config::getCurrentSectionName()const {
+    inline const ustring& Config::getCurrentSectionName()const {
         return curr_section_name_;
     }
 
-    inline void Config::setCurrentSectionName(const std::string &section) {
+    inline void Config::setCurrentSectionName(const ustring &section) {
         curr_section_name_ = section;
     }
 
-    inline void Config::trim_(std::string &s) {
+    inline void Config::trim_(ustring &s) {
     //static
         // Remove leading and trailing whitespace
-        static const char whitespace[] = " \n\t\v\r\f";
+        static const c32 whitespace[] = U" \n\t\v\r\f";
         s.erase( 0, s.find_first_not_of(whitespace) );
         s.erase( s.find_last_not_of(whitespace)+1 );
     }
 
-    inline void Config::addSourceLine_(const std::string& source_line, ConfigSectionMap*& curr_section) {
+    inline void Config::addSourceLine_(const ustring& source_line, ConfigSectionMap*& curr_section) {
         size_t delim_len = delim_.length();
         size_t section_len = section_.length();
 
 
-        std::string line_without_comms= source_line.substr( 0, source_line.find(comment_) );    // ignore comments
+        ustring line_without_comms= source_line.substr( 0, source_line.find(comment_) );    // ignore comments
         size_t delim_pos = line_without_comms.find(delim_);
-        if (delim_pos==std::string::npos) {
-            std::string sl = source_line;
+        if (delim_pos==ustring::npos) {
+            ustring sl = source_line;
             trim_(sl);
-            if (std::equal(sl.begin(), sl.begin()+section_len, section_.begin())) {
+            if (sl.find(section_) == 0) {
                 // change section
                 curr_section_name_ = sl.substr(section_len);
                 trim_(curr_section_name_);
-                curr_section = &data_[curr_section_name_];
+                curr_section = &accCurrData();
             }
 
             // no delimiter found
@@ -127,20 +127,20 @@ namespace grynca {
             return;
         }
         // extract key
-        std::string key = line_without_comms.substr(0, delim_pos);
-        std::string val = line_without_comms.substr(delim_pos+delim_len);
+        ustring key = line_without_comms.substr(0, delim_pos);
+        ustring val = line_without_comms.substr(delim_pos+delim_len);
         //line.replace(0, delim_pos+delim_len, "");
         // remove whitechars
         Config::trim_(key);
         Config::trim_(val);
         // store to map
-        (*curr_section)[key] = CfgValue(val);
+        new (curr_section->addItem(key)) CfgValue(val);
 
         // check if this key was loaded before
-        std::map<std::string, u32>::iterator it = to_line_id_.find(key);
-        if (it != to_line_id_.end()) {
+        u32* line_id = to_line_id_.findItem(key);
+        if (line_id) {
             // must correct source line
-            lines_[it->second].replace(0, lines_[it->second].find(comment_), line_without_comms);
+            lines_[*line_id].replace(0, lines_[*line_id].find(comment_), line_without_comms);
         }
         else {
             // first time seeing this key, add source line
@@ -148,11 +148,19 @@ namespace grynca {
         }
     }
 
+    inline Config::ConfigSectionMap& Config::findOraddSectionInner_(const ustring& section_name) {
+        bool was_added;
+        Config::ConfigSectionMap* rslt = data_.findOrAddItem(section_name, was_added);
+        if (was_added)
+            new (rslt) Config::ConfigSectionMap();
+        return *rslt;
+    }
+
     // stream operators
     inline std::istream& operator>>(std::istream& is, Config& c) {
-        std::string source_line;
+        ustring source_line;
         bool eof;
-        Config::ConfigSectionMap* curr_section = &c.data_[c.curr_section_name_];
+        Config::ConfigSectionMap* curr_section = &c.accCurrData();
         do {
             eof = !ssu::getLineA(is, source_line);
             c.addSourceLine_(source_line, curr_section);

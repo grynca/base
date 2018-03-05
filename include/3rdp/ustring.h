@@ -1383,6 +1383,9 @@ static inline bool operator<( const ustring::const_reverse_iterator& lhs , const
 static inline bool operator<=( const ustring::const_iterator& lhs , const ustring::const_iterator& rhs ){ return lhs.get_index() <= rhs.get_index(); }
 static inline bool operator<=( const ustring::const_reverse_iterator& lhs , const ustring::const_reverse_iterator& rhs ){ return lhs.get_index() >= rhs.get_index(); }
 
+ustring operator+(const ustring::value_type* lhs, ustring&& rhs) { return std::move(rhs.insert(0, lhs)); }
+ustring operator+(const ustring::value_type* lhs, const ustring& rhs) { return ustring(lhs)+rhs; }
+
 ////! Compute distance between iterators
 //extern int	operator-( const ustring::const_iterator& lhs , const ustring::const_iterator& rhs );
 //extern int	operator-( const ustring::const_reverse_iterator& lhs , const ustring::const_reverse_iterator& rhs );
@@ -2225,7 +2228,7 @@ inline bool ustring::equals( const char* str ) const
     const char* it1 = this->buffer;
 
     if( !it1 || !str )
-        return it1 == str;
+        return (long)it1 == *str;
 
     while( *it1 && *str ){
         if( *it1 != *str )

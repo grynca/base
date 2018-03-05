@@ -95,7 +95,7 @@ namespace grynca {
     }
 
     template <typename T, typename Domain>
-     ustring Type<T, Domain>::getTypename() {
+    inline std::string Type<T, Domain>::getTypename() {
         //static
         return typeid(T()).name();
     };
@@ -128,12 +128,20 @@ namespace grynca {
     template <typename T, typename Domain>
     inline void Type<T, Domain>::copy(void* to, const void *from) {
         //static
-        new (to) T( *(const T*)from);
+        Call<internal::CopyConstruct, T>::template ifTrue<std::is_copy_constructible<T> >(to, from);
+        Call<internal::NoCopyConstruct, T>::template ifFalse<std::is_copy_constructible<T> >();
     }
 
     template <typename T, typename Domain>
     inline void Type<T, Domain>::move(void *to, void *from)  {
-        *(T*)to = std::move(*(T*)from);
+        new (to) T(std::move(*(T*)from));
+    }
+
+    template <typename T, typename Domain>
+    template <typename BaseT>
+    inline BaseT* Type<T, Domain>::castToBase(void* place) {
+        ASSERT((std::is_base_of<BaseT, T>::value));
+        return (BaseT*)place;
     }
 
 
@@ -184,8 +192,8 @@ namespace grynca {
         return id_;
     }
 
-    inline ustring TypeInfo::getDebugString()const {
-        return ssu::toString(id_) + ": " +typename_.cpp_str() + ", size: " + ssu::toString(size_);
+    inline std::string TypeInfo::getDebugString()const {
+        return ssu::toStringA(id_) + ": " + typename_.cpp_str() + ", size: " + ssu::toStringA(size_);
     }
 
     template <typename Domain>
@@ -194,9 +202,11 @@ namespace grynca {
     //static
         ASSERT_M(!isTypeIdSet(tid),
                "Type with this id already set.");
-        if (tid >=getTypes_().size())
-            getTypes_().resize(tid+1);
-        getTypes_()[tid].template set<T, Domain>(tid);
+        fast_vector<TypeInfo>& types = getTypes_();
+        if (tid >=types.size()) {
+            types.enlarge(tid + 1);
+        }
+        types[tid].template set<T, Domain>(tid);
         Type<T, Domain>::typeId_() = tid;
     }
 
@@ -228,68 +238,4 @@ namespace grynca {
         static fast_vector<TypeInfo> types_;
         return types_;
     }
-
-    template <typename F, typename... R>
-    inline constexpr int TypesPack<F, R...>::getTypesCount() {
-    //static
-        return sizeof...(R) +1;
-    }
-
-    template <typename F, typename... R>
-    template <typename T>
-    inline constexpr int TypesPack<F, R...>::pos() {
-    //static
-        return position<T, F, R...>::pos;
-    }
-
-    template <typename F, typename... R>
-    inline constexpr int TypesPack<F, R...>::empty() {
-    //static
-        return false;
-    }
-
-    template <typename F, typename... R>
-    inline const TypeInfo& TypesPack<F, R...>::getTypeInfo(int pos) {
-    //static
-        static internal::TypeIdTypesPackSetter<Types> lazy_setter_;
-
-        ASSERT_M(pos < getTypesCount(), "Invalid type pos.");
-        return TypeInfoManager<Types>::get(pos);
-    }
-
-    template <typename F, typename... R>
-    template <typename... Tss>
-    inline TypesPack<F, R...,Tss...> TypesPack<F, R...>::expand() {
-    //static
-        return TypesPack<F, R...,Tss...>();
-    }
-
-    template <typename F, typename... R>
-    template <typename Functor, typename... Args>
-    inline void TypesPack<F, R...>::callOnTypes(Args&&... args) {
-    // static
-        callOnInner_<Types, Types, Functor>(std::forward<Args>(args)...);
-    }
-
-    template <typename F, typename... R>
-    template <typename TPOrig, typename TP, typename Functor, typename... Args>
-    inline IF_EMPTY(TP) TypesPack<F, R...>::callOnInner_(Args&&... args)
-    // static
-    {}
-
-    template <typename F, typename... R>
-    template <typename TPOrig, typename TP, typename Functor, typename... Args>
-    inline IF_NOT_EMPTY(TP) TypesPack<F, R...>::callOnInner_(Args&&... args) {
-    // static
-        Functor::template f<TPOrig, HEAD(TP)>(std::forward<Args>(args)...);
-        callOnInner_<TPOrig, TAIL(TP), Functor>(std::forward<Args>(args)...);
-    }
-
-    template <typename F, typename... R>
-    template <typename Domain>
-    void TypesPack<F, R...>::mapIds(fast_vector<u32>& ids_mapper_out) {
-    // static
-        internal::TypeIdTypesPackMapper<Types, Domain>::map(ids_mapper_out);
-    };
-
 }

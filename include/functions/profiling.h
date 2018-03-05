@@ -1,6 +1,7 @@
 #ifndef PROFILING_H
 #define PROFILING_H
 
+#include "functions/hash.h"
 #include "types/Singleton.h"
 #include "types/containers/fast_vector.h"
 #include "types/containers/HashMap.h"
@@ -15,23 +16,19 @@ namespace grynca {
             MeasureCtx(const fast_vector<u32>& sp);
 
             f32 calcDt();
+            f32 calcDt(f32 divider);
 
             f32 acc_time;
             u32 samples_cnt;
             fast_vector<u32> stack_path;
         };
 
-        struct CmpMeasures {
-            bool operator()(MeasureCtx* m1, MeasureCtx* m2) {
-                u32 s = u32(std::min(m1->stack_path.size(), m2->stack_path.size()));
-                for (u32 i=0; i<s; ++i) {
-                    if (m1->stack_path[i] < m2->stack_path[i])
-                        return true;
-                    else if (m1->stack_path[i] > m2->stack_path[i])
-                        return false;
-                }
-                return m1->stack_path.size() < m2->stack_path.size();
-            }
+        struct CmpMeasuresByAvg {
+            bool operator()(MeasureCtx* m1, MeasureCtx* m2);
+        };
+
+        struct CmpMeasuresByAcc {
+            bool operator()(MeasureCtx* m1, MeasureCtx* m2);
         };
 
         struct PathHasher {
@@ -63,22 +60,39 @@ namespace grynca {
         // return block id
         static u32 initBlock(const ustring &name);
     private:
+        friend class ProfilingBlock;
         friend class ProfilingSample;
         friend class ProfilingSampleSimple;
         template <typename T> friend class ProfilingSampleCond;
-        template <typename T> friend class ProfilingSamplePrint;
+        template <typename T> friend class ProfilingSampleFunc;
 
         void endCurrBlock_();
 
         fast_vector<ProfilingBlock> blocks_;
+        // sinking path of measure context, root ctx is first,
+        //   after that there can be multiple ctxs for conditional measures
         fast_vector<Measures> measure_ctxs_;
         fast_vector<u32> curr_stack_;
+        fast_vector<Profiling::MeasureCtx*> tmp_print_;
+        u32 longest_block_name_;
     };
 
     class ProfilingSample {
     public:
-        ustring print()const;
-        ustring printWithPerc()const;
+        ProfilingSample();
+
+        template <typename Sorter = Profiling::CmpMeasuresByAcc>
+        ustring simplePrint(f32 avg_divider = 1.0f)const;
+
+        template <typename Sorter = Profiling::CmpMeasuresByAcc>
+        void clearMeasureTimes()const;
+
+        void getBlockInfo(ustring& name_out, u32& lvl_out)const;
+    private:
+        template <typename Sorter = Profiling::CmpMeasuresByAcc>
+        fast_vector<Profiling::MeasureCtx*>& lazyGetMeasures_()const;
+
+        mutable u32 sorter_tid_;
     };
 
     class ProfilingSampleSimple : public ProfilingSample {
@@ -94,25 +108,20 @@ namespace grynca {
         ~ProfilingSampleCond();
 
     private:
-        CondFunc cf_;
+        const CondFunc& cf_;
     };
 
     template <typename PrintFunc>
-    class ProfilingSamplePrint : public ProfilingSample {
+    class ProfilingSampleFunc : public ProfilingSample {
     public:
-        ProfilingSamplePrint(u32 block_id, const PrintFunc& pf);
-        ~ProfilingSamplePrint();
+        ProfilingSampleFunc(u32 block_id, const PrintFunc& pf);
+        ~ProfilingSampleFunc();
     private:
-        PrintFunc pf_;
+        const PrintFunc& pf_;
     };
 
     struct ProfilingPrinterCout {
-        void operator()(const ProfilingSample& s) { std::cout << s.print(); }
-    };
-
-    //  prints accumulated block times and percentage distribution on each level
-    struct ProfilingPrinterPercCout {
-        void operator()(const ProfilingSample& s) { std::cout << s.printWithPerc(); }
+        void operator()(const ProfilingSample& s)const { std::cout << s.simplePrint(); }
     };
 }
 
@@ -123,47 +132,43 @@ namespace grynca {
         NAME = Profiling::initBlock(MSG);
 
 #define MEASURE_SAMPLE_C(NAME, COND_FUNC) \
-        auto CAT(prof_func, __LINE__) = COND_FUNC; \
-        ProfilingSampleCond<decltype(CAT(prof_func, __LINE__))> CAT(prof_sample_, __LINE__) (NAME, CAT(prof_func, __LINE__))
+        ProfilingSampleCond<decltype(COND_FUNC)> CAT(prof_sample_, __LINE__) (NAME, COND_FUNC)
 
 #define MEASURE_SAMPLE(NAME) ProfilingSampleSimple CAT(prof_sample_, __LINE__)(NAME)
 
-#define MEASURE_SAMPLE_P(NAME, PRINT_FUNC) \
-        auto CAT(print_func, __LINE__) = PRINT_FUNC; \
-        ProfilingSamplePrint<decltype(CAT(print_func, __LINE__))> CAT(prof_sample_, __LINE__) (NAME, CAT(print_func, __LINE__))
+#define MEASURE_SAMPLE_F(NAME, PRINT_FUNC) \
+        ProfilingSampleFunc<decltype(PRINT_FUNC)> CAT(prof_sample_, __LINE__) (NAME, PRINT_FUNC)
 
 // Time is added only if COND_FUNC results to true
 #define MEASURE_BLOCK_C(MSG, COND_FUNC) \
         static u32 CAT(prof_bl_, __LINE__) = Profiling::initBlock(MSG); \
-        auto CAT(prof_func, __LINE__) = COND_FUNC; \
-        ProfilingSampleCond<decltype(CAT(prof_func, __LINE__))> CAT(prof_sample_, __LINE__) (CAT(prof_bl_, __LINE__), CAT(prof_func, __LINE__))
+        ProfilingSampleCond<decltype(COND_FUNC)> CAT(prof_sample_, __LINE__) (CAT(prof_bl_, __LINE__), COND_FUNC)
 
 #define MEASURE_BLOCK(MSG) \
         static u32 CAT(prof_bl_, __LINE__) = Profiling::initBlock(MSG); \
         ProfilingSampleSimple CAT(prof_sample_, __LINE__) (CAT(prof_bl_, __LINE__))
 
 // Prints average block loop-times on block destructor
-#define MEASURE_BLOCK_P(MSG, PRINT_FUNC) \
+#define MEASURE_BLOCK_F(MSG, PRINT_FUNC) \
         static u32 CAT(prof_bl_, __LINE__) = Profiling::initBlock(MSG); \
-        auto CAT(print_func, __LINE__) = PRINT_FUNC; \
-        ProfilingSamplePrint<decltype(CAT(print_func, __LINE__))> CAT(prof_sample_, __LINE__) (CAT(prof_bl_, __LINE__), CAT(print_func, __LINE__))
+        ProfilingSampleFunc<decltype(PRINT_FUNC)> CAT(prof_sample_, __LINE__) (CAT(prof_bl_, __LINE__), PRINT_FUNC)
 
-#if defined(PROFILE_BUILD) || defined(PROFILE_IN_RELEASE)
+#if defined(PROFILE_BUILD)
 #   define PROFILE_ID_DEF(NAME) MEASURE_ID_DEF(NAME)
 #   define PROFILE_ID_INIT(NAME, MSG) MEASURE_ID_INIT(NAME, MSG)
 #   define PROFILE_SAMPLE(NAME) MEASURE_SAMPLE(NAME)
-#   define PROFILE_SAMPLE_P(NAME, PRINT_FUNC) MEASURE_SAMPLE_P(NAME, PRINT_FUNC)
+#   define PROFILE_SAMPLE_F(NAME, PRINT_FUNC) MEASURE_SAMPLE_F(NAME, PRINT_FUNC)
 #   define PROFILE_BLOCK(MSG) MEASURE_BLOCK(MSG)
 #   define PROFILE_BLOCK_C(MSG, COND_FUNC) MEASURE_BLOCK_C(MSG, COND_FUNC)
-#   define PROFILE_BLOCK_P(MSG, PRINT_FUNC) MEASURE_BLOCK_P(MSG, PRINT_FUNC)
+#   define PROFILE_BLOCK_F(MSG, PRINT_FUNC) MEASURE_BLOCK_F(MSG, PRINT_FUNC)
 #else
 #   define PROFILE_ID_DEF(NAME)
 #   define PROFILE_ID_INIT(NAME, MSG)
 #   define PROFILE_SAMPLE(NAME)
-#   define PROFILE_SAMPLE_P(NAME, PRINT_FUNC)
+#   define PROFILE_SAMPLE_F(NAME, PRINT_FUNC)
 #   define PROFILE_BLOCK(MSG)
 #   define PROFILE_BLOCK_C(MSG, COND_FUNC)
-#   define PROFILE_BLOCK_P(MSG, PRINT_FUNC)
+#   define PROFILE_BLOCK_F(MSG, PRINT_FUNC)
 #endif
 
 #include "profiling.inl"

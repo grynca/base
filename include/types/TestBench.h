@@ -51,10 +51,10 @@ namespace grynca {
         template<typename Functor, typename TObject = void>
         u32 addTest(const ustring& name, const ustring& cfg_section, TObject *obj = NULL);
 
-        template <typename PrintFunc = ProfilingPrinterCout>
-        void runAllTests(const PrintFunc& pf = PrintFunc());
-        template <typename PrintFunc = ProfilingPrinterCout>
-        void runTest(u32 test_id, const PrintFunc& pf = PrintFunc());
+        template <typename ProfilingFunc = ProfilingPrinterCout>
+        void runAllTests(const ProfilingFunc& pf = ProfilingFunc());
+        template <typename ProfilingFunc = ProfilingPrinterCout>
+        void runTest(u32 test_id, const ProfilingFunc& pf = ProfilingFunc());
     };
 
     class TestBenchSton : public Singleton<TestBench> {};
@@ -82,10 +82,24 @@ namespace grynca {
 
     class SDLTestBench : public TestBenchBase {
     public:
+        enum OverlayPrintMode {
+            opmNone = 0,
+            opmAll = u32(-1),
+
+            opmFPS = BIT_MASK(0),
+            opmProfileMeasures = BIT_MASK(1),
+        };
+
         SDLTestBench(u32 width = 1024, u32 height = 768, bool accelerated = true);
         ~SDLTestBench();
 
-        // returns test id
+        /* adds test fixture, must define methods:
+         *      void init(Config::ConfigSectionMap& cfg) {}
+         *      void close() {}
+         *      void handleEvent(SDL_Event& evt) {}
+         *      void update(SDL_Renderer* r, f32 dt) {}
+         * returns test id
+         * */
         template<typename TObject>
         u32 addTest(const ustring& name, TObject *obj);     // cfg_section same name as test
         template<typename TObject>
@@ -97,13 +111,11 @@ namespace grynca {
         u32 getRunningTest()const;       // InvalidId() when not running
         u32 getTestsCount()const;
 
-        void setUpdateMeasurePrintFreq(f32 freq);
-        f32 getUpdateMeasurePrintFreq()const;
+        void setUpdateMeasurePrintFreq(u32 frames);
+        u32 getUpdateMeasurePrintFreq()const;
 
-        void setShowFps(bool val);
-        bool getShowFps()const;
-        void setShowProfileMeasures(bool val);
-        bool getShowProfileMeasures()const;
+        void setOverlayPrintMode(u32 opm);
+        u32 getOverlayPrintMode()const;
 
         SDL_Window* getWindow()const;
         SDL_Renderer* getRenderer()const;
@@ -113,11 +125,14 @@ namespace grynca {
             static void f(TObject* obj, Config::ConfigSectionMap& cfg);
         };
 
+        void runCurrentTest_();
+
         SDL_Window* window_;
         SDL_Renderer* renderer_;
         u32 running_test_;
-        f32 update_measure_print_freq_;
-        u8 debug_overlay_flags_;
+        u32 update_print_frames_;
+        u32 overlay_print_mode_;
+        u32 overlap_print_mode_stored_;
     };
 
     class SDLTestBenchSton : public Singleton<SDLTestBench> {};

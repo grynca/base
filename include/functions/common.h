@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include "meta.h"
 #include "defs.h"
 #include <algorithm>
 
@@ -30,45 +31,9 @@ namespace grynca {
         return x - (x >> 1);
     }
 
-
     // e.g for finding out number of bits needed for storing number
     constexpr u32 floorLog2(u32 x) {
         return x < 2 ? x : 1+floorLog2(x >> 1);
-    }
-
-    // Thomas Wang's hash
-    inline u32 calcHash32(u32 key)
-    {
-        key += ~(key << 15);
-        key ^=  (key >> 10);
-        key +=  (key << 3);
-        key ^=  (key >> 6);
-        key += ~(key << 11);
-        key ^=  (key >> 16);
-        return key;
-    }
-
-    inline u32 calcHash64(u64 key)
-    {
-        key += ~(key << 32);
-        key ^= (key >> 22);
-        key += ~(key << 13);
-        key ^= (key >> 8);
-        key += (key << 3);
-        key ^= (key >> 15);
-        key += ~(key << 27);
-        key ^= (key >> 31);
-        return u32(key);
-    }
-
-    // calc integers hash
-    template <typename IntegersVec>
-    inline u64 calcIntsHash(const IntegersVec& ints) {
-        u64 seed = ints.size();
-        for (auto& i : ints) {
-            seed ^= i + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-        }
-        return seed;
     }
 
     template <typename T>
@@ -81,9 +46,10 @@ namespace grynca {
         return (v > 0) - (v < 0);
     }
 
-    template <typename T>
-    inline T wrap(T a, T b) {
-        return a < 0 ? a % b + b : a % b;
+    // wraps index to array (works with negative indices)
+    //  (when arr_size is power of two use PMOD macro instead)
+    inline u32 wrap(i32 index, i32 arr_size) {
+        return (u32)((index % arr_size) + arr_size) % arr_size;
     }
 
     // the number of 1 bits in a number.
@@ -104,6 +70,15 @@ namespace grynca {
         return __builtin_ctzll(w);
     }
 
+    // count leading zeros
+    inline u32 clz(u32 w) {
+        return __builtin_clz(w);
+    }
+
+    inline u32 clz(u64 w) {
+        return __builtin_clzll(w);
+    }
+
     template <typename Vec>
     inline bool isPrefix(const Vec& prefix, const Vec& c) {
         size_t plen = prefix.size();
@@ -122,15 +97,36 @@ namespace grynca {
 
     template <typename Map, typename Key, typename Val>
     inline Val tryGet(const Map& map, const Key& key, const Val& def_value) {
-        auto it = map.find(key);
-        if(it != map.end())
-            return it->second;
+        auto item_ptr = map.findItem(key);
+        if(item_ptr)
+            return *item_ptr;
         return def_value;
     };
 
     template <typename FuctType>
     inline void dispatchFunction(void* fp) {
         (*(FuctType*)fp)();
+    }
+
+    template <typename T>
+    inline T lerp(f32 t, const T& a, const T& b) {
+        return (1-t)*a + t*b;
+    }
+
+    // same as with vector, shifts elements after removed to fill the gap
+    //  caller must update its size variable
+    template <typename T>
+    inline void arrayErase(T* arr, u32 pos, u32 count, u32 size) {
+        ASSERT((pos+count) <= size);
+        memmove(arr + pos, arr + pos + count, (size - pos - count) * sizeof(T));
+    }
+
+    // creates gap for new items
+    template <typename T>
+    inline void arrayInsert(T* arr, u32 pos, u32 count, u32 size, u32 max_size) {
+        UNUSED(max_size);
+        ASSERT((size+count) <= max_size);
+        memmove(arr + pos + count, arr + pos, (size - pos) * sizeof(T));
     }
 }
 

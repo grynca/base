@@ -6,6 +6,11 @@
 
 namespace grynca {
 
+    // fw
+    template <typename CT, typename IT> class ItemPtr;
+    template <typename CT, typename IT> class ItemAutoPtr;
+    template <typename CT, typename IT> class ItemRefPtr;
+
     // adds data to back in O(1)
     // removing data also in O(1),
     //  - Array has holes inside
@@ -14,7 +19,14 @@ namespace grynca {
 
     template <typename T, typename PoolType = Pool>
     class Array {
+        typedef Array<T, PoolType> MyType;
     public:
+        typedef T ItemType;
+        typedef Index ItemIndexType;
+        typedef ItemPtr<MyType, ItemType> IPtr;
+        typedef ItemAutoPtr<MyType, ItemType> IAutoPtr;
+        typedef ItemRefPtr<MyType, ItemType> IRefPtr;
+
         Array();
         ~Array();
 
@@ -26,28 +38,40 @@ namespace grynca {
         template <typename ...ConstructionArgs>
         T& add2(Index& index_out, ConstructionArgs&&... args);
 
-        void remove(Index index);
-        void removeAtPos(u32 pos);
+        // item must derive from RefCounted
+        template <typename ...ConstructionArgs>
+        IRefPtr addRC(ConstructionArgs&&... args);
+
+        void removeItem(Index index);
+        void removeItemAtPos(u32 pos);
         void reserve(size_t count);
 
         u32 getItemPos(const T* item)const;
         u32 getItemPos(Index index)const;
-        T& get(Index index);
-        T* getAtPos(u32 pos);      // good for looping through 0-size
-        T& getAtPos2(u32 pos);      // (use when you are sure that pos is not hole)
-        Index getIndexForPos(u32 pos);      // get index for data at pos
+        T& accItem(Index index);
+        T* accItemAtPos(u32 pos);      // good for looping through 0-size
+        T& accItemAtPos2(u32 pos);      // (use when you are sure that pos is not hole)
+        Index getIndexForPos(u32 pos)const;      // get index for data at pos
+        Index getFullIndex(u32 index_id)const;      // if you only have Index.index this will get you corresponding version&aux
 
-        const T& get(Index index)const;
-        const T* getAtPos(u32 pos)const;
+        // if you only have index part of Index
+        T& accItemWithInnerIndex(u32 inner_id);
+        const T& getItemWithInnerIndex(u32 inner_id)const;
+
+        const T& getItem(Index index)const;
+        const T* getItemAtPos(u32 pos)const;
 
         bool isValidIndex(Index index)const;
 
         T* getData();
 
+        void clear();
+
         u32 size()const;
         bool empty()const;
 
-        PoolType& getPool() { return pool_; }
+        PoolType& accPool() { return pool_; }
+        const PoolType& getPool()const { return pool_; }
     private:
         PoolType pool_;
     };

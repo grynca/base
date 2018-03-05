@@ -31,7 +31,14 @@ namespace grynca {
         return Index(redirect_id, redirect_version);
     }
 
-    inline void TightPool::remove(Index index) {
+    inline Index TightPool::add(u8*& new_item_out, u16 aux_id) {
+        Index id = add(new_item_out);
+        redirects_[id.getIndex()].setAuxIndex(aux_id);
+        id.setAuxIndex(aux_id);
+        return id;
+    }
+
+    inline void TightPool::removeItem(Index index) {
         ASSERT_M(isValidIndex(index), "Invalid index.");
 
         u32 deleted_item_pos = getItemPos(index);
@@ -41,7 +48,9 @@ namespace grynca {
         u8* last = &data_[last_item_pos*item_size_];
 
         // move last item to deleted place
-        memcpy(deleted, last, item_size_);
+        if (last_item_pos != deleted_item_pos) {
+            memcpy(deleted, last, item_size_);
+        }
         // update redirect for last(moved) item
         u32 redirect_id = redirect_ids_[last_item_pos];
         redirects_[redirect_id].setIndex(deleted_item_pos);
@@ -59,7 +68,7 @@ namespace grynca {
         first_free_pos_ = index.getIndex();
     }
 
-    inline void TightPool::remove(Index index, DestroyFunc destructor) {
+    inline void TightPool::removeItem(Index index, DestroyFunc destructor) {
         ASSERT_M(isValidIndex(index), "Invalid index.");
 
         u32 deleted_item_pos = getItemPos(index);
@@ -71,7 +80,9 @@ namespace grynca {
         // call destructor on item data_
         destructor(deleted);
         // move last item to deleted place
-        memcpy(deleted, last, item_size_);
+        if (last_item_pos != deleted_item_pos) {
+            memcpy(deleted, last, item_size_);
+        }
         // update redirect for last(moved) item
         u32 redirect_id = redirect_ids_[last_item_pos];
         redirects_[redirect_id].setIndex(deleted_item_pos);
@@ -106,41 +117,58 @@ namespace grynca {
         return redirects_[index.getIndex()].getIndex();
     }
 
-    inline u8* TightPool::get(Index index) {
+    inline u8* TightPool::accItem(Index index) {
         ASSERT_M(isValidIndex(index), "Invalid index.");
         return &data_[getItemPos(index)*item_size_];
     }
 
-    inline const u8* TightPool::get(Index index)const {
+    inline const u8* TightPool::getItem(Index index)const {
         ASSERT_M(isValidIndex(index), "Invalid index.");
         return &data_[getItemPos(index)*item_size_];
     }
 
-    inline u8* TightPool::getAtPos(u32 pos) {
+    inline u8* TightPool::accItemWithInnerIndex(u32 inner_id) {
+        u32 pos = redirects_[inner_id].getIndex();
         return &data_[pos*item_size_];
     }
 
-    inline const u8* TightPool::getAtPos(u32 pos)const {
+    inline const u8* TightPool::getItemWithInnerIndex(u32 inner_id)const {
+        u32 pos = redirects_[inner_id].getIndex();
         return &data_[pos*item_size_];
     }
 
-    inline u8* TightPool::getAtPos2(u32 pos) {
-        return getAtPos(pos);
+    inline u8* TightPool::accItemAtPos(u32 pos) {
+        return &data_[pos*item_size_];
     }
 
-    inline const u8* TightPool::getAtPos2(u32 pos)const {
-        return getAtPos(pos);
+    inline const u8* TightPool::getItemAtPos(u32 pos)const {
+        return &data_[pos*item_size_];
     }
 
-    inline Index TightPool::getIndexForPos(u32 pos) {
-        u32 redirect_id = redirect_ids_[pos];
-        return Index(redirect_id, redirects_[redirect_id].getVersion());
+    inline u8* TightPool::accItemAtPos2(u32 pos) {
+        return accItemAtPos(pos);
     }
 
-    inline void TightPool::getIndexForPos2(u32 pos, Index& index_out) {
+    inline const u8* TightPool::getItemAtPos2(u32 pos)const {
+        return getItemAtPos(pos);
+    }
+
+    inline Index TightPool::getIndexForPos(u32 pos)const {
+        return getFullIndex(redirect_ids_[pos]);
+    }
+
+    inline u32 TightPool::getInnerIndexForPos(u32 pos)const {
+        return redirect_ids_[pos];
+    }
+
+    inline void TightPool::getIndexForPos2(u32 pos, Index& index_out)const {
         u32 redirect_id = redirect_ids_[pos];
         index_out.setIndex(redirect_id);
-        index_out.setVersion(redirects_[redirect_id].getVersion());
+        index_out.setVerAux(redirects_[redirect_id].getVerAux());
+    }
+
+    inline Index TightPool::getFullIndex(u32 index_id)const {
+        return Index(index_id, redirects_[index_id].getVersion(), redirects_[index_id].getAuxIndex());
     }
 
     inline bool TightPool::isValidIndex(Index index) const {
@@ -170,7 +198,7 @@ namespace grynca {
 
     inline void TightPool::clear(DestroyFunc destructor) {
         for (u32 i=0; i<size(); ++i) {
-            destructor(getAtPos(i));
+            destructor(accItemAtPos(i));
         }
         clear();
     }

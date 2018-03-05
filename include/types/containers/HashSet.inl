@@ -4,14 +4,15 @@
 
 #define HS_TPL template <typename KeyType, typename Hasher, typename Compare>
 #define HS_TYPE HashSet<KeyType, Hasher, Compare>
-#define DEF_SIZE 64
 
 namespace grynca {
 
     HS_TPL
     inline HS_TYPE::HashSet()
-     : HashSet(DEF_SIZE)
-    {}
+     : items_count_(0), modulo_mask_(0), initial_size_(0)
+    {
+        hash_table_.push_back(InvalidId());
+    }
 
     HS_TPL
     inline HS_TYPE::HashSet(u32 initial_size)
@@ -150,7 +151,7 @@ namespace grynca {
 
     HS_TPL
     inline u32 HS_TYPE::addItemInner_(u32 inner_hash, u32 hash, const KeyType& key) {
-        if (items_count_ >= hash_table_.size()) {
+        if (items_count_ >= keys_.size()) {
             u32 new_size = calcNextPowerOfTwo(items_count_+1);
             modulo_mask_ = new_size - 1;
             hash_table_.resize(new_size);

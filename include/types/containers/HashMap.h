@@ -29,16 +29,18 @@ namespace grynca {
 
         void reserve(u32 size);
         void clear();
-        ItemType* addItem(const KeyType& key);   // returns item ptr where user must construct item himself
-        ItemType* findOrAddItem(const KeyType &key, bool &was_added);
+        ItemType* addItem(const KeyType& key);      // returns item ptr where user must construct item himself with placement new
+        ItemType* findOrAddItem(const KeyType &key, bool &was_added);       // returns item ptr where user must construct item himself with placement new
         u32 findItemId(const KeyType& key)const;      // returns InvalidId() if not found
         const ItemType* findItem(const KeyType& key)const;
         ItemType* findItem(const KeyType& key);
         bool removeItem(const KeyType& key);        // return true if item was found and removed
+        template <typename BeforeRemoveFunc>
+        void removeItem(const KeyType& key, const BeforeRemoveFunc& cb);    // func gets called if item is removed
 
         u32 getItemsCount() const { return items_count_; }
         const KeyType& getKey(u32 item_id) const;
-        ItemType& getItem(u32 item_id);
+        ItemType& accItem(u32 item_id);
         const ItemType& getItem(u32 item_id)const;
         u32 getItemIndex(const ItemType* i) const;     // ptr must point inside map
 

@@ -6,11 +6,13 @@
 
 namespace grynca {
 
+    // Size must be power of 2 !!
     template <typename ItemType, int Size = 32>
     class RoundBuffer {
     public:
         RoundBuffer()
-            : curr_id_(0), size_(0)  {}
+         : curr_id_(0), size_(0)
+        {}
 
         void clear() {
             size_ = 0;
@@ -31,11 +33,11 @@ namespace grynca {
 
         ItemType& getPrev(u32 prev_offset = 1) {
             ASSERT(((i32)getSize()-prev_offset) > 0);
-            return items_[(curr_id_-prev_offset)%Size];
+            return items_[(curr_id_-prev_offset)&(Size-1)];
         }
 
         void add() {
-            curr_id_ = (curr_id_+1)%Size;
+            curr_id_ = (curr_id_+1)&(Size-1);
             ++size_;
         }
 

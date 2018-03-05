@@ -25,6 +25,11 @@ namespace grynca {
         return randFloat()*(to-from) + from;
     }
 
+    // -1 or 1
+    static inline f32 randSign() {
+        return (rand()%2)*2 - 1;
+    }
+
     // pick count numbers without repeating, from 0 to (max-1), caller is responsible for seeding his random gen
     static inline void randomPickN(fast_vector<unsigned int>& picked, unsigned int count, unsigned int max) {
         ASSERT_M(count <= max, "Cant pick more numbers than max.");

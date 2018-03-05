@@ -38,8 +38,8 @@ namespace grynca {
         void subscribe() {
             ObjFunc<bool(void*)> f;
             f.bind<EventRecieveHelper<EventType, Derived> >((Derived *) this);
-            EventCallbackId hid = handler_->addCallbackT<EventType>(f);
-            subscribed_.push_back(hid);
+            auto& event_cb = handler_->addCallbackT<EventType>(f);
+            subscribed_.push_back(event_cb.getId());
         }
 
         template <typename EventType>

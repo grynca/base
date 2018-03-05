@@ -14,25 +14,33 @@ namespace grynca {
         TightPool(u32 item_size);
 
         Index add(u8*& new_item_out);
+        Index add(u8*& new_item_out, u16 aux_id);
 
-        void remove(Index index);
-        void remove(Index index, DestroyFunc destructor);
+        void removeItem(Index index);
+        void removeItem(Index index, DestroyFunc destructor);
         void reserve(size_t count);
 
         u32 getItemPos(const u8* item)const;       // item must be in pool
         u32 getItemPos(Index index)const;
-        u8* get(Index index);
-        const u8* get(Index index)const;
-        Index getIndexForPos(u32 pos);      // get index for data at pos
-        void getIndexForPos2(u32 pos, Index& index_out);
+        u8* accItem(Index index);
+        const u8* getItem(Index index)const;
+
+        // if you only have index part of Index
+        u8* accItemWithInnerIndex(u32 inner_id);
+        const u8* getItemWithInnerIndex(u32 inner_id)const;
+
+        Index getIndexForPos(u32 pos)const;      // get index for data at pos
+        u32 getInnerIndexForPos(u32 pos)const;   // gets only .index part
+        void getIndexForPos2(u32 pos, Index& index_out)const;
+        Index getFullIndex(u32 index_id)const;      // if you only have Index.index this will get you corresponding version&aux
 
         // no need to check for NULL (cant be hole)
-        u8* getAtPos(u32 pos);
-        const u8* getAtPos(u32 pos)const;
+        u8* accItemAtPos(u32 pos);
+        const u8* getItemAtPos(u32 pos)const;
 
         // just for consistent API with Pool (same as getAtPos)
-        u8* getAtPos2(u32 pos);
-        const u8* getAtPos2(u32 pos)const;
+        u8* accItemAtPos2(u32 pos);
+        const u8* getItemAtPos2(u32 pos)const;
 
         bool isValidIndex(Index index)const;
 
